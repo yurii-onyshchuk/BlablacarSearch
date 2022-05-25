@@ -14,7 +14,7 @@ class User(AbstractUser):
         return self.username
 
 
-class Trip(models.Model):
+class Task(models.Model):
     from_city = models.CharField(verbose_name='Звідки?', max_length=40)
     to_city = models.CharField(verbose_name='Куди?', max_length=40)
     locale = models.CharField(verbose_name='Локалізація', default='uk-UA', max_length=5)
@@ -23,10 +23,11 @@ class Trip(models.Model):
     end_date_local = models.DateTimeField(verbose_name='Закінчуючи часом', blank=True, null=True)
     requested_seats = models.IntegerField(verbose_name='Кількість місць', default=1)
     radius_in_meters = models.IntegerField(verbose_name='Радіус пошуку', blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'Поїздка'
-        verbose_name_plural = 'Поїздки'
+        verbose_name = 'Пошук поїздок'
+        verbose_name_plural = 'Пошук поїздок'
 
     def __str__(self):
         return f'{self.from_city}-{self.to_city}: {self.start_date_local}'

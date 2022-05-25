@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h1>Заплановані поїздки</h1>
+    {% for task in task_list %}
+        <p><a href="{% url 'task_detail' task.pk %}">{{ task }}</a></p>
+    {% endfor %}
+{% endblock %}

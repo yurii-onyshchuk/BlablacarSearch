@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User
+from .models import User, Task
 
 
 class UserRegisterForm(UserCreationForm):
@@ -25,3 +25,10 @@ class UserRegisterForm(UserCreationForm):
 class UserAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label="Ім'я користувача")
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput())
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = '__all__'
+        exclude = ['user', ]
