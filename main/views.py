@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from . import forms
 from .models import Task
+from .utils import get_city_coordinate
 
 
 class UserRegister(CreateView):
@@ -32,6 +33,8 @@ class CreateTask(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        form.instance.from_coordinate = get_city_coordinate(form.cleaned_data['from_city'])
+        form.instance.to_coordinate = get_city_coordinate(form.cleaned_data['to_city'])
         return super(CreateTask, self).form_valid(form)
 
 
