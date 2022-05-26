@@ -33,8 +33,8 @@ class CreateTask(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.from_coordinate = get_city_coordinate(form.cleaned_data['from_city'])
-        form.instance.to_coordinate = get_city_coordinate(form.cleaned_data['to_city'])
+        form.instance.from_coordinate = form.from_city_coord
+        form.instance.to_coordinate = form.to_city_coord
         return super(CreateTask, self).form_valid(form)
 
 

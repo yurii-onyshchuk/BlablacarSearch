@@ -13,9 +13,7 @@ class TaskAdmin(admin.ModelAdmin):
     list_display_links = ('from_city', 'to_city',)
 
     def get_form(self, request, obj=None, **kwargs):
-        print(self.exclude)
         self.exclude = (None,)
-        print(self.exclude)
         return super(TaskAdmin, self).get_form(request, obj=None, **kwargs)
 
 

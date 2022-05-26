@@ -30,10 +30,14 @@ class UserAuthenticationForm(AuthenticationForm):
 
 
 class TaskForm(forms.ModelForm):
+    from_city_coord = None
+    to_city_coord = None
+
     def clean_from_city(self):
         from_city = self.cleaned_data['from_city']
         coordinate = get_city_coordinate(from_city)
         if coordinate:
+            self.from_city_coord = coordinate
             return from_city
         else:
             raise ValidationError(f'Міста "{from_city}" не знайдено..')
@@ -42,6 +46,7 @@ class TaskForm(forms.ModelForm):
         to_city = self.cleaned_data['to_city']
         coordinate = get_city_coordinate(to_city)
         if coordinate:
+            self.to_city_coord = coordinate
             return to_city
         else:
             raise ValidationError(f'Міста "{to_city}" не знайдено..')
