@@ -33,6 +33,9 @@ class TaskForm(forms.ModelForm):
     from_city_coord = None
     to_city_coord = None
 
+    requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8)
+    radius_in_meters = forms.IntegerField(label='Радіус пошуку, м', required=False, min_value=1, max_value=50000)
+
     def clean_from_city(self):
         from_city = self.cleaned_data['from_city']
         coordinate = get_city_coordinate(from_city)
@@ -53,5 +56,4 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        fields = '__all__'
-        exclude = ['user', 'from_coordinate', 'to_coordinate']
+        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters']

@@ -4,7 +4,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from . import forms
 from .models import Task
-from .utils import get_city_coordinate
 
 
 class UserRegister(CreateView):
@@ -52,3 +51,9 @@ class TaskDetail(LoginRequiredMixin, UpdateView):
     form_class = forms.TaskForm
     template_name = 'task_form.html'
     success_url = reverse_lazy('task_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskDetail, self).get_context_data(**kwargs)
+        task = Task.objects.get(user=self.request.user, pk=self.kwargs['pk'])
+        context['url'] = Task.get_url(task)
+        return context
