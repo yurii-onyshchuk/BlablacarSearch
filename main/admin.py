@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import User, Task
+from .models import User, Task, Trip
 from .forms import TaskForm
 
 
@@ -19,3 +19,8 @@ class TaskAdmin(admin.ModelAdmin):
 
     def URL(self, obj):
         return mark_safe(f'<a href="{obj.get_url()}">{obj.get_url()}</a>')
+
+
+@admin.register(Trip)
+class TripAdmin(admin.ModelAdmin):
+    pass
