@@ -2,7 +2,7 @@ import requests, time, smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.core.management import BaseCommand
-from main.models import Task
+from main.models import Task, Trip
 
 
 def send_message(password, from_email, to_email, subject, message):
@@ -20,56 +20,90 @@ def send_message(password, from_email, to_email, subject, message):
     server.quit()
 
 
-class TripChecker:
-    def __init__(self, url):
-        self.url = url
+class TripParser:
+    def __init__(self, task):
+        self.task = task
+        self.response = requests.get(task.get_url()).json()
 
-    def get_response(self):
-        response = requests.get(self.url)
-        return response
+    def get_search_link(self):
+        return self.response['link']
 
-    def get_dict_response(self):
-        return self.get_response().json()
+    def get_search_info(self):
+        return self.response['search_info']
 
     def get_trips_list(self):
-        return self.get_dict_response()['trips']
+        return self.response['trips']
 
-    @staticmethod
-    def get_from_city(trip):
-        return trip["waypoints"][0]["place"]['city']
+    def get_trip_link(self, item):
+        return self.response['trips'][item]['link']
 
-    @staticmethod
-    def get_to_city(trip):
-        return trip["waypoints"][1]["place"]['city']
+    def get_departure_time(self, item):
+        return self.response['trips'][item]["waypoints"][0]["date_time"]
 
-    @staticmethod
-    def get_trip_link(trip):
-        return trip['link']
+    def get_from_city(self, item):
+        return self.response['trips'][item]["waypoints"][0]["place"]['city']
+
+    def get_from_address(self, item):
+        try:
+            return self.response['trips'][item]["waypoints"][0]["place"]['address']
+        except KeyError:
+            return None
+
+    def get_to_city(self, item):
+        return self.response['trips'][item]["waypoints"][1]["place"]['city']
+
+    def get_to_address(self, item):
+        try:
+            return self.response['trips'][item]["waypoints"][1]["place"]['address']
+        except KeyError:
+            return None
+
+    def get_arrival_time(self, item):
+        return self.response['trips'][item]["waypoints"][1]["date_time"]
+
+    def get_price(self, item):
+        return f'{self.response["trips"][item]["price"]["amount"]} {self.response["trips"][item]["price"]["currency"]}'
+
+    def get_vehicle(self, item):
+        try:
+            return f'{self.response["trips"][item]["vehicle"]["make"]} {self.response["trips"][item]["vehicle"]["model"]}'
+        except KeyError:
+            return None
+
+    def add_trip_to_db(self, item, task):
+        trip = Trip(link=self.get_trip_link(item),
+                    from_city=self.get_from_city(item),
+                    from_address=self.get_from_address(item),
+                    departure_time=self.get_departure_time(item),
+                    to_city=self.get_to_city(item),
+                    to_address=self.get_to_address(item),
+                    arrival_time=self.get_arrival_time(item),
+                    price=self.get_price(item),
+                    vehicle=self.get_vehicle(item),
+                    task=task)
+        trip.save()
 
 
 class Command(BaseCommand):
     help = 'Перевірка наявності необхідних поїздок'
 
     @staticmethod
-    def start_check():
-        sent_trip = []
-        tasks = Task.objects.all()
-        while True:
-            for task in tasks:
-                task.trip = TripChecker(task.get_url())
-                trip_list = task.trip.get_trips_list()
-                for trip in trip_list:
-                    if not TripChecker.get_trip_link(trip) in sent_trip:
-                        if TripChecker.get_from_city(trip) == task.from_city and TripChecker.get_to_city(
-                                trip) == task.to_city:
-                            message = f'{TripChecker.get_trip_link(trip)}\n{TripChecker.get_from_city(trip)} : {TripChecker.get_to_city(trip)} \n'
-                            send_message('argentum123TITEL95', 'yura.onyshchuk@gmail.com',
-                                         f'{task.user.email}',
-                                         'My BlaBlaCar Check', message)
-                            print(f'Надіслано для {task.user.email}')
-                            sent_trip.append(TripChecker.get_trip_link(trip))
-            print(sent_trip)
-            time.sleep(30)
+    def check_task(task):
+        parser = TripParser(task)
+        trip_list = parser.get_trips_list()
+        for item in range(len(trip_list)):
+            if parser.get_from_city(item) == task.from_city and parser.get_to_city(item) == task.to_city:
+                try:
+                    Trip.objects.get(link=parser.get_trip_link(item))
+                except Trip.DoesNotExist:
+                    parser.add_trip_to_db(item, task)
+                    message = f'{parser.get_trip_link(item)}\n{parser.get_from_city(item)} : {parser.get_to_city(item)}\n'
+                    send_message('argentum123TITEL95', 'yura.onyshchuk@gmail.com', f'{task.user.email}',
+                                 'Нова поїздка BlaBlaCar', message)
 
     def handle(self, *args, **options):
-        return self.start_check()
+        while True:
+            tasks = Task.objects.all()
+            for task in tasks:
+                self.check_task(task)
+            time.sleep(120)

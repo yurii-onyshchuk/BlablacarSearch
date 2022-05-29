@@ -14,25 +14,6 @@ class User(AbstractUser):
         return self.username
 
 
-class Trip(models.Model):
-    link = models.URLField(verbose_name='Посилання на поїздку')
-
-    from_city = models.CharField(verbose_name='Пункт відправлення', max_length=40)
-    from_address = models.CharField(verbose_name='Адреса відправлення', max_length=40, blank=True)
-    departure_time = models.CharField(verbose_name='Час відправлення', max_length=40)
-
-    to_city = models.CharField(verbose_name='Пункт прибуття', max_length=40)
-    to_address = models.CharField(verbose_name='Адреса прибуття', max_length=40, blank=True)
-    arrival_time = models.CharField(verbose_name='Час прибуття', max_length=40)
-
-    price = models.CharField(verbose_name='Ціна', max_length=40)
-    vehicle = models.CharField(verbose_name='Автомобіль', max_length=40, blank=True)
-
-    class Meta:
-        verbose_name = 'Знайдена поїздок'
-        verbose_name_plural = 'Знайдені поїздки'
-
-
 class Task(models.Model):
     from_city = models.CharField(verbose_name='Звідки?', max_length=40)
     to_city = models.CharField(verbose_name='Куди?', max_length=40)
@@ -45,8 +26,6 @@ class Task(models.Model):
     requested_seats = models.IntegerField(verbose_name='Кількість місць', default=1)
     radius_in_meters = models.IntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
-    found_trips = models.ForeignKey(Trip, on_delete=models.CASCADE, verbose_name='Знайдені поїздки', blank=True,
-                                    null=True)
 
     base_api_url = 'https://public-api.blablacar.com'
     base_search_path = '/api/v3/trips'
@@ -74,3 +53,23 @@ class Task(models.Model):
         if self.radius_in_meters:
             url += f'&radius_in_meters={self.radius_in_meters}'
         return url
+
+
+class Trip(models.Model):
+    link = models.URLField(verbose_name='Посилання на поїздку')
+    from_city = models.CharField(verbose_name='Пункт відправлення', max_length=40)
+    from_address = models.CharField(verbose_name='Адреса відправлення', max_length=40, blank=True, null=True)
+    departure_time = models.CharField(verbose_name='Час відправлення', max_length=40)
+    to_city = models.CharField(verbose_name='Пункт прибуття', max_length=40)
+    to_address = models.CharField(verbose_name='Адреса прибуття', max_length=40, blank=True, null=True)
+    arrival_time = models.CharField(verbose_name='Час прибуття', max_length=40)
+    price = models.CharField(verbose_name='Ціна', max_length=40)
+    vehicle = models.CharField(verbose_name='Автомобіль', max_length=40, blank=True, null=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Завдання')
+
+    class Meta:
+        verbose_name = 'Знайдена поїздок'
+        verbose_name_plural = 'Знайдені поїздки'
+
+    def __str__(self):
+        return f'{self.from_city}-{self.to_city}: {self.departure_time}'

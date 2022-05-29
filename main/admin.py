@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 
 from .models import User, Task, Trip
-from .forms import TaskForm
 
 
 @admin.register(User)
@@ -23,4 +22,13 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('from_city', 'to_city', 'departure_time', 'vehicle', 'price', 'link_URL')
+    list_display_links = ('from_city', 'to_city')
+    readonly_fields = (
+        'task', 'link_URL', 'from_city', 'from_address', 'departure_time', 'to_city', 'to_address', 'arrival_time',
+        'price', 'vehicle')
+
+    exclude = ('link',)
+
+    def link_URL(self, obj):
+        return mark_safe(f'<a href="{obj.link}">{obj.link}</a>')
