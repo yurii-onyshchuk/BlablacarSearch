@@ -1,12 +1,6 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-
-from .models import User, Task, TaskInfo, Trip
-
-
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'first_name', 'last_name', 'email', 'API_key']
+from .models import Task, TaskInfo, Trip
 
 
 @admin.register(Task)
