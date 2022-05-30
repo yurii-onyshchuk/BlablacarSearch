@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} :: {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div>
+        <div>
+            <a href="{% url 'task_list' %}">
+                <button><---До переліку завдань</button>
+            </a>
+        </div>
+        <div>
+            <div>
+                <h1>{{ task.from_city }}-{{ task.to_city }}</h1>
+            </div>
+            <div>
+                <p>Починаючи з часу: {{ task.start_date_local }}</p>
+                {% if task.end_date_local %}
+                    <p>Закінчуючи часом: {{ task.end_date_local }}</p>
+                {% else %}
+                    <p>Закінчуючи часом: кінець доби</p>
+                {% endif %}
+                <p>Кількість місць: {{ task.requested_seats }}</p>
+                {% if task.radius_in_meters %}
+                    <p>Радіус пошуку: {{ task.radius_in_meters }}</p>
+                {% endif %}
+            </div>
+            <div>
+                <a href="{% url 'task_update' task.pk %}">
+                    <button>Редагувати завдання</button>
+                </a>
+                <a href="{% url 'task_delete' task.pk %}">
+                    <button>Видалити завдання</button>
+                </a>
+            </div>
+            {% if task.taskinfo.link %}
+                <div>
+                    <h4>Наявна інформація з пошуку поїздок</h4>
+                    <p>Загальна кількість доступних поїздок: {{ task.taskinfo.count }}</p>
+                    <p>Кількість повних доступних поїздок: {{ task.taskinfo.full_trip_count }}</p>
+                    <p>Посилання на пошук: <a href="{{ task.taskinfo.link }}"
+                                              target="_blank">{{ task.taskinfo.link }}</a>
+                    </p>
+                </div>
+                </div>
+            {% endif %}
+    </div>
+{% endblock %}

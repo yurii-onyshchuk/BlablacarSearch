@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Blablacar{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block title %}BlaBlaCar{% endblock %}</title>
 </head>
 <header>
     {% include 'inc/_header.html' %}

@@ -1,10 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    <h1>Заплановані поїздки</h1>
-    {% for task in task_list %}
-        <p><a href="{% url 'task_detail' task.pk %}">{{ task }}</a></p>
-    {% endfor %}
+    <div>
+        <div>
+            <div>
+                <h1>{{ title }}</h1>
+            </div>
+            <div>
+                {% for task in task_list %}
+                    <p><a href="{% url 'task_detail' task.pk %}">{{ task }}</a></p>
+                {% empty %}
+                    <p>Наразі не створено щодного завдання</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <p><a href="{% url 'create_task' %}">
+                <button>Створити новий пошук</button>
+            </a></p>
+        </div>
+    </div>
 {% endblock %}

@@ -2,14 +2,16 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import Task
 from .utils import get_city_coordinate
+from datetime import datetime
 
 
 class TaskForm(forms.ModelForm):
-    from_city_coord = None
-    to_city_coord = None
-
+    start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now().strftime("%d.%m.%Y %H:%M"))
     requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8)
     radius_in_meters = forms.IntegerField(label='Радіус пошуку, м', required=False, min_value=1, max_value=50000)
+
+    from_city_coord = None
+    to_city_coord = None
 
     def clean_from_city(self):
         from_city = self.cleaned_data['from_city']

@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    <p><a href="{% url 'task_list' %}">Підписки на поїздки</a></p>
-    <p><a href="{% url 'create_task' %}">Створити новий пошук</a></p>
+    <div>
+        <p><a href="{% url 'task_list' %}">Підписки на поїздки</a></p>
+        <p><a href="{% url 'create_task' %}">Створити новий пошук</a></p>
+    </div>
 {% endblock %}
