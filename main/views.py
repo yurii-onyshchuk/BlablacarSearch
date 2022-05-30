@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from . import forms
 from .models import Task
+from .utils import Checker
 
 
 class HomePage(LoginRequiredMixin, TemplateView):
@@ -35,6 +36,10 @@ class TaskDetail(LoginRequiredMixin, DetailView):
     extra_context = {'title': 'Деталі завдання'}
     model = Task
     template_name = 'task_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        Checker().check_task(Task.objects.get(pk=self.kwargs['pk']))
+        return super(TaskDetail, self).get(request, *args, **kwargs)
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
