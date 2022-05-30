@@ -55,6 +55,21 @@ class Task(models.Model):
         return url
 
 
+class TaskInfo(models.Model):
+    link = models.URLField(verbose_name='Посилання на пошук поїздку', blank=True, null=True)
+    count = models.IntegerField(verbose_name='Загальна кількість знайдених поїздок', blank=True, null=True)
+    full_trip_count = models.IntegerField(verbose_name='Загальна кількість знайдених повних поїздок', blank=True,
+                                          null=True)
+    task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True)
+
+    class Meta:
+        verbose_name = 'Інформація щодо пошуку поїздки'
+        verbose_name_plural = 'Інформація щодо пошуку поїздок'
+
+    def __str__(self):
+        return f'{self.task.from_city}-{self.task.to_city}: {self.task.start_date_local}'
+
+
 class Trip(models.Model):
     link = models.URLField(verbose_name='Посилання на поїздку')
     from_city = models.CharField(verbose_name='Пункт відправлення', max_length=40)

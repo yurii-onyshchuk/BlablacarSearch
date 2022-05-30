@@ -2,7 +2,7 @@ import requests, time, smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.core.management import BaseCommand
-from main.models import Task, Trip
+from main.models import Task, TaskInfo, Trip
 
 
 def send_message(password, from_email, to_email, subject, message):
@@ -83,6 +83,13 @@ class TripParser:
                     task=task)
         trip.save()
 
+    def add_task_info_to_db(self, task):
+        task_info = TaskInfo(link=self.get_search_link(),
+                             count=self.get_search_info()['count'],
+                             full_trip_count=self.get_search_info()['full_trip_count'],
+                             task=task)
+        task_info.save()
+
 
 class Command(BaseCommand):
     help = 'Перевірка наявності необхідних поїздок'
@@ -90,6 +97,7 @@ class Command(BaseCommand):
     @staticmethod
     def check_task(task):
         parser = TripParser(task)
+        parser.add_task_info_to_db(Task.objects.get(id=task.id))
         trip_list = parser.get_trips_list()
         for item in range(len(trip_list)):
             if parser.get_from_city(item) == task.from_city and parser.get_to_city(item) == task.to_city:
