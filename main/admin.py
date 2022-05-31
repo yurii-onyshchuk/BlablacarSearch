@@ -16,7 +16,11 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(TaskInfo)
 class TaskInfoAdmin(admin.ModelAdmin):
-    readonly_fields = ('task', 'link', 'count', 'full_trip_count',)
+    readonly_fields = ('task', 'link_URL', 'count', 'full_trip_count',)
+    exclude = ('link',)
+
+    def link_URL(self, obj):
+        return mark_safe(f'<a href="{obj.link}">{obj.link}</a>')
 
 
 @admin.register(Trip)
