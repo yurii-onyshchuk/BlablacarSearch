@@ -15,13 +15,15 @@ class CreateTask(LoginRequiredMixin, CreateView):
     extra_context = {'title': 'Створити новий пошук'}
     form_class = forms.TaskForm
     template_name = 'task_form.html'
-    success_url = reverse_lazy('task_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.from_coordinate = form.from_city_coord
         form.instance.to_coordinate = form.to_city_coord
         return super(CreateTask, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('task_detail', kwargs={'pk': self.object.pk})
 
 
 class TaskList(LoginRequiredMixin, ListView):
@@ -47,7 +49,6 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = forms.TaskForm
     template_name = 'task_form.html'
-    success_url = reverse_lazy('task_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -60,6 +61,9 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
         task = Task.objects.get(user=self.request.user, pk=self.kwargs['pk'])
         context['url'] = Task.get_url(task)
         return context
+
+    def get_success_url(self):
+        return reverse_lazy('task_detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class DeleteTask(LoginRequiredMixin, DeleteView):
