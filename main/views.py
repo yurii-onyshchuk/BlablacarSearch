@@ -23,6 +23,7 @@ class CreateTask(LoginRequiredMixin, CreateView):
         return super(CreateTask, self).form_valid(form)
 
     def get_success_url(self):
+        Checker.single_check(self.object)
         return reverse_lazy('task_detail', kwargs={'pk': self.object.pk})
 
 
@@ -39,9 +40,9 @@ class TaskDetail(LoginRequiredMixin, DetailView):
     model = Task
     template_name = 'task_detail.html'
 
-    def get(self, request, *args, **kwargs):
-        Checker().check_task(Task.objects.get(pk=self.kwargs['pk']))
-        return super(TaskDetail, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        Checker.single_check(self.object)
+        return super(TaskDetail, self).get_context_data(**kwargs)
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):

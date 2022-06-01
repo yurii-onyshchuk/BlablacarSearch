@@ -6,5 +6,4 @@ class Command(BaseCommand):
     help = 'Перевірка наявності необхідних поїздок'
 
     def handle(self, *args, **options):
-        checker = Checker()
-        checker.run_check_cycle()
+        Checker.run_check_cycle()

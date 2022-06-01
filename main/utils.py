@@ -14,78 +14,22 @@ def get_city_coordinate(city: str):
         return f'{latitude},{longitude}'
 
 
-class TripParser:
-    def __init__(self, task):
-        self.task = task
-        self.response = requests.get(task.get_url()).json()
-
-    def get_search_link(self):
-        return self.response['link']
-
-    def get_search_info(self):
-        return self.response['search_info']
-
-    def get_trips_list(self):
-        return self.response['trips']
-
-    def get_trip_link(self, item):
-        return self.response['trips'][item]['link']
-
-    def get_departure_time(self, item):
-        return self.response['trips'][item]["waypoints"][0]["date_time"]
-
-    def get_from_city(self, item):
-        return self.response['trips'][item]["waypoints"][0]["place"]['city']
-
-    def get_from_address(self, item):
-        try:
-            return self.response['trips'][item]["waypoints"][0]["place"]['address']
-        except KeyError:
-            return None
-
-    def get_to_city(self, item):
-        return self.response['trips'][item]["waypoints"][1]["place"]['city']
-
-    def get_to_address(self, item):
-        try:
-            return self.response['trips'][item]["waypoints"][1]["place"]['address']
-        except KeyError:
-            return None
-
-    def get_arrival_time(self, item):
-        return self.response['trips'][item]["waypoints"][1]["date_time"]
-
-    def get_price(self, item):
-        return f'{self.response["trips"][item]["price"]["amount"]} {self.response["trips"][item]["price"]["currency"]}'
-
-    def get_vehicle(self, item):
-        try:
-            return f'{self.response["trips"][item]["vehicle"]["make"]} {self.response["trips"][item]["vehicle"]["model"]}'
-        except KeyError:
-            return None
-
-    def add_trip_to_db(self, item, task):
-        trip = Trip(link=self.get_trip_link(item),
-                    from_city=self.get_from_city(item),
-                    from_address=self.get_from_address(item),
-                    departure_time=self.get_departure_time(item),
-                    to_city=self.get_to_city(item),
-                    to_address=self.get_to_address(item),
-                    arrival_time=self.get_arrival_time(item),
-                    price=self.get_price(item),
-                    vehicle=self.get_vehicle(item),
-                    task=task)
-        trip.save()
-
-    def add_task_info_to_db(self, task):
-        task_info = TaskInfo(link=self.get_search_link(),
-                             count=self.get_search_info()['count'],
-                             full_trip_count=self.get_search_info()['full_trip_count'],
-                             task=task)
-        task_info.save()
+def get_response(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response
+    except requests.exceptions.HTTPError as errh:
+        print("Http Error:", errh)
+    except requests.exceptions.ConnectionError as errc:
+        print("Error Connecting:", errc)
+    except requests.exceptions.Timeout as errt:
+        print("Timeout Error:", errt)
+    except requests.exceptions.RequestException as err:
+        print("OOps: Something Else", err)
 
 
-class Checker:
+class Massager:
     @staticmethod
     def send_message(password, from_email, to_email, subject, message):
         msg = MIMEMultipart()
@@ -102,25 +46,134 @@ class Checker:
         server.quit()
 
     @staticmethod
-    def check_task(task):
-        parser = TripParser(task)
-        parser.add_task_info_to_db(Task.objects.get(id=task.id))
-        trip_list = parser.get_trips_list()
-        for item in range(len(trip_list)):
-            if parser.get_from_city(item) == task.from_city and parser.get_to_city(item) == task.to_city:
-                try:
-                    Trip.objects.get(link=parser.get_trip_link(item))
-                except Trip.DoesNotExist:
-                    parser.add_trip_to_db(item, task)
-                    message = f'{parser.get_trip_link(item)}\n{parser.get_from_city(item)} : {parser.get_to_city(item)}\n'
-                    message_data = ('argentum123TITEL95', 'yura.onyshchuk@gmail.com', f'{task.user.email}',
-                                    'Нова поїздка BlaBlaCar', message)
-                    return message_data
+    def get_single_message_text(trip):
+        message_text = f'{Parser.get_trip_link(trip)}\n' \
+                       f'{Parser.get_from_city(trip)} : {Parser.get_to_city(trip)}\n'
+        return message_text
 
-    def run_check_cycle(self):
+    @staticmethod
+    def get_several_message_text(trip_list: list):
+        message_text = ''
+        for trip in trip_list:
+            trip_message_text = Massager.get_single_message_text(trip)
+            message_text += f'{trip_message_text}\n\n'
+        return message_text
+
+    @staticmethod
+    def get_message_data(task, message_text: str):
+        return {'password': 'argentum123TITEL95',
+                'from_email': 'yura.onyshchuk@gmail.com',
+                'to_email': f'{task.user.email}',
+                'subject': "Нова поїздка BlaBlaCar",
+                'message': message_text}
+
+
+class Parser:
+    def __init__(self, response: dict):
+        self.response = response
+
+    def get_search_link(self):
+        return self.response['link']
+
+    def get_search_info(self):
+        return self.response['search_info']
+
+    def get_trips_list(self):
+        return self.response['trips']
+
+    @staticmethod
+    def get_trip_link(trip):
+        return trip['link']
+
+    @staticmethod
+    def get_departure_time(trip):
+        return trip["waypoints"][0]["date_time"]
+
+    @staticmethod
+    def get_from_city(trip):
+        return trip["waypoints"][0]["place"]['city']
+
+    @staticmethod
+    def get_from_address(trip):
+        try:
+            return trip["waypoints"][0]["place"]['address']
+        except KeyError:
+            return None
+
+    @staticmethod
+    def get_to_city(trip):
+        return trip["waypoints"][1]["place"]['city']
+
+    @staticmethod
+    def get_to_address(trip):
+        try:
+            return trip["waypoints"][1]["place"]['address']
+        except KeyError:
+            return None
+
+    @staticmethod
+    def get_arrival_time(trip):
+        return trip["waypoints"][1]["date_time"]
+
+    @staticmethod
+    def get_price(trip):
+        return f'{trip["price"]["amount"]} {trip["price"]["currency"]}'
+
+    @staticmethod
+    def get_vehicle(trip):
+        try:
+            return f'{trip["vehicle"]["make"]} {trip["vehicle"]["model"]}'
+        except KeyError:
+            return None
+
+    def get_task_info(self):
+        return {'link': self.get_search_link(),
+                'count': self.get_search_info()['count'],
+                'full_trip_count': self.get_search_info()['full_trip_count']}
+
+    def get_trip_info(self, trip):
+        return {'link': self.get_trip_link(trip),
+                'from_city': self.get_from_city(trip),
+                'from_address': self.get_from_address(trip),
+                'departure_time': self.get_departure_time(trip),
+                'to_city': self.get_to_city(trip),
+                'to_address': self.get_to_address(trip),
+                'arrival_time': self.get_arrival_time(trip),
+                'price': self.get_price(trip),
+                'vehicle': self.get_vehicle(trip)}
+
+
+class Checker:
+    @staticmethod
+    def trip_accord_to_task(task, trip):
+        return Parser.get_from_city(trip) == task.from_city and Parser.get_to_city(trip) == task.to_city
+
+    @staticmethod
+    def trip_exists(trip):
+        return Trip.objects.filter(link=Parser.get_trip_link(trip)).exists()
+
+    @staticmethod
+    def single_check(task):
+        response = get_response(task.get_url())
+        parser = Parser(response.json())
+        task_info = parser.get_task_info()
+        TaskInfo(task=task, **task_info).save()
+        trips_list = parser.get_trips_list()
+        found_trip = [trip for trip in trips_list if
+                      Checker.trip_accord_to_task(task, trip) and not Checker.trip_exists(trip)]
+        for trip in found_trip:
+            trip_info = parser.get_trip_info(trip)
+            Trip(task=task, **trip_info).save()
+        return found_trip
+
+    @staticmethod
+    def run_check_cycle():
         while True:
             tasks = Task.objects.all()
             for task in tasks:
-                message_data = self.check_task(task)
-                self.send_message(*message_data)
+                found_trip = Checker.single_check(task)
+                if found_trip:
+                    message_text = Massager.get_several_message_text(found_trip)
+                    message_data = Massager.get_message_data(task, message_text)
+                    Massager.send_message(**message_data)
             time.sleep(120)
