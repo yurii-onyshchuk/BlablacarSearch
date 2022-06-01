@@ -2,7 +2,7 @@ from django.views.generic import CreateView, ListView, UpdateView, DetailView, T
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from . import forms
-from .models import Task
+from .models import Task, Trip
 from .utils import Checker
 
 
@@ -41,8 +41,10 @@ class TaskDetail(LoginRequiredMixin, DetailView):
     template_name = 'task_detail.html'
 
     def get_context_data(self, **kwargs):
+        context = super(TaskDetail, self).get_context_data(**kwargs)
         Checker.single_check(self.object)
-        return super(TaskDetail, self).get_context_data(**kwargs)
+        context['trip_list'] = Trip.objects.filter(task=self.object)
+        return context
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
