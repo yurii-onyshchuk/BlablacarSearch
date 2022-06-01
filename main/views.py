@@ -2,8 +2,9 @@ from django.views.generic import CreateView, ListView, UpdateView, DetailView, T
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from . import forms
-from .models import Task
+from .models import Task, Trip
 from .utils import Checker
+import datetime
 
 
 class HomePage(LoginRequiredMixin, TemplateView):
@@ -55,6 +56,7 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
         form.instance.user = self.request.user
         form.instance.from_coordinate = form.from_city_coord
         form.instance.to_coordinate = form.to_city_coord
+        Trip.objects.filter(task=self.object).delete()
         return super(TaskUpdate, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
