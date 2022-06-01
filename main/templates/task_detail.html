@@ -44,5 +44,15 @@
                 </div>
                 </div>
             {% endif %}
+        {% if trip_list %}
+            <div>
+                <h4>Наявні поїздки за запитом</h4>
+                {% for trip in trip_list %}
+                    <div>
+                        <a href="{{ trip.link }}" target="_blank">{{ trip}}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
