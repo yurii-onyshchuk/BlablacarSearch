@@ -33,26 +33,24 @@
                     <button>Видалити завдання</button>
                 </a>
             </div>
-            {% if task.taskinfo.link %}
-                <div>
-                    <h4>Наявна інформація з пошуку поїздок</h4>
-                    <p>Загальна кількість доступних поїздок: {{ task.taskinfo.count }}</p>
-                    <p>Кількість повних доступних поїздок: {{ task.taskinfo.full_trip_count }}</p>
-                    <p>Посилання на пошук: <a href="{{ task.taskinfo.link }}"
-                                              target="_blank">{{ task.taskinfo.link }}</a>
-                    </p>
-                </div>
-                </div>
-            {% endif %}
-        {% if trip_list %}
             <div>
-                <h4>Наявні поїздки за запитом</h4>
+                <h4>Доступні поїздки</h4>
                 {% for trip in trip_list %}
                     <div>
-                        <a href="{{ trip.link }}" target="_blank">{{ trip}}</a>
+                        <a href="{{ trip.link }}" target="_blank">{{ trip }}</a>
+                    </div>
+                {% empty %}
+                    <div>
+                        <p>На даний момент доступних поїздок {{ task.from_city }}-{{ task.to_city }} немає...</p>
                     </div>
                 {% endfor %}
             </div>
-        {% endif %}
+            {% if task.taskinfo.link %}
+                <div>
+                    <h4>Інші доступні поїздки поблизу</h4>
+                    <p><a href="{{ task.taskinfo.link }}" target="_blank">{{ task.taskinfo.link }}</a></p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
