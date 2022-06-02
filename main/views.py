@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from . import forms
 from .models import Task, Trip
 from .utils import Checker
-import datetime
+from datetime import datetime
 
 
 class HomePage(LoginRequiredMixin, TemplateView):
@@ -44,7 +44,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
         Checker.single_check(self.object)
-        context['trip_list'] = Trip.objects.filter(task=self.object)
+        context['trip_list'] = Trip.objects.filter(task=self.object, departure_time__gt=datetime.now())
         return context
 
 

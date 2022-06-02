@@ -56,17 +56,17 @@ class TaskInfo(models.Model):
         verbose_name_plural = 'Інформація щодо пошуку поїздок'
 
     def __str__(self):
-        return f'{self.task.from_city}-{self.task.to_city}: {self.task.start_date_local}'
+        return f'{self.task.from_city}-{self.task.to_city}: {self.task.start_date_local.strftime("%d.%m.%Y %H:%M")}'
 
 
 class Trip(models.Model):
     link = models.URLField(verbose_name='Посилання на поїздку')
     from_city = models.CharField(verbose_name='Пункт відправлення', max_length=40)
     from_address = models.CharField(verbose_name='Адреса відправлення', max_length=40, blank=True, null=True)
-    departure_time = models.CharField(verbose_name='Час відправлення', max_length=40)
+    departure_time = models.DateTimeField(verbose_name='Час відправлення')
     to_city = models.CharField(verbose_name='Пункт прибуття', max_length=40)
     to_address = models.CharField(verbose_name='Адреса прибуття', max_length=40, blank=True, null=True)
-    arrival_time = models.CharField(verbose_name='Час прибуття', max_length=40)
+    arrival_time = models.DateTimeField(verbose_name='Час прибуття')
     price = models.CharField(verbose_name='Ціна', max_length=40)
     vehicle = models.CharField(verbose_name='Автомобіль', max_length=40, blank=True, null=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Завдання')
@@ -74,6 +74,7 @@ class Trip(models.Model):
     class Meta:
         verbose_name = 'Знайдена поїздок'
         verbose_name_plural = 'Знайдені поїздки'
+        ordering = ('departure_time',)
 
     def __str__(self):
-        return f'{self.from_city}-{self.to_city}: {self.departure_time}'
+        return f'{self.from_city}-{self.to_city}: {self.departure_time.strftime("%d.%m.%Y %H:%M")}'

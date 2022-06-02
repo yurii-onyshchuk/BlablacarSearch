@@ -31,6 +31,11 @@ class TaskForm(forms.ModelForm):
         else:
             raise ValidationError(f'Міста "{to_city}" не знайдено..')
 
+    def clean(self):
+        if self.cleaned_data['end_date_local'] and \
+                self.cleaned_data['start_date_local'] > self.cleaned_data['end_date_local']:
+            raise ValidationError('"Час початку пошуку" має бути раніше "Часу закінчення пошуку": ')
+
     class Meta:
         model = Task
         fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters']
