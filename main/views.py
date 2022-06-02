@@ -24,7 +24,7 @@ class CreateTask(LoginRequiredMixin, CreateView):
         return super(CreateTask, self).form_valid(form)
 
     def get_success_url(self):
-        Checker.single_check(self.object)
+        Checker(self.object).single_check()
         return reverse_lazy('task_detail', kwargs={'pk': self.object.pk})
 
 
@@ -43,7 +43,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
-        Checker.single_check(self.object)
+        Checker(self.object).single_check()
         context['trip_list'] = Trip.objects.filter(task=self.object, departure_time__gt=datetime.now())
         return context
 

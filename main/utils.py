@@ -144,39 +144,37 @@ class Parser:
 
 
 class Checker:
-    @staticmethod
-    def trip_accord_to_task(task, trip):
-        return Parser.get_from_city(trip) == task.from_city and Parser.get_to_city(trip) == task.to_city
+    def __init__(self, task):
+        self.task = task
 
-    @staticmethod
-    def trip_exists_list(task):
-        link_list = [i[0] for i in Trip.objects.filter(task=task).values_list('link')]
+    def trip_accord_to_task(self, trip):
+        return Parser.get_from_city(trip) == self.task.from_city and Parser.get_to_city(trip) == self.task.to_city
+
+    def trip_exists_list(self):
+        link_list = [i[0] for i in Trip.objects.filter(task=self.task).values_list('link')]
         return link_list
 
-    @staticmethod
-    def single_check(task):
-        response = get_response(task.get_url())
+    def single_check(self):
+        response = get_response(self.task.get_url())
         parser = Parser(response.json())
 
         task_info = parser.get_task_info()
-        TaskInfo(task=task, **task_info).save()
+        TaskInfo(task=self.task, **task_info).save()
 
         trips_list = parser.get_trips_list()
-        trip_exists_list = Checker.trip_exists_list(task)
+        trip_exists_list = self.trip_exists_list()
         found_trip = [trip for trip in trips_list if
-                      Checker.trip_accord_to_task(task, trip) and not Parser.get_trip_link(trip) in trip_exists_list]
-
+                      self.trip_accord_to_task(trip) and not Parser.get_trip_link(trip) in trip_exists_list]
         trip_info_list = [parser.get_trip_info(trip) for trip in found_trip]
-        Trip.objects.bulk_create([Trip(task=task, **trip_info) for trip_info in trip_info_list])
+        Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in trip_info_list])
 
         return found_trip
 
-    @staticmethod
-    def run_check_cycle():
+    def run_check_cycle(self):
         while True:
             tasks = Task.objects.all()
             for task in tasks:
-                found_trip = Checker.single_check(task)
+                found_trip = self.single_check()
                 if found_trip:
                     message_text = Massager.get_several_message_text(found_trip)
                     message_data = Massager.get_message_data(task, message_text)
