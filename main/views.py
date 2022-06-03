@@ -74,5 +74,4 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 class DeleteTask(LoginRequiredMixin, DeleteView):
     extra_context = {'title': 'Видалити задання'}
     model = Task
-    template_name = 'task_confirm_delete.html'
     success_url = reverse_lazy('task_list')

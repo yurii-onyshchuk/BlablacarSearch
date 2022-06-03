@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
@@ -26,12 +28,12 @@
                 {% endif %}
             </div>
             <div>
-                <a href="{% url 'task_update' task.pk %}">
-                    <button>Редагувати завдання</button>
-                </a>
-                <a href="{% url 'task_delete' task.pk %}">
-                    <button>Видалити завдання</button>
-                </a>
+                <div>
+                    <a href="{% url 'task_update' task.pk %}">
+                        <button>Редагувати завдання</button>
+                    </a>
+                    {% include 'inc/_modal_confirm_delete.html' %}
+                </div>
             </div>
             <div>
                 <h4>Доступні поїздки</h4>
