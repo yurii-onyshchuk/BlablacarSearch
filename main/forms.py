@@ -6,7 +6,13 @@ from datetime import datetime
 
 
 class TaskForm(forms.ModelForm):
-    start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now().strftime("%d.%m.%Y %H:%M"))
+    start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
+                                           widget=forms.DateTimeInput(attrs={'type': "datetime-local"},
+                                                                      format="%Y-%m-%dT%H:%M"))
+    end_date_local = forms.DateTimeField(label='Закінчуючи часом',
+                                         widget=forms.DateTimeInput(attrs={'type': "datetime-local"},
+                                                                    format="%Y-%m-%dT%H:%M"),
+                                         required=False)
     requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8)
     radius_in_meters = forms.IntegerField(label='Радіус пошуку, м', required=False, min_value=1, max_value=50000)
 
