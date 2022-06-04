@@ -3,12 +3,14 @@
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    <div>
-        <div>
-            <div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
                 <h1>{{ title }}</h1>
             </div>
-            <div>
+        </div>
+        <div class="row">
+            <div class="col">
                 {% for task in task_list %}
                     <p><a href="{% url 'task_detail' task.pk %}">{{ task }}</a></p>
                 {% empty %}
@@ -16,10 +18,12 @@
                 {% endfor %}
             </div>
         </div>
-        <div>
-            <p><a href="{% url 'create_task' %}">
-                <button>Створити новий пошук</button>
-            </a></p>
+        <div class="row">
+            <div class="col">
+                <p><a href="{% url 'create_task' %}">
+                    <button>Створити новий пошук</button>
+                </a></p>
+            </div>
         </div>
     </div>
 {% endblock %}
