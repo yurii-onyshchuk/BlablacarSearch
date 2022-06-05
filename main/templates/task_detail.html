@@ -36,10 +36,15 @@
         </div>
 
         <div class="row">
-            <div class="col">
+            <div class="col-2">
                 <a href="{% url 'task_update' task.pk %}">
-                    <button>Редагувати завдання</button>
+                    <button type="button" class="btn btn-secondary">Редагувати завдання</button>
                 </a>
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#task_delete">
+                    Видалити завдання
+                </button>
                 {% include 'inc/_modal_confirm_delete.html' %}
             </div>
         </div>

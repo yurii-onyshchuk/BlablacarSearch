@@ -1,25 +1,19 @@
-<!-- Button HTML (to Trigger Modal) -->
-<a href="#task_delete" data-toggle="modal">
-    <button>Видалити завдання</button>
-</a>
-
-<!-- Modal HTML -->
-<div id="task_delete" class="modal fade">
+<div class="modal fade" id="task_delete">
     <div class="modal-dialog modal-confirm">
         <div class="modal-content">
             <div class="modal-header flex-column">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                 <div class="icon-box">
                     <i class="material-icons">&#xE5CD;</i>
                 </div>
                 <h4 class="modal-title w-100">Видалити "{{ object }}"</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
-                </button>
+
             </div>
             <div class="modal-body">
                 <p>Впевнені, що хочете видалити "{{ object }}"? Цю дію неможливо відмінити</p>
             </div>
             <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
                 <form method="post" action="{% url 'task_delete' task.pk %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Видалити</button>
