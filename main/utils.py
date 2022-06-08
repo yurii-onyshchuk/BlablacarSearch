@@ -1,7 +1,7 @@
+import requests
+import time
+from django.core.mail import send_mail
 from geopy.geocoders import Nominatim
-import requests, time, smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from main.models import Task, TaskInfo, Trip
 
 
@@ -18,6 +18,7 @@ def get_response(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
+        print('New request')
         return response
     except requests.exceptions.HTTPError as errh:
         print("Http Error:", errh)
@@ -29,43 +30,17 @@ def get_response(url):
         print("OOps: Something Else", err)
 
 
-class Massager:
-    @staticmethod
-    def send_message(password, from_email, to_email, subject, message):
-        msg = MIMEMultipart()
-        password = password
-        msg['From'] = from_email
-        msg['To'] = to_email
-        msg['Subject'] = subject
-        message = message
-        msg.attach(MIMEText(message, 'plain'))
-        server = smtplib.SMTP('smtp.gmail.com: 587')
-        server.starttls()
-        server.login(msg['From'], password)
-        server.sendmail(msg['From'], msg['To'], msg.as_string())
-        server.quit()
+def get_message_text(trip):
+    message_text = f'{Parser.get_trip_link(trip)}\n' \
+                   f'{Parser.get_from_city(trip)} : {Parser.get_to_city(trip)}\n'
+    return message_text
 
-    @staticmethod
-    def get_single_message_text(trip):
-        message_text = f'{Parser.get_trip_link(trip)}\n' \
-                       f'{Parser.get_from_city(trip)} : {Parser.get_to_city(trip)}\n'
-        return message_text
 
-    @staticmethod
-    def get_several_message_text(trip_list: list):
-        message_text = ''
-        for trip in trip_list:
-            trip_message_text = Massager.get_single_message_text(trip)
-            message_text += f'{trip_message_text}\n\n'
-        return message_text
-
-    @staticmethod
-    def get_message_data(task, message_text: str):
-        return {'password': 'argentum123TITEL95',
-                'from_email': 'yura.onyshchuk@gmail.com',
-                'to_email': f'{task.user.email}',
-                'subject': "Нова поїздка BlaBlaCar",
-                'message': message_text}
+def get_message_data(task, message_text: str):
+    return {'subject': "Нова поїздка BlaBlaCar",
+            'message': message_text,
+            'from_email': 'yura.onyshchuk@gmail.com',
+            'recipient_list': [task.user.email]}
 
 
 class Parser:
@@ -170,13 +145,16 @@ class Checker:
 
         return found_trip
 
-    def run_check_cycle(self):
+    @staticmethod
+    def run_check_cycle():
         while True:
-            tasks = Task.objects.all()
+            tasks = Task.objects.filter(notification=True)
             for task in tasks:
-                found_trip = self.single_check()
+                checker = Checker(task)
+                found_trip = checker.single_check()
                 if found_trip:
-                    message_text = Massager.get_several_message_text(found_trip)
-                    message_data = Massager.get_message_data(task, message_text)
-                    Massager.send_message(**message_data)
+                    for trip in found_trip:
+                        message_text = get_message_text(trip)
+                        message_data = get_message_data(task, message_text)
+                        send_mail(**message_data)
             time.sleep(120)

@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-rx43!ks91-*d@!v4wio^@db(dif35$#vl-tuil0g49y(mkt4w%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -126,3 +126,9 @@ AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'login'
 
 INTERNAL_IPS = ['127.0.0.1']
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'yura.onyshchuk@gmail.com'
+EMAIL_HOST_PASSWORD = 'splfdxehvlwjtsec'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
