@@ -1,0 +1,23 @@
+<div class="modal fade" id="task_delete">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header flex-column">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                <div class="icon-box">
+                    <i class="material-icons">&#xE5CD;</i>
+                </div>
+                <h4 class="modal-title w-100">Видалити "{{ task }}"</h4>
+            </div>
+            <div class="modal-body">
+                <p>Впевнені, що хочете видалити "{{ task }}"? Цю дію неможливо відмінити</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <form method="post" action="{% url 'task_delete' task.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Видалити</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

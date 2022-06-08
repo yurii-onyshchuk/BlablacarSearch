@@ -3,23 +3,55 @@
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    <div>
-        <div>
-            <div>
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-2">
+            <div class="col text-center">
                 <h1>{{ title }}</h1>
             </div>
-            <div>
-                {% for task in task_list %}
-                    <p><a href="{% url 'task_detail' task.pk %}">{{ task }}</a></p>
-                {% empty %}
-                    <p>Наразі не створено щодного завдання</p>
-                {% endfor %}
-            </div>
         </div>
-        <div>
-            <p><a href="{% url 'create_task' %}">
-                <button>Створити новий пошук</button>
-            </a></p>
+        <div class="row">
+            {% for task in task_list %}
+                <div class="col-md-6 col-xl-4">
+                    <div class="card mt-3 shadow">
+                        <div class="card-header pb-0">
+                            <div class="row">
+                                <div class="col-10 position-relative">
+                                    <a href="{% url 'task_detail' task.pk %}" class="stretched-link"></a>
+                                    <h4>{{ task.from_city }}-{{ task.to_city }}</h4>
+                                </div>
+                                <div class="col-2 text-sm-center text-lg-end">
+                                    <a class="btn" data-bs-toggle="modal" data-bs-target="#task_delete"><i
+                                            class="material-icons">&#xE5CD;</i></a>
+                                    {% include 'inc/_modal_confirm_delete.html' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body position-relative">
+                            <div class="card-text">
+                                <a href="{% url 'task_detail' task.pk %}" class="stretched-link"></a>
+                                <p>Починаючи з часу: <b>{{ task.start_date_local }}</b></p>
+                                {% if task.end_date_local %}
+                                    <p>Закінчуючи часом: <b>{{ task.end_date_local }}</b></p>
+                                {% else %}
+                                    <p>Закінчуючи часом: <b>кінець доби</b></p>
+                                {% endif %}
+                                <p>Кількість місць: <b>{{ task.requested_seats }}</b></p>
+                                {% if task.radius_in_meters %}
+                                    <p>Радіус пошуку: <b>{{ task.radius_in_meters }} м</b></p>
+                                {% endif %}
+                                {% if task.notification %}
+                                    <p class="text-end"><b>Сповіщення про нові поїздки</b></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col my-3">
+                <a href="{% url 'create_task' %}" class="btn btn-secondary">Створити новий пошук</a>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -6,9 +6,24 @@ from datetime import datetime
 
 
 class TaskForm(forms.ModelForm):
-    start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now().strftime("%d.%m.%Y %H:%M"))
-    requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8)
-    radius_in_meters = forms.IntegerField(label='Радіус пошуку, м', required=False, min_value=1, max_value=50000)
+    from_city = forms.CharField(label='Звідки?', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    to_city = forms.CharField(label='Куди?', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
+                                           widget=forms.DateTimeInput(
+                                               attrs={'class': 'form-control', 'type': "datetime-local"},
+                                               format="%Y-%m-%dT%H:%M"))
+    end_date_local = forms.DateTimeField(label='Закінчуючи часом', required=False,
+                                         widget=forms.DateTimeInput(
+                                             attrs={'class': 'form-control', 'type': "datetime-local"},
+                                             format="%Y-%m-%dT%H:%M"))
+
+    requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8,
+                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    radius_in_meters = forms.IntegerField(label='Радіус пошуку, м', required=False, min_value=1, max_value=50000,
+                                          widget=forms.NumberInput(attrs={'class': 'form-control'}))
+
+    notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='',
+                                      widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
     from_city_coord = None
     to_city_coord = None
@@ -38,4 +53,5 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters']
+        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters',
+                  'notification']

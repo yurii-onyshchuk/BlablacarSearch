@@ -3,16 +3,21 @@
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    <div>
-        <div>
-            <h1>{{ title }}</h1>
-        </div>
-        <div>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Зберегти</button>
-            </form>
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-2">
+            <div class="col col-sm-8 col-lg-4">
+                <h1 class="text-center">{{ title }}</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="row my-3">
+                        <div class="col-lg">
+                            <button class="btn btn-bla" type="submit">Зберегти</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}
+
