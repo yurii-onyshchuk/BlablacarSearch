@@ -24,13 +24,13 @@ class CreateTask(LoginRequiredMixin, CreateView):
         return super(CreateTask, self).form_valid(form)
 
     def get_success_url(self):
-        Checker(self.object).single_check()
         return reverse_lazy('task_detail', kwargs={'pk': self.object.pk})
 
 
 class TaskList(LoginRequiredMixin, ListView):
     extra_context = {'title': 'Підписки на поїздки'}
     template_name = 'task_list.html'
+    context_object_name = 'task_list'
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
