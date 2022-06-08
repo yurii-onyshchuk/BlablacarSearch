@@ -4,21 +4,22 @@
 
 {% block content %}
     <div class="container-fluid">
-        <div class="row">
-            <div class="col">
-                <h1>{{ title }}</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
+        <div class="row justify-content-center mt-2">
+            <div class="col col-sm-8 col-md-6 col-lg-4">
+                <h1 class="text-center">{{ title }}</h1>
                 <form method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button type="submit">Зареєструватися</button>
+                    <div class="row">
+                        <div class="col-lg">
+                            <button class="btn btn-bla w-100" type="submit">Зареєструватися</button>
+                        </div>
+                        <div class="col-lg align-self-center text-center my-3 my-sm-3 my-md-3 my-lg-0">
+                            <a href="{% url 'login' %}">Вже зареєстровані?</a>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 {% endblock %}
-
-

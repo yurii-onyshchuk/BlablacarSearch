@@ -8,14 +8,22 @@ class UserRegisterForm(UserCreationForm):
     last_name = forms.CharField(label='Прізвище')
     username = forms.CharField(label="Ім'я користувача")
     API_key = forms.CharField(label='API ключ',
-                              help_text='Не маєте API ключа? Створи акаунт на Develompent BlaBlaCar API')
+                              help_text=f'Не маєте API ключа? Створи акаунт на '
+                                        f'<a href="https://support.blablacar.com/hc/en-gb/articles/360014200220--How-to-use-BlaBlaCar-search-API-" '
+                                        f'target="_blank">BlaBlaCar API</a>')
     email = forms.EmailField(label='Email')
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput())
     password2 = forms.CharField(label='Підтвердження паролю', widget=forms.PasswordInput())
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(UserRegisterForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({'autofocus': False})
+
+        for field_name, field in self.fields.items():
+            if field.widget.attrs.get('class'):
+                field.widget.attrs['class'] += ' form-control'
+            else:
+                field.widget.attrs['class'] = 'form-control'
 
     class Meta:
         model = User
@@ -25,3 +33,11 @@ class UserRegisterForm(UserCreationForm):
 class UserAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label="Ім'я користувача")
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput())
+
+    def __init__(self, *args, **kwargs):
+        super(UserAuthenticationForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field.widget.attrs.get('class'):
+                field.widget.attrs['class'] += ' form-control'
+            else:
+                field.widget.attrs['class'] = 'form-control'

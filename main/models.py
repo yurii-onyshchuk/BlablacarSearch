@@ -15,6 +15,7 @@ class Task(models.Model):
     requested_seats = models.IntegerField(verbose_name='Кількість місць', default=1)
     radius_in_meters = models.IntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
+    notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
 
     base_api_url = 'https://public-api.blablacar.com'
     base_search_path = '/api/v3/trips'

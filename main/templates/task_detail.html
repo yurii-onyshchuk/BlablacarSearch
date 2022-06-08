@@ -7,77 +7,91 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col">
-                <a href="{% url 'task_list' %}">
-                    <button><---До переліку завдань</button>
+            <div class="col-md-5 col-xl-4">
+                <a href="{% url 'task_list' %}" class="btn btn-secondary btn-sm mt-2">
+                    <i class="bi bi-arrow-left"></i> До переліку завдань
                 </a>
+                <div class="card mt-3 shadow">
+                    <div class="card-header">
+                        <h1>{{ task.from_city }}-{{ task.to_city }}</h1>
+                    </div>
+                    <div class="card-body">
+                        <p>Починаючи з часу: <b>{{ task.start_date_local }}</b></p>
+                        {% if task.end_date_local %}
+                            <p>Закінчуючи часом: <b>{{ task.end_date_local }}</b></p>
+                        {% else %}
+                            <p>Закінчуючи часом: <b>кінець доби</b></p>
+                        {% endif %}
+                        <p>Кількість місць: <b>{{ task.requested_seats }}</b></p>
+                        {% if task.radius_in_meters %}
+                            <p>Радіус пошуку: <b>{{ task.radius_in_meters }} м</b></p>
+                        {% endif %}
+                        {% if task.notification %}
+                            <p class="text-end"><b>Сповіщення про нові поїздки</b></p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-center text-md-end">
+                        <a href="{% url 'task_update' task.pk %}" class="btn btn-secondary btn">Редагувати</a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#task_delete">Видалити
+                        </button>
+                        {% include 'inc/_modal_confirm_delete.html' %}
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col">
-                <h1>{{ task.from_city }}-{{ task.to_city }}</h1>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col">
-                <p>Починаючи з часу: {{ task.start_date_local }}</p>
-                {% if task.end_date_local %}
-                    <p>Закінчуючи часом: {{ task.end_date_local }}</p>
-                {% else %}
-                    <p>Закінчуючи часом: кінець доби</p>
+            <div class="col-md-5">
+                <div class="row my-2 text-center">
+                    <h3>Доступні поїздки <span class="badge bg-secondary">{{ trip_list.count }}</span></h3>
+                </div>
+                {% for trip in trip_list %}
+                    <div class="card mb-2 shadow-lg">
+                        <div class="card-body">
+                            <a href="{{ trip.link }}" class="stretched-link" target="_blank"></a>
+                            <div class="row card-title">
+                                <div class="col-6">
+                                    <b>{{ trip.from_city }}</b>
+                                    <p class="mb-0">{{ trip.from_address }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <b>{{ trip.to_city }}</b>
+                                    <p class="mb-0">{{ trip.to_address }}</p>
+                                </div>
+                            </div>
+                            <div class="row card-subtitle">
+                                <div class="col-6">
+                                    <p>{{ trip.departure_time }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <p> {{ trip.arrival_time }}</p>
+                                </div>
+                            </div>
+                            <div class="row card-text">
+                                <div class="col-6">
+                                    {% if trip.vehicle %}
+                                        <p class="mb-0"><i class="fa-solid fa-car-side fs-5 pe-2"></i>{{ trip.vehicle }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-6 text-end">
+                                    <p class="mb-0"><i class="fa-solid fa-coins pe-2"></i>{{ trip.price }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="row">
+                        <p>На даний момент доступних поїздок {{ task.from_city }}-{{ task.to_city }} немає...</p>
+                    </div>
+                {% endfor %}
+                {% if task.taskinfo.link %}
+                    <h4 class="text-center">Інші доступні поїздки поблизу</h4>
+                    <div class="card mb-3 shadow-lg">
+                        <div class="card-body">
+                            <p><a href="{{ task.taskinfo.link }}" target="_blank">{{ task.taskinfo.link }}</a></p>
+                        </div>
+                    </div>
                 {% endif %}
-                <p>Кількість місць: {{ task.requested_seats }}</p>
-                {% if task.radius_in_meters %}
-                    <p>Радіус пошуку: {{ task.radius_in_meters }}</p>
-                {% endif %}
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-2">
-                <a href="{% url 'task_update' task.pk %}">
-                    <button type="button" class="btn btn-secondary">Редагувати завдання</button>
-                </a>
-            </div>
-            <div class="col-2">
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#task_delete">
-                    Видалити завдання
-                </button>
-                {% include 'inc/_modal_confirm_delete.html' %}
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col">
-                <h4>Доступні поїздки</h4>
-            </div>
-        </div>
-
-        {% for trip in trip_list %}
-            <div class="row">
-                <div class="col">
-                    <a href="{{ trip.link }}" target="_blank">{{ trip }}</a>
-                </div>
-            </div>
-
-        {% empty %}
-            <div class="row">
-                <div class="col">
-                    <p>На даний момент доступних поїздок {{ task.from_city }}-{{ task.to_city }} немає...</p>
-                </div>
-            </div>
-        {% endfor %}
-
-        {% if task.taskinfo.link %}
-            <div class="row">
-                <div class="col">
-                    <h4>Інші доступні поїздки поблизу</h4>
-                    <p><a href="{{ task.taskinfo.link }}" target="_blank">{{ task.taskinfo.link }}</a></p>
-                </div>
-            </div>
-        {% endif %}
     </div>
 {% endblock %}
