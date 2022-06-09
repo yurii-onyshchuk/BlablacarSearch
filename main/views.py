@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -8,12 +9,12 @@ from datetime import datetime
 
 
 class HomePage(LoginRequiredMixin, TemplateView):
-    extra_context = {'title': 'Головна'}
-    template_name = 'index.html'
+    def get(self, request, *args, **kwargs):
+        return redirect('task_list')
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
-    extra_context = {'title': 'Створити новий пошук'}
+    extra_context = {'title': 'Пошук поїздок'}
     form_class = forms.TaskForm
     template_name = 'task_form.html'
 
@@ -28,7 +29,7 @@ class CreateTask(LoginRequiredMixin, CreateView):
 
 
 class TaskList(LoginRequiredMixin, ListView):
-    extra_context = {'title': 'Підписки на поїздки'}
+    extra_context = {'title': 'Заплановані поїздки'}
     template_name = 'task_list.html'
     context_object_name = 'task_list'
 
@@ -37,7 +38,7 @@ class TaskList(LoginRequiredMixin, ListView):
 
 
 class TaskDetail(LoginRequiredMixin, DetailView):
-    extra_context = {'title': 'Деталі завдання'}
+    extra_context = {'title': 'Деталі поїздки'}
     model = Task
     template_name = 'task_detail.html'
 
@@ -49,7 +50,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
-    extra_context = {'title': 'Оновлення завдання'}
+    extra_context = {'title': 'Оновлення поїздки'}
     model = Task
     form_class = forms.TaskForm
     template_name = 'task_form.html'
@@ -72,6 +73,6 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
 
 class DeleteTask(LoginRequiredMixin, DeleteView):
-    extra_context = {'title': 'Видалити задання'}
+    extra_context = {'title': 'Видалення поїздки'}
     model = Task
     success_url = reverse_lazy('task_list')

@@ -3,16 +3,5 @@
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col">
-                <p><a href="{% url 'task_list' %}">Підписки на поїздки</a></p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <p><a href="{% url 'create_task' %}">Створити новий пошук</a></p>
-            </div>
-        </div>
-    </div>
+
 {% endblock %}
