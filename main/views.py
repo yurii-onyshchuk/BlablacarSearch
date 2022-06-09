@@ -39,8 +39,10 @@ class TaskList(LoginRequiredMixin, ListView):
 
 class TaskDetail(LoginRequiredMixin, DetailView):
     extra_context = {'title': 'Деталі поїздки'}
-    model = Task
     template_name = 'task_detail.html'
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user, pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
