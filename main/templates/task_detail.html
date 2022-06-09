@@ -33,7 +33,7 @@
                     <div class="card-footer text-center text-md-end">
                         <a href="{% url 'task_update' task.pk %}" class="btn btn-secondary btn">Редагувати</a>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#task_delete">Видалити
+                                data-bs-target="#task_delete_{{ task.pk }}">Видалити
                         </button>
                         {% include 'inc/_modal_confirm_delete.html' %}
                     </div>
