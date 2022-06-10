@@ -1,22 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
-{% block content %}
-    <div class="container-fluid">
-        <div class="row justify-content-center mt-2">
-            <div class="col col-sm-8 col-lg-4">
-                <h1 class="text-center">{{ title }}</h1>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <div class="row my-3">
-                        <div class="col-lg">
-                            <button class="btn btn-bla" type="submit">Зберегти</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+{% block form_footer %}
+    <div class="row">
+        <div class="col-lg">
+            <button class="btn btn-bla" type="submit">Зберегти</button>
         </div>
     </div>
 {% endblock %}
