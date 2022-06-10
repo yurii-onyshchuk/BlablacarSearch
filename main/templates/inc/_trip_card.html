@@ -1,0 +1,34 @@
+<div class="card mb-2 shadow-lg">
+    <div class="card-body">
+        <a href="{{ trip.link }}" class="stretched-link" target="_blank"></a>
+        <div class="row card-title">
+            <div class="col-6">
+                <b>{{ trip.from_city }}</b>
+                <p class="mb-0">{{ trip.from_address }}</p>
+            </div>
+            <div class="col-6">
+                <b>{{ trip.to_city }}</b>
+                <p class="mb-0">{{ trip.to_address }}</p>
+            </div>
+        </div>
+        <div class="row card-subtitle">
+            <div class="col-6">
+                <p>{{ trip.departure_time }}</p>
+            </div>
+            <div class="col-6">
+                <p> {{ trip.arrival_time }}</p>
+            </div>
+        </div>
+        <div class="row card-text">
+            <div class="col-6">
+                {% if trip.vehicle %}
+                    <p class="mb-0"><i class="fa-solid fa-car-side fs-5 pe-2"></i>{{ trip.vehicle }}
+                    </p>
+                {% endif %}
+            </div>
+            <div class="col-6 text-end">
+                <p class="mb-0"><i class="fa-solid fa-coins pe-2"></i>{{ trip.price }}</p>
+            </div>
+        </div>
+    </div>
+</div>
