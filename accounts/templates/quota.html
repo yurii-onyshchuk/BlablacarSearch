@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} :: {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-2">
+            <div class="col text-center">
+                <h1>{{ title }}</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col col-md-6 col-xl-4 text-center">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Залишок</th>
+                        <th scope="col">Ліміт</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">На день</th>
+                        <td>{{ quota.remaining_day }}</td>
+                        <td>{{ quota.limit_day }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">На хвилину</th>
+                        <td>{{ quota.remaining_minute }}</td>
+                        <td>{{ quota.limit_minute }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

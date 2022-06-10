@@ -1,7 +1,10 @@
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from . import forms
+from .models import User
+from main.models import Task
+import requests
 
 
 class UserRegister(CreateView):
@@ -16,3 +19,18 @@ class UserAuthentication(LoginView):
     template_name = 'login.html'
     form_class = forms.UserAuthenticationForm
     success_url = reverse_lazy('task_list')
+
+
+class QuotaView(TemplateView):
+    extra_context = {'title': 'Ліміт API-запитів'}
+    template_name = 'quota.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(QuotaView, self).get_context_data()
+        url = f'{Task.base_api_url}{Task.base_search_path}?key={User.objects.get(username=self.request.user).API_key}'
+        response = requests.get(url)
+        context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
+                            'remaining_day': response.headers['x-ratelimit-remaining-day'],
+                            'limit_minute': response.headers['x-ratelimit-limit-minute'],
+                            'remaining_minute': response.headers['x-ratelimit-remaining-minute'], }
+        return context
