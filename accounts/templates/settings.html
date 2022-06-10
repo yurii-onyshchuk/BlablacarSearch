@@ -12,10 +12,12 @@
                     {{ form.as_p }}
                     <div class="row">
                         <div class="col-lg">
-                            <button class="btn btn-bla w-100" type="submit">Ввійти</button>
+                            <a href="{% url 'change_password' %}">Змінити пароль</a>
                         </div>
-                        <div class="col-lg align-self-center text-center my-3 my-sm-3 my-md-3 my-lg-0">
-                            <a href="{% url 'register' %}">Немає акаунту?</a>
+                    </div>
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-lg">
+                            <button class="btn btn-bla w-100" type="submit">Зберегти</button>
                         </div>
                     </div>
                 </form>

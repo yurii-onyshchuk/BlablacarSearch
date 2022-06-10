@@ -26,7 +26,7 @@
                            aria-expanded="false" href="">{{ request.user }}<i
                                 class="fa-solid fa-user-large ms-2"></i></a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Профіль</a></li>
+                            <li><a class="dropdown-item" href="{% url 'settings' request.user.pk %}">Налаштування</a></li>
                             <li><a class="dropdown-item" href="{% url 'quota' %}">Ліміт API-запитів</a></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}">Вихід<i
                                     class="fa-solid fa-right-from-bracket ms-2"></i></a></li>
