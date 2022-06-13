@@ -4,8 +4,8 @@ from accounts.models import User
 
 
 class Task(models.Model):
-    from_city = models.CharField(verbose_name='Звідки?', max_length=40)
-    to_city = models.CharField(verbose_name='Куди?', max_length=40)
+    from_city = models.CharField(verbose_name='Звідки?', max_length=32)
+    to_city = models.CharField(verbose_name='Куди?', max_length=32)
     from_coordinate = models.CharField(verbose_name='Координата відправлення', max_length=22)
     to_coordinate = models.CharField(verbose_name='Координата прибуття', max_length=22)
     locale = models.CharField(verbose_name='Локалізація', default='uk-UA', max_length=5)
@@ -62,14 +62,14 @@ class TaskInfo(models.Model):
 
 class Trip(models.Model):
     link = models.URLField(verbose_name='Посилання на поїздку')
-    from_city = models.CharField(verbose_name='Пункт відправлення', max_length=40)
-    from_address = models.CharField(verbose_name='Адреса відправлення', max_length=40, blank=True, null=True)
+    from_city = models.CharField(verbose_name='Пункт відправлення', max_length=32)
+    from_address = models.CharField(verbose_name='Адреса відправлення', max_length=128, blank=True, null=True)
     departure_time = models.DateTimeField(verbose_name='Час відправлення')
-    to_city = models.CharField(verbose_name='Пункт прибуття', max_length=40)
-    to_address = models.CharField(verbose_name='Адреса прибуття', max_length=40, blank=True, null=True)
+    to_city = models.CharField(verbose_name='Пункт прибуття', max_length=32)
+    to_address = models.CharField(verbose_name='Адреса прибуття', max_length=128, blank=True, null=True)
     arrival_time = models.DateTimeField(verbose_name='Час прибуття')
-    price = models.CharField(verbose_name='Ціна', max_length=40)
-    vehicle = models.CharField(verbose_name='Автомобіль', max_length=40, blank=True, null=True)
+    price = models.CharField(verbose_name='Ціна', max_length=16)
+    vehicle = models.CharField(verbose_name='Автомобіль', max_length=32, blank=True, null=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Завдання')
 
     class Meta:
