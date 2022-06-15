@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/blablacar
+    ports:
+      - '8000:8000'
+    environment:
+      - DB_HOST=db
+      - DB_NAME=blablacar_db
+      - DB_USER=Yurii
+      - DB_PASS=71014
+    depends_on:
+      - db
+  db:
+    image: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=blablacar_db
+      - POSTGRES_USER=Yurii
+      - POSTGRES_PASSWORD=71014
+
+volumes:
+  postgres_data:
