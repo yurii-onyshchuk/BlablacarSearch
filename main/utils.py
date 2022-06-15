@@ -14,6 +14,10 @@ def get_city_coordinate(city: str):
         return f'{latitude},{longitude}'
 
 
+def try_func():
+    print('Hello from Celery')
+
+
 def get_response(url):
     try:
         response = requests.get(url)
@@ -144,17 +148,3 @@ class Checker:
         Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in trip_info_list])
 
         return found_trip
-
-    @staticmethod
-    def run_check_cycle():
-        while True:
-            tasks = Task.objects.filter(notification=True)
-            for task in tasks:
-                checker = Checker(task)
-                found_trip = checker.single_check()
-                if found_trip:
-                    for trip in found_trip:
-                        message_text = get_message_text(trip)
-                        message_data = get_message_data(task, message_text)
-                        send_mail(**message_data)
-            time.sleep(120)

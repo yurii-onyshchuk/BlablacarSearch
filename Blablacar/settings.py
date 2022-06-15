@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'accounts.apps.AccountsConfig',
     'main.apps.MainConfig',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -112,7 +113,7 @@ TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -135,3 +136,15 @@ EMAIL_HOST_USER = 'yura.onyshchuk@gmail.com'
 EMAIL_HOST_PASSWORD = 'splfdxehvlwjtsec'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = '6379'
+CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = 'redis://'+REDIS_HOST+':'+REDIS_PORT + '/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
