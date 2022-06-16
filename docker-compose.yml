@@ -17,14 +17,43 @@ services:
       - db
   db:
     image: postgres
-    ports:
-      - '5432:5432'
+    container_name: db
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=blablacar_db
       - POSTGRES_USER=Yurii
       - POSTGRES_PASSWORD=71014
+  redis:
+    image: redis
+  celery:
+    build: .
+    command: celery -A Blablacar worker -l info
+    volumes:
+      - .:/usr/src/blablacar
+    environment:
+      - DB_HOST=db
+      - DB_NAME=blablacar_db
+      - DB_USER=Yurii
+      - DB_PASS=71014
+    depends_on:
+      - db
+      - web
+      - redis
+  celery-beat:
+    build: .
+    command: celery -A Blablacar beat -l info
+    volumes:
+      - .:/usr/src/blablacar
+    environment:
+      - DB_HOST=db
+      - DB_NAME=blablacar_db
+      - DB_USER=Yurii
+      - DB_PASS=71014
+    depends_on:
+      - db
+      - web
+      - redis
 
 volumes:
   postgres_data:
