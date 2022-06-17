@@ -46,7 +46,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
-        Checker(self.object).single_check()
+        Checker(self.object).get_suitable_trips()
         context['trip_list'] = Trip.objects.filter(task=self.object, departure_time__gt=datetime.now())
         return context
 

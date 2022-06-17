@@ -14,15 +14,11 @@ def get_city_coordinate(city: str):
         return f'{latitude},{longitude}'
 
 
-def try_func():
-    print('Hello from Celery')
-
-
 def get_response(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
-        print('New request')
+        print(f'New request to {url}')
         return response
     except requests.exceptions.HTTPError as errh:
         print("Http Error:", errh)
@@ -133,7 +129,7 @@ class Checker:
         link_list = [i[0] for i in Trip.objects.filter(task=self.task).values_list('link')]
         return link_list
 
-    def single_check(self):
+    def get_suitable_trips(self):
         response = get_response(self.task.get_url())
         parser = Parser(response.json())
 
@@ -142,9 +138,30 @@ class Checker:
 
         trips_list = parser.get_trips_list()
         trip_exists_list = self.trip_exists_list()
-        found_trip = [trip for trip in trips_list if
-                      self.trip_accord_to_task(trip) and not Parser.get_trip_link(trip) in trip_exists_list]
-        trip_info_list = [parser.get_trip_info(trip) for trip in found_trip]
+        suitable_trips = [trip for trip in trips_list if
+                          self.trip_accord_to_task(trip) and not Parser.get_trip_link(trip) in trip_exists_list]
+        trip_info_list = [parser.get_trip_info(trip) for trip in suitable_trips]
         Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in trip_info_list])
 
-        return found_trip
+        return suitable_trips
+
+    @staticmethod
+    def check_new_trips():
+        tasks = Task.objects.filter(notification=True)
+        for task in tasks:
+            suitable_trip = Checker(task).get_suitable_trips()
+            if suitable_trip:
+                for trip in suitable_trip:
+                    Checker.send_notification(task, trip)
+
+    @staticmethod
+    def send_notification(task, trip):
+        message_text = get_message_text(trip)
+        message_data = get_message_data(task, message_text)
+        send_mail(**message_data)
+
+    @staticmethod
+    def run_check_cycle():
+        while True:
+            Checker.check_new_trips()
+            time.sleep(120)
