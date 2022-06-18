@@ -1,11 +1,11 @@
+import requests
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, TemplateView, FormView, UpdateView
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, TemplateView
 from . import forms
 from .models import User
-from main.models import Task
-import requests
 
 
 class UserRegister(CreateView):
@@ -28,7 +28,7 @@ class APIQuotaView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(APIQuotaView, self).get_context_data()
-        url = f'{Task.base_api_url}{Task.base_search_path}?key={User.objects.get(username=self.request.user).API_key}'
+        url = f'{settings.BASE_BLABLACAR_API_URL}?key={User.objects.get(username=self.request.user).API_key}'
         response = requests.get(url)
         context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
                             'remaining_day': response.headers['x-ratelimit-remaining-day'],
