@@ -12,6 +12,19 @@ class HomePage(LoginRequiredMixin, FormView):
     extra_context = {'title': 'Куди їдемо?'}
     form_class = forms.SearchForm
     template_name = 'index.html'
+    search_url = None
+
+    def get_context_data(self, **kwargs):
+        context = super(HomePage, self).get_context_data(**kwargs)
+        if self.search_url:
+            context['show_trips'] = True
+            response = get_response(self.search_url)
+            parser = Parser(response.json())
+            trip_list = parser.get_trips_list()
+            trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
+            trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
+            context['trip_list'] = trip_list
+        return context
 
     def form_valid(self, form):
         url = f'{settings.BASE_BLABLACAR_API_URL}?' \
@@ -27,43 +40,14 @@ class HomePage(LoginRequiredMixin, FormView):
             url += f'&end_date_local={self.request.POST.get("end_date_local")}'
         if self.request.POST.get('radius_in_meters'):
             url += f'&radius_in_meters={self.request.POST.get("radius_in_meters")}'
-        self.request.session['search_url'] = url
-        return super(HomePage, self).form_valid(form)
-
-    def post(self, request, *args, **kwargs):
-        self.request.session['form'] = self.request.POST
-        return super(HomePage, self).post(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse_lazy('search')
-
-
-class SearchList(HomePage):
-    extra_context = {'title': 'Знайдені поїздки'}
-    template_name = 'search_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchList, self).get_context_data(**kwargs)
-        response = get_response(self.request.session['search_url'])
-        parser = Parser(response.json())
-        trip_list = parser.get_trips_list()
-        trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
-        trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
-        context['trip_list'] = trip_list
-        return context
-
-    def get_initial(self):
-        return self.request.session.get('form', self.initial.copy())
-
-    def post(self, request, *args, **kwargs):
-        self.request.session['form'] = self.request.POST
-        return super(SearchList, self).post(request, *args, **kwargs)
+        self.search_url = url
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
     extra_context = {'title': 'Планування нової поїздки'}
     form_class = forms.TaskForm
-    template_name = 'task_create.html'
+    template_name = 'task_form.html'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -95,7 +79,6 @@ class TaskDetail(LoginRequiredMixin, DetailView):
         context = super(TaskDetail, self).get_context_data(**kwargs)
         Checker(self.object).get_suitable_trips()
         context['trip_list'] = Trip.objects.filter(task=self.object, departure_time__gt=datetime.now())
-        print(context['trip_list'])
         return context
 
 

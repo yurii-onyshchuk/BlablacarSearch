@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ca86b67c-7641-41de-b3a9-c9021bf4a396" name="Changes" comment="Add search as on Blablacar">
+    <list default="true" id="ca86b67c-7641-41de-b3a9-c9021bf4a396" name="Changes" comment="idea folder">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_06_2022_18_47__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_06_2022_18_47__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/templates/password_change.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/password_change.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/register.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/templates/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/settings.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/search_form.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/task_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/task_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/task_form.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base_form.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/inc/_header.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/inc/_header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
