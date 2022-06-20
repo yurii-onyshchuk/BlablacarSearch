@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from datetime import datetime
 from accounts.models import User
 
@@ -17,10 +18,6 @@ class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
 
-    base_api_url = 'https://public-api.blablacar.com'
-    base_search_path = '/api/v3/trips'
-    count = 100
-
     class Meta:
         verbose_name = 'Пошук поїздок'
         verbose_name_plural = 'Пошук поїздок'
@@ -29,7 +26,7 @@ class Task(models.Model):
         return f'{self.from_city}-{self.to_city}: {self.start_date_local.strftime("%d.%m.%Y %H:%M")}'
 
     def get_url(self):
-        url = f'{self.base_api_url}{self.base_search_path}?' \
+        url = f'{settings.BASE_BLABLACAR_API_URL}?' \
               f'key={User.objects.get(username=self.user).API_key}&' \
               f'from_coordinate={self.from_coordinate}&' \
               f'to_coordinate={self.to_coordinate}&' \
@@ -37,7 +34,7 @@ class Task(models.Model):
               f'currency={self.currency}&' \
               f'start_date_local={self.start_date_local.strftime("%Y-%m-%dT%H:%M")}&' \
               f'requested_seats={self.requested_seats}&' \
-              f'count={self.count}'
+              f'count=100'
         if self.end_date_local:
             url += f'&end_date_local={self.end_date_local.strftime("%Y-%m-%dT%H:%M")}'
         if self.radius_in_meters:

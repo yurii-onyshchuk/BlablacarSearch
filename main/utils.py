@@ -44,17 +44,17 @@ def get_message_data(task, message_text: str):
 
 
 class Parser:
-    def __init__(self, response: dict):
-        self.response = response
+    def __init__(self, response_json: dict):
+        self.response_json = response_json
 
     def get_search_link(self):
-        return self.response['link']
+        return self.response_json['link']
 
     def get_search_info(self):
-        return self.response['search_info']
+        return self.response_json['search_info']
 
     def get_trips_list(self):
-        return self.response['trips']
+        return self.response_json['trips']
 
     @staticmethod
     def get_trip_link(trip):
@@ -118,6 +118,19 @@ class Parser:
                 'vehicle': self.get_vehicle(trip)}
 
 
+class TripDeserializer:
+    def __init__(self, trip_info: dict):
+        self.link = trip_info['link']
+        self.from_city = trip_info['from_city']
+        self.from_address = trip_info['from_address']
+        self.departure_time = trip_info['departure_time']
+        self.to_city = trip_info['to_city']
+        self.to_address = trip_info['to_address']
+        self.arrival_time = trip_info['arrival_time']
+        self.price = trip_info['price']
+        self.vehicle = trip_info['vehicle']
+
+
 class Checker:
     def __init__(self, task):
         self.task = task
@@ -136,9 +149,9 @@ class Checker:
         task_info = parser.get_task_info()
         TaskInfo(task=self.task, **task_info).save()
 
-        trips_list = parser.get_trips_list()
+        trip_list = parser.get_trips_list()
         trip_exists_list = self.trip_exists_list()
-        suitable_trips = [trip for trip in trips_list if
+        suitable_trips = [trip for trip in trip_list if
                           self.trip_accord_to_task(trip) and not Parser.get_trip_link(trip) in trip_exists_list]
         trip_info_list = [parser.get_trip_info(trip) for trip in suitable_trips]
         Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in trip_info_list])

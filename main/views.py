@@ -1,22 +1,56 @@
-from django.shortcuts import redirect
-from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView, DeleteView
+from django.conf import settings
+from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView, DeleteView, FormView
 from . import forms
-from .models import Task, Trip
-from .utils import Checker
-from datetime import datetime
+from .models import Task, Trip, User
+from .utils import Checker, Parser, TripDeserializer, get_response
 
 
-class HomePage(LoginRequiredMixin, TemplateView):
-    def get(self, request, *args, **kwargs):
-        return redirect('task_list')
+class HomePage(LoginRequiredMixin, FormView):
+    template_name = 'main/index.html'
+    form_class = forms.SearchForm
+    search_url = None
+
+    def get_context_data(self, **kwargs):
+        context = super(HomePage, self).get_context_data(**kwargs)
+        context['title'] = 'Пошук поїздок'
+        context['heading'] = 'Куди їдемо?'
+        if self.search_url:
+            context['show_trips'] = True
+            context['title'] = 'Доступні поїздки'
+            context['heading'] = 'Пошук'
+            response = get_response(self.search_url)
+            parser = Parser(response.json())
+            trip_list = parser.get_trips_list()
+            trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
+            trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
+            context['trip_list'] = trip_list
+        return context
+
+    def form_valid(self, form):
+        url = f'{settings.BASE_BLABLACAR_API_URL}?' \
+              f'key={User.objects.get(username=self.request.user).API_key}&' \
+              f'from_coordinate={form.from_city_coord}&' \
+              f'to_coordinate={form.to_city_coord}&' \
+              f'locale=uk-UA&' \
+              f'currency=UAH&' \
+              f'start_date_local={self.request.POST.get("start_date_local")}&' \
+              f'requested_seats={self.request.POST.get("requested_seats")}&' \
+              f'count=100'
+        if self.request.POST.get('end_date_local'):
+            url += f'&end_date_local={self.request.POST.get("end_date_local")}'
+        if self.request.POST.get('radius_in_meters'):
+            url += f'&radius_in_meters={self.request.POST.get("radius_in_meters")}'
+        self.search_url = url
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
-    extra_context = {'title': 'Пошук поїздок'}
+    extra_context = {'title': 'Планування нової поїздки'}
+    template_name = 'main/task_form.html'
     form_class = forms.TaskForm
-    template_name = 'task_form.html'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -30,32 +64,26 @@ class CreateTask(LoginRequiredMixin, CreateView):
 
 class TaskList(LoginRequiredMixin, ListView):
     extra_context = {'title': 'Заплановані поїздки'}
-    template_name = 'task_list.html'
-    context_object_name = 'task_list'
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
 
 
 class TaskDetail(LoginRequiredMixin, DetailView):
-    extra_context = {'title': 'Деталі поїздки'}
-    template_name = 'task_detail.html'
-
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user, pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
+        context['title'] = 'Деталі поїздки'
         Checker(self.object).get_suitable_trips()
         context['trip_list'] = Trip.objects.filter(task=self.object, departure_time__gt=datetime.now())
         return context
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
-    extra_context = {'title': 'Оновлення поїздки'}
     model = Task
     form_class = forms.TaskForm
-    template_name = 'task_form.html'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -66,8 +94,8 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
-        task = Task.objects.get(user=self.request.user, pk=self.kwargs['pk'])
-        context['url'] = Task.get_url(task)
+        context['title'] = 'Оновлення поїздки'
+        context['url'] = Task.objects.get(user=self.request.user, pk=self.kwargs['pk']).get_url()
         return context
 
     def get_success_url(self):

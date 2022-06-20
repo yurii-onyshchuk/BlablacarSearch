@@ -134,6 +134,8 @@ LOGIN_URL = 'login'
 
 INTERNAL_IPS = ['127.0.0.1']
 
+BASE_BLABLACAR_API_URL = 'https://public-api.blablacar.com/api/v3/trips'
+
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'yura.onyshchuk@gmail.com'
 EMAIL_HOST_PASSWORD = 'splfdxehvlwjtsec'
