@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ca86b67c-7641-41de-b3a9-c9021bf4a396" name="Changes" comment="idea folder">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_06_2022_18_47__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_06_2022_18_47__Changes_.xml" afterDir="false" />
+    <list default="true" id="ca86b67c-7641-41de-b3a9-c9021bf4a396" name="Changes" comment="Single page for search and result">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/templates/password_change.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/password_change.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/templates/quota.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/quota.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/templates/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/templates/accounts/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/inc/_availiable_trips.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/inc/_availiable_trips.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/inc/_detail_task_card.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/inc/_detail_task_card.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/inc/_modal_confirm_delete.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/inc/_modal_confirm_delete.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/inc/_task_card.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/inc/_task_card.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/inc/_trip_card.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/inc/_trip_card.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/task_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/task_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/task_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/task_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/task_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/task_list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,18 +43,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/DEV/Blablacar/main/templates&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/DEV/ToDo_divanov"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\DEV\Blablacar\main\templates" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\DEV\Blablacar\accounts\templates\accounts" />
+      <recent name="D:\DEV\Blablacar\main\templates\main" />
     </key>
   </component>
   <component name="RunManager">
@@ -81,6 +99,14 @@
       <workItem from="1655549119644" duration="6296000" />
       <workItem from="1655621132380" duration="8504000" />
     </task>
+    <task id="LOCAL-00001" summary="Single page for search and result">
+      <created>1655756132889</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1655756132889</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -96,5 +122,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="idea folder" />
+    <MESSAGE value="Single page for search and result" />
+    <option name="LAST_COMMIT_MESSAGE" value="Single page for search and result" />
   </component>
 </project>

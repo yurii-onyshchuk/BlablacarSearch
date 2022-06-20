@@ -2,7 +2,7 @@
         class="badge bg-secondary ms-2">{{ trip_list|length }}</span>
 </h3>
 {% for trip in trip_list %}
-    {% include 'inc/_trip_card.html' %}
+    {% include 'main/inc/_trip_card.html' %}
 {% empty %}
     <div class="card shadow-lg mb-3">
         <div class="card-body text-center">

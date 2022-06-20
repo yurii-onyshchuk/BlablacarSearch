@@ -11,7 +11,7 @@
                 <div class="col-md-5 col-xl-4 mb-2">
                     <div class="row justify-content-center mt-3">
                         <div class="col text-center">
-                            <h2>{{ title }}</h2>
+                            <h4>{{ heading }}</h4>
                         </div>
                     </div>
                     <div class="row justify-content-center">
@@ -29,13 +29,13 @@
                     </div>
                 </div>
                 <div class="col-md-5">
-                    {% include 'inc/_availiable_trips.html' %}
+                    {% include 'main/inc/_availiable_trips.html' %}
                 </div>
             </div>
         {% else %}
             <div class="row justify-content-center my-3">
                 <div class="col text-center">
-                    <h2>{{ title }}</h2>
+                    <h2>{{ heading }}</h2>
                 </div>
             </div>
             <div class="row justify-content-center">
