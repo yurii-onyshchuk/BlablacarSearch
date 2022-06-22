@@ -21,15 +21,19 @@
                                 {{ form.as_p }}
                                 <div class="row">
                                     <div class="col">
-                                        <input class="btn btn-bla mt-2" type="submit" name="search" value="Знайти заново"/>
-                                        <input class="btn btn-success mt-2" type="submit" name="save" value="Додати до запланованих поїздок"/>
+                                        <input class="btn btn-bla mt-2" type="submit" name="search"
+                                               value="Знайти заново"/>
+                                        <input class="btn btn-success mt-2" type="button"
+                                               value="Додати до запланованих поїздок"
+                                               data-bs-toggle="modal" data-bs-target="#task_info_append"/>
+                                        {% include 'main/inc/_modal_task_info_append.html' %}
                                     </div>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 mt-2">
+                <div class=" col-md-5 mt-2">
                     {% include 'main/inc/_availiable_trips.html' %}
                 </div>
             </div>

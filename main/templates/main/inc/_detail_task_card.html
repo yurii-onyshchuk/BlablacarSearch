@@ -21,7 +21,7 @@
     <div class="card-footer text-center text-md-end">
         <a href="{% url 'task_update' task.pk %}" class="btn btn-secondary btn">Редагувати</a>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                data-bs-target="#task_delete_{{ task.pk }}">Видалити
+                data-bs-target="#task_info">Видалити
         </button>
         {% include 'main/inc/_modal_confirm_delete.html' %}
     </div>

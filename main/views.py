@@ -50,6 +50,8 @@ class HomePage(LoginRequiredMixin, FormView):
             task.user = self.request.user
             task.from_coordinate = form.from_city_coord
             task.to_coordinate = form.to_city_coord
+            if 'notification' in self.request.POST:
+                task.notification = True
             task.save()
             return redirect('task_list')
 
