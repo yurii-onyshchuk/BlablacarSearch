@@ -5,7 +5,7 @@ from .models import Task
 from .utils import get_city_coordinate
 
 
-class SearchForm(forms.Form):
+class SearchForm(forms.ModelForm):
     from_city = forms.CharField(label='Звідки?', widget=forms.TextInput(attrs={'class': 'form-control'}))
     to_city = forms.CharField(label='Куди?', widget=forms.TextInput(attrs={'class': 'form-control'}))
     start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
@@ -49,14 +49,10 @@ class SearchForm(forms.Form):
             raise ValidationError('"Час початку пошуку" має бути раніше "Часу закінчення пошуку": ')
 
     class Meta:
+        model = Task
         fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters']
 
 
-class TaskForm(SearchForm, forms.ModelForm):
-    notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='',
+class TaskForm(SearchForm):
+    notification = forms.BooleanField(label='Сповіщення про нові поїздки', required=False, label_suffix='',
                                       widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-
-    class Meta:
-        model = Task
-        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters',
-                  'notification']

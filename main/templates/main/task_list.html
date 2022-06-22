@@ -4,20 +4,31 @@
 
 {% block content %}
     <div class="container-fluid mb-4">
-        <div class="row justify-content-center my-3">
-            <div class="col text-center">
-                <h1>{{ title }}</h1>
+        {% if task_list %}
+            <div class="row justify-content-center my-3">
+                <div class="col text-center">
+                    <h1>{{ title }}</h1>
+                </div>
             </div>
-        </div>
+            <div class="row">
+                {% for task in task_list %}
+                    {% include 'main/inc/_task_card.html' %}
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="row justify-content-center my-5">
+                <div class="col-6 text-center">
+                    <h1><i class="fa-solid fa-car"></i></h1>
+                    <h1>Запланованих поїздок немає</h1>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row">
-            {% for task in task_list %}
-                {% include 'main/inc/_task_card.html' %}
-            {% endfor %}
-        </div>
-        <div class="row">
-            <div class="col">
+            <div class="col {% if not task_list %}text-center{% endif %}">
                 <a href="{% url 'create_task' %}" class="btn btn-secondary">
-                    <i class="fa-solid fa-magnifying-glass me-2"></i>Знайти нову поїздку</a>
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>Запланувати нову поїздку</a>
             </div>
         </div>
     </div>

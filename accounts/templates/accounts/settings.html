@@ -15,12 +15,12 @@
                     {% csrf_token %}
                     {{ form.as_p }}
                     <div class="row">
-                        <div class="col-lg">
+                        <div class="col-lg mb-3">
                             <a href="{% url 'change_password' %}">Змінити пароль</a>
                         </div>
                     </div>
-                    <div class="row justify-content-center mt-4">
-                        <div class="col-lg">
+                    <div class="row">
+                        <div class="col-sm col-md-4 col-xxl-3 mt-2">
                             <button class="btn btn-bla w-100" type="submit">Зберегти</button>
                         </div>
                     </div>

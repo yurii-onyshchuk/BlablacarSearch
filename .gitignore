@@ -1,3 +1,4 @@
-/db.sqlite3
-/celerybeat-schedule
-/Blablacar/static/css/bootstrap.css
+db.sqlite3
+celerybeat-schedule
+Blablacar/static/css/bootstrap.css
+.idea/

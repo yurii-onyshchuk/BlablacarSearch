@@ -1,6 +1,7 @@
 from django.conf import settings
 from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView, DeleteView, FormView
 from . import forms
@@ -11,17 +12,16 @@ from .utils import Checker, Parser, TripDeserializer, get_response
 class HomePage(LoginRequiredMixin, FormView):
     template_name = 'main/index.html'
     form_class = forms.SearchForm
-    search_url = None
 
     def get_context_data(self, **kwargs):
         context = super(HomePage, self).get_context_data(**kwargs)
         context['title'] = 'Пошук поїздок'
         context['heading'] = 'Куди їдемо?'
-        if self.search_url:
+        if 'api_url' in kwargs:
             context['show_trips'] = True
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
-            response = get_response(self.search_url)
+            response = get_response(kwargs['api_url'])
             parser = Parser(response.json())
             trip_list = parser.get_trips_list()
             trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
@@ -30,21 +30,28 @@ class HomePage(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        url = f'{settings.BASE_BLABLACAR_API_URL}?' \
-              f'key={User.objects.get(username=self.request.user).API_key}&' \
-              f'from_coordinate={form.from_city_coord}&' \
-              f'to_coordinate={form.to_city_coord}&' \
-              f'locale=uk-UA&' \
-              f'currency=UAH&' \
-              f'start_date_local={self.request.POST.get("start_date_local")}&' \
-              f'requested_seats={self.request.POST.get("requested_seats")}&' \
-              f'count=100'
-        if self.request.POST.get('end_date_local'):
-            url += f'&end_date_local={self.request.POST.get("end_date_local")}'
-        if self.request.POST.get('radius_in_meters'):
-            url += f'&radius_in_meters={self.request.POST.get("radius_in_meters")}'
-        self.search_url = url
-        return self.render_to_response(self.get_context_data(form=form))
+        if 'search' in self.request.POST:
+            api_url = f'{settings.BASE_BLABLACAR_API_URL}?' \
+                      f'key={User.objects.get(username=self.request.user).API_key}&' \
+                      f'from_coordinate={form.from_city_coord}&' \
+                      f'to_coordinate={form.to_city_coord}&' \
+                      f'locale=uk-UA&' \
+                      f'currency=UAH&' \
+                      f'start_date_local={self.request.POST.get("start_date_local")}&' \
+                      f'requested_seats={self.request.POST.get("requested_seats")}&' \
+                      f'count=100'
+            if self.request.POST.get('end_date_local'):
+                api_url += f'&end_date_local={self.request.POST.get("end_date_local")}'
+            if self.request.POST.get('radius_in_meters'):
+                api_url += f'&radius_in_meters={self.request.POST.get("radius_in_meters")}'
+            return self.render_to_response(self.get_context_data(form=form, api_url=api_url))
+        elif 'save' in self.request.POST:
+            task = form.save(commit=False)
+            task.user = self.request.user
+            task.from_coordinate = form.from_city_coord
+            task.to_coordinate = form.to_city_coord
+            task.save()
+            return redirect('task_list')
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
