@@ -54,5 +54,9 @@ class SearchForm(forms.ModelForm):
 
 
 class TaskForm(SearchForm):
-    notification = forms.BooleanField(label='Сповіщення про нові поїздки', required=False, label_suffix='',
+    notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='',
                                       widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
+    class Meta(SearchForm.Meta):
+        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters',
+                  'notification']

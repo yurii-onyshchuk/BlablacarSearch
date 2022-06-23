@@ -15,15 +15,9 @@
                            href="{% url 'index' %}"><i class="fa-solid fa-magnifying-glass me-2"></i>Пошук поїздок</a>
                     </li>
                     <li class="nav-item">
-                        {% url 'create_task' as path %}
-                        <a class="nav-link {% if path == request.path %}active{% endif %}"
-                           href="{% url 'create_task' %}"><i class="fa-solid fa-calendar-plus me-2"></i>Запланувати нову
-                            поїздку</a>
-                    </li>
-                    <li class="nav-item">
                         {% url 'task_list' as path %}
                         <a class="nav-link {% if path == request.path %}active{% endif %}"
-                           href="{% url 'task_list' %}"><i class="fa-solid fa-suitcase me-2"></i>Заплановані поїздки</a>
+                           href="{% url 'task_list' %}"><i class="fa-solid fa-car me-2"></i>Заплановані поїздки</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav ms-auto">
