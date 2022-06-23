@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, PasswordChangeView
+from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, TemplateView
 from . import forms
@@ -43,9 +43,3 @@ class UserSettingsView(LoginRequiredMixin, UpdateView):
     template_name = 'accounts/settings.html'
     form_class = forms.UserSettingForm
     success_url = reverse_lazy('index')
-
-
-class ChangePassword(LoginRequiredMixin, PasswordChangeView):
-    extra_context = {'title': 'Зміна паролю'}
-    template_name = 'accounts/password_change.html'
-    form_class = forms.UserPasswordChangeForm
