@@ -104,7 +104,7 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         context['title'] = 'Оновлення поїздки'
-        context['url'] = Task.objects.get(user=self.request.user, pk=self.kwargs['pk']).get_url()
+        context['url'] = Task.objects.get(user=self.request.user, pk=self.kwargs['pk']).get_api_url()
         return context
 
     def get_success_url(self):

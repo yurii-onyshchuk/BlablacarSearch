@@ -11,7 +11,7 @@ class TaskAdmin(admin.ModelAdmin):
     readonly_fields = ('URL',)
 
     def URL(self, obj):
-        return mark_safe(f'<a href="{obj.get_url()}">{obj.get_url()}</a>')
+        return mark_safe(f'<a href="{obj.get_api_url()}">{obj.get_api_url()}</a>')
 
 
 @admin.register(TaskInfo)

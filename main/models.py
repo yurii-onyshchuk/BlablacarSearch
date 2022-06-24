@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from datetime import datetime
 from accounts.models import User
@@ -25,8 +26,11 @@ class Task(models.Model):
     def __str__(self):
         return f'{self.from_city}-{self.to_city}: {self.start_date_local.strftime("%d.%m.%Y %H:%M")}'
 
-    def get_url(self):
-        url = f'{settings.BASE_BLABLACAR_API_URL}?' \
+    def get_absolute_url(self):
+        return reverse('task_detail', kwargs={'pk': self.pk})
+
+    def get_api_url(self):
+        api_url = f'{settings.BASE_BLABLACAR_API_URL}?' \
               f'key={User.objects.get(username=self.user).API_key}&' \
               f'from_coordinate={self.from_coordinate}&' \
               f'to_coordinate={self.to_coordinate}&' \
@@ -36,10 +40,10 @@ class Task(models.Model):
               f'requested_seats={self.requested_seats}&' \
               f'count=100'
         if self.end_date_local:
-            url += f'&end_date_local={self.end_date_local.strftime("%Y-%m-%dT%H:%M")}'
+            api_url += f'&end_date_local={self.end_date_local.strftime("%Y-%m-%dT%H:%M")}'
         if self.radius_in_meters:
-            url += f'&radius_in_meters={self.radius_in_meters}'
-        return url
+            api_url += f'&radius_in_meters={self.radius_in_meters}'
+        return api_url
 
 
 class TaskInfo(models.Model):

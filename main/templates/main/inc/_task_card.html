@@ -3,7 +3,7 @@
         <div class="card-header pb-0">
             <div class="row align-items-center">
                 <div class="col-10 position-relative">
-                    <a href="{% url 'task_detail' task.pk %}" class="stretched-link"></a>
+                    <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
                     <h4>{{ task.from_city }}-{{ task.to_city }}</h4>
                 </div>
                 <div class="col-2 text-sm-center text-lg-end">
@@ -15,7 +15,7 @@
         </div>
         <div class="card-body position-relative">
             <div class="card-text">
-                <a href="{% url 'task_detail' task.pk %}" class="stretched-link"></a>
+                <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
                 <p>Починаючи з часу: <b>{{ task.start_date_local }}</b></p>
                 {% if task.end_date_local %}
                     <p>Закінчуючи часом: <b>{{ task.end_date_local }}</b></p>

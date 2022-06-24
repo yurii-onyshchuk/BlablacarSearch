@@ -144,7 +144,7 @@ class Checker:
         return link_list
 
     def get_suitable_trips(self):
-        response = get_response(self.task.get_url())
+        response = get_response(self.task.get_api_url())
         parser = Parser(response.json())
 
         task_info = parser.get_task_info()
