@@ -13,8 +13,8 @@ class Task(models.Model):
     currency = models.CharField(verbose_name='Валюта', default='UAH', max_length=3)
     start_date_local = models.DateTimeField(verbose_name='Починаючи з часу', default=datetime.now)
     end_date_local = models.DateTimeField(verbose_name='Закінчуючи часом', blank=True, null=True)
-    requested_seats = models.IntegerField(verbose_name='Кількість місць', default=1)
-    radius_in_meters = models.IntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
+    requested_seats = models.PositiveSmallIntegerField(verbose_name='Кількість місць', default=1)
+    radius_in_meters = models.PositiveIntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
 
@@ -44,9 +44,10 @@ class Task(models.Model):
 
 class TaskInfo(models.Model):
     link = models.URLField(verbose_name='Посилання на пошук поїздку', blank=True, null=True)
-    count = models.IntegerField(verbose_name='Загальна кількість знайдених поїздок', blank=True, null=True)
-    full_trip_count = models.IntegerField(verbose_name='Загальна кількість знайдених повних поїздок', blank=True,
-                                          null=True)
+    count = models.PositiveSmallIntegerField(verbose_name='Загальна кількість знайдених поїздок', blank=True, null=True)
+    full_trip_count = models.PositiveSmallIntegerField(verbose_name='Загальна кількість знайдених повних поїздок',
+                                                       blank=True,
+                                                       null=True)
     task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True)
 
     class Meta:
