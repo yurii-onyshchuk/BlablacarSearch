@@ -7,8 +7,8 @@ from accounts.models import User
 class Task(models.Model):
     from_city = models.CharField(verbose_name='Звідки?', max_length=32)
     to_city = models.CharField(verbose_name='Куди?', max_length=32)
-    from_coordinate = models.CharField(verbose_name='Координата відправлення', max_length=22)
-    to_coordinate = models.CharField(verbose_name='Координата прибуття', max_length=22)
+    from_coordinate = models.CharField(verbose_name='Координата відправлення', max_length=32)
+    to_coordinate = models.CharField(verbose_name='Координата прибуття', max_length=32)
     locale = models.CharField(verbose_name='Локалізація', default='uk-UA', max_length=5)
     currency = models.CharField(verbose_name='Валюта', default='UAH', max_length=3)
     start_date_local = models.DateTimeField(verbose_name='Починаючи з часу', default=datetime.now)
