@@ -30,7 +30,16 @@ class HomePage(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        if 'search' in self.request.POST:
+        if self.request.POST.get('save', None):
+            task = form.save(commit=False)
+            task.user = self.request.user
+            task.from_coordinate = form.from_city_coord
+            task.to_coordinate = form.to_city_coord
+            if self.request.POST.get('notification', False):
+                task.notification = True
+            task.save()
+            return redirect('task_list')
+        else:
             api_url = f'{settings.BASE_BLABLACAR_API_URL}?' \
                       f'key={User.objects.get(username=self.request.user).API_key}&' \
                       f'from_coordinate={form.from_city_coord}&' \
@@ -45,15 +54,6 @@ class HomePage(LoginRequiredMixin, FormView):
             if self.request.POST.get('radius_in_meters'):
                 api_url += f'&radius_in_meters={self.request.POST.get("radius_in_meters")}'
             return self.render_to_response(self.get_context_data(form=form, api_url=api_url))
-        elif 'save' in self.request.POST:
-            task = form.save(commit=False)
-            task.user = self.request.user
-            task.from_coordinate = form.from_city_coord
-            task.to_coordinate = form.to_city_coord
-            if 'notification' in self.request.POST:
-                task.notification = True
-            task.save()
-            return redirect('task_list')
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
