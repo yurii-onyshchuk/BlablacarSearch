@@ -1,5 +1,6 @@
 import requests
 import time
+from datetime import datetime
 from django.core.mail import send_mail
 from geopy.geocoders import Nominatim
 from main.models import Task, TaskInfo, Trip
@@ -123,10 +124,10 @@ class TripDeserializer:
         self.link = trip_info['link']
         self.from_city = trip_info['from_city']
         self.from_address = trip_info['from_address']
-        self.departure_time = trip_info['departure_time']
+        self.departure_time = datetime.fromisoformat(trip_info['departure_time'])
         self.to_city = trip_info['to_city']
         self.to_address = trip_info['to_address']
-        self.arrival_time = trip_info['arrival_time']
+        self.arrival_time = datetime.fromisoformat(trip_info['arrival_time'])
         self.price = trip_info['price']
         self.vehicle = trip_info['vehicle']
 

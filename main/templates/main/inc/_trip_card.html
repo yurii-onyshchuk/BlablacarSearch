@@ -13,10 +13,10 @@
         </div>
         <div class="row card-subtitle">
             <div class="col-6">
-                <p>{{ trip.departure_time }}</p>
+                <p>{{ trip.departure_time|date:"d E Y р. H:i" }}</p>
             </div>
             <div class="col-6">
-                <p> {{ trip.arrival_time }}</p>
+                <p> {{ trip.arrival_time|date:"d E Y р. H:i" }}</p>
             </div>
         </div>
         <div class="row card-text">
