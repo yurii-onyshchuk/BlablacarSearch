@@ -52,7 +52,7 @@ class TaskInfo(models.Model):
     full_trip_count = models.PositiveSmallIntegerField(verbose_name='Загальна кількість знайдених повних поїздок',
                                                        blank=True,
                                                        null=True)
-    task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True)
+    task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True, verbose_name='Завдання')
 
     class Meta:
         verbose_name = 'Інформація щодо пошуку поїздки'
