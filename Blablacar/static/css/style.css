@@ -22,6 +22,20 @@ nav {
 
 }
 
+.btn-exchange {
+    --bs-btn-color: #6c757d;
+    --bs-btn-border-color: #ced4da;
+    --bs-btn-hover-color: #6c757d;
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-hover-border-color: #ced4da;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #6c757d;
+    --bs-btn-active-border-color: #ced4da;
+    --bs-btn-disabled-color: #6c757d;
+    --bs-btn-disabled-bg: transparent;
+    --bs-gradient: none;
+}
+
 .active {
     color: #f50000;
 }

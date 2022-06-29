@@ -1,13 +1,14 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from .widgets import InputGroupWidget
 from .models import Task
 from .utils import get_city_coordinate
 
 
 class SearchForm(forms.ModelForm):
-    from_city = forms.CharField(label='Звідки?', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    to_city = forms.CharField(label='Куди?', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    from_city = forms.CharField(label='Звідки?', widget=InputGroupWidget())
+    to_city = forms.CharField(label='Куди?', widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'to_city'}))
     start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
                                            widget=forms.DateTimeInput(
                                                attrs={'class': 'form-control', 'type': "datetime-local"},
@@ -50,7 +51,8 @@ class SearchForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters']
+        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats',
+                  'radius_in_kilometers']
 
 
 class TaskForm(SearchForm):
@@ -58,5 +60,5 @@ class TaskForm(SearchForm):
                                       widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
     class Meta(SearchForm.Meta):
-        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters',
-                  'notification']
+        fields = ['from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats',
+                  'radius_in_kilometers', 'notification']
