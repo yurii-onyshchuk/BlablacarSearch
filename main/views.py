@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView, DeleteView, FormView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, FormView
 from . import forms
 from .models import Task, Trip, User
 from .utils import Checker, Parser, TripDeserializer, get_response
@@ -38,6 +38,7 @@ class HomePage(LoginRequiredMixin, FormView):
             if self.request.POST.get('notification', False):
                 task.notification = True
             task.save()
+            Checker(task).get_suitable_trips()
             return redirect('task_list')
         else:
             api_url = f'{settings.BASE_BLABLACAR_API_URL}?' \
@@ -51,8 +52,8 @@ class HomePage(LoginRequiredMixin, FormView):
                       f'count=100'
             if self.request.POST.get('end_date_local'):
                 api_url += f'&end_date_local={self.request.POST.get("end_date_local")}'
-            if self.request.POST.get('radius_in_meters'):
-                api_url += f'&radius_in_meters={self.request.POST.get("radius_in_meters")}'
+            if self.request.POST.get('radius_in_kilometers'):
+                api_url += f'&radius_in_meters={int(self.request.POST.get("radius_in_kilometers")) * 1000}'
             return self.render_to_response(self.get_context_data(form=form, api_url=api_url))
 
 

@@ -15,7 +15,7 @@ class Task(models.Model):
     start_date_local = models.DateTimeField(verbose_name='Починаючи з часу', default=datetime.now)
     end_date_local = models.DateTimeField(verbose_name='Закінчуючи часом', blank=True, null=True)
     requested_seats = models.PositiveSmallIntegerField(verbose_name='Кількість місць', default=1)
-    radius_in_meters = models.PositiveIntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
+    radius_in_kilometers = models.PositiveIntegerField(verbose_name='Радіус пошуку, км', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
 
@@ -31,18 +31,18 @@ class Task(models.Model):
 
     def get_api_url(self):
         api_url = f'{settings.BASE_BLABLACAR_API_URL}?' \
-              f'key={User.objects.get(username=self.user).API_key}&' \
-              f'from_coordinate={self.from_coordinate}&' \
-              f'to_coordinate={self.to_coordinate}&' \
-              f'locale={self.locale}&' \
-              f'currency={self.currency}&' \
-              f'start_date_local={self.start_date_local.strftime("%Y-%m-%dT%H:%M")}&' \
-              f'requested_seats={self.requested_seats}&' \
-              f'count=100'
+                  f'key={User.objects.get(username=self.user).API_key}&' \
+                  f'from_coordinate={self.from_coordinate}&' \
+                  f'to_coordinate={self.to_coordinate}&' \
+                  f'locale={self.locale}&' \
+                  f'currency={self.currency}&' \
+                  f'start_date_local={self.start_date_local.strftime("%Y-%m-%dT%H:%M")}&' \
+                  f'requested_seats={self.requested_seats}&' \
+                  f'count=100'
         if self.end_date_local:
             api_url += f'&end_date_local={self.end_date_local.strftime("%Y-%m-%dT%H:%M")}'
-        if self.radius_in_meters:
-            api_url += f'&radius_in_meters={self.radius_in_meters}'
+        if self.radius_in_kilometers:
+            api_url += f'&radius_in_meters={int(self.radius_in_kilometers) * 1000}'
         return api_url
 
 

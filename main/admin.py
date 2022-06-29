@@ -30,8 +30,8 @@ class TripInline(admin.StackedInline):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_meters',
-                    'user', 'id', 'URL')
+    list_display = ('from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats',
+                    'radius_in_kilometers', 'user', 'id', 'URL')
     list_display_links = ('from_city', 'to_city',)
     readonly_fields = ('URL',)
     inlines = [TaskInfoInline, TripInline]

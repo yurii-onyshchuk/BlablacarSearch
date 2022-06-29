@@ -12,15 +12,15 @@ class SearchForm(forms.ModelForm):
                                            widget=forms.DateTimeInput(
                                                attrs={'class': 'form-control', 'type': "datetime-local"},
                                                format="%Y-%m-%dT%H:%M"))
-    end_date_local = forms.DateTimeField(label='Закінчуючи часом', required=False,
+    end_date_local = forms.DateTimeField(label="Закінчуючи часом (не обов'язково)", required=False,
                                          widget=forms.DateTimeInput(
                                              attrs={'class': 'form-control', 'type': "datetime-local"},
                                              format="%Y-%m-%dT%H:%M"))
-
     requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8,
                                          widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    radius_in_meters = forms.IntegerField(label='Радіус пошуку, м', required=False, min_value=1, max_value=50000,
-                                          widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    radius_in_kilometers = forms.IntegerField(label="Радіус пошуку навколо вказаних міст, км (не обов'язково)",
+                                              required=False, min_value=1, max_value=50,
+                                              widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
     from_city_coord = None
     to_city_coord = None

@@ -12,14 +12,14 @@ class UserRegister(CreateView):
     extra_context = {'title': 'Реєстрація'}
     template_name = 'accounts/register.html'
     form_class = forms.UserRegisterForm
-    success_url = reverse_lazy('task_list')
+    success_url = reverse_lazy('index')
 
 
 class UserAuthentication(LoginView):
     extra_context = {'title': 'Вхід'}
     template_name = 'accounts/login.html'
     form_class = forms.UserAuthenticationForm
-    success_url = reverse_lazy('task_list')
+    success_url = reverse_lazy('index')
 
 
 class APIQuotaView(TemplateView):
