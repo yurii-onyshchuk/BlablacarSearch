@@ -1,15 +1,13 @@
-<div class="modal fade" id="task_delete_{{ task.pk }}">
-    <div class="modal-dialog modal-confirm">
+<div class="modal fade" id="task_delete_{{ task.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header flex-column">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                <div class="icon-box">
-                    <i class="material-icons">&#xE5CD;</i>
-                </div>
-                <h4 class="modal-title w-100">Видалити поїздку {{ task }}</h4>
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Цю дію неможливо відмінити</p>
+                <h4 class="modal-title text-center">Видалити поїздку {{ task }}</h4>
+                <p class="text-center">Цю дію неможливо відмінити</p>
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
