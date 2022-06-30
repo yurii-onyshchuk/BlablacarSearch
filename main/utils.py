@@ -1,7 +1,9 @@
+import os
 import requests
 import time
 from datetime import datetime
 from django.core.mail import send_mail
+from django.template.loader import get_template
 from geopy.geocoders import Nominatim
 from main.models import Task, TaskInfo, Trip
 
@@ -29,19 +31,6 @@ def get_response(url):
         print("Timeout Error:", errt)
     except requests.exceptions.RequestException as err:
         print("OOps: Something Else", err)
-
-
-def get_message_text(trip):
-    message_text = f'{Parser.get_trip_link(trip)}\n' \
-                   f'{Parser.get_from_city(trip)} : {Parser.get_to_city(trip)}\n'
-    return message_text
-
-
-def get_message_data(task, message_text: str):
-    return {'subject': "Нова поїздка BlaBlaCar",
-            'message': message_text,
-            'from_email': os.getenv('EMAIL_HOST_USER'),
-            'recipient_list': [task.user.email]}
 
 
 class Parser:
@@ -170,9 +159,21 @@ class Checker:
 
     @staticmethod
     def send_notification(task, trip):
-        message_text = get_message_text(trip)
-        message_data = get_message_data(task, message_text)
-        send_mail(**message_data)
+        subject = "Нова поїздка BlaBlaCar"
+        from_email = os.getenv('EMAIL_HOST_USER')
+        recipient_list = [task.user.email]
+        context = {'link': Parser.get_trip_link(trip),
+                   'from_city': Parser.get_from_city(trip),
+                   'to_city': Parser.get_to_city(trip),
+                   'from_address': Parser.get_from_address(trip),
+                   'to_address': Parser.get_to_address(trip),
+                   'departure_time': datetime.fromisoformat(Parser.get_departure_time(trip)),
+                   'arrival_time': datetime.fromisoformat(Parser.get_arrival_time(trip)),
+                   'price': Parser.get_price(trip),
+                   'vehicle': Parser.get_vehicle(trip)}
+        html_message = get_template('main/new_trip_email.html').render(context)
+        send_mail(subject=subject, message='', from_email=from_email, recipient_list=recipient_list,
+                  html_message=html_message)
 
     @staticmethod
     def run_check_cycle():
