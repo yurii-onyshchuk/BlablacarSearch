@@ -12,7 +12,7 @@ services:
       - DB_HOST=db
       - DB_NAME=blablacar_db
       - DB_USER=Yurii
-      - DB_PASS=71014
+      - DB_PASSWORD=71014
     depends_on:
       - db
   db:

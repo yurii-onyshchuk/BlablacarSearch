@@ -33,3 +33,9 @@ nav {
     --bs-btn-disabled-bg: transparent;
     --bs-gradient: none;
 }
+
+.dropdown-item.active, .dropdown-item:active {
+  color: var(--bs-dropdown-link-active-color);
+  text-decoration: none;
+  background-color: #34caff;
+}

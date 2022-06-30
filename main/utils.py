@@ -40,7 +40,7 @@ def get_message_text(trip):
 def get_message_data(task, message_text: str):
     return {'subject': "Нова поїздка BlaBlaCar",
             'message': message_text,
-            'from_email': 'yura.onyshchuk@gmail.com',
+            'from_email': os.getenv('EMAIL_HOST_USER'),
             'recipient_list': [task.user.email]}
 
 
