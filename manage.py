@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 def main():
     """Run administrative tasks."""
-    env_path = Path('.') / '.env'
+    env_path = Path('.') / '.env.development'
     load_dotenv(dotenv_path=env_path)
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Blablacar.settings')
     try:

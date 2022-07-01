@@ -3,27 +3,24 @@ version: '3.9'
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "gunicorn Blablacar.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/usr/src/blablacar
-    ports:
-      - '8001:8000'
-    environment:
-      - DB_HOST=db
-      - DB_NAME=blablacar_db
-      - DB_USER=Yurii
-      - DB_PASSWORD=71014
+      - static_volume:/usr/src/blablacar/static/
+    expose:
+      - 8000
+    env_file:
+      - .env.production
     depends_on:
       - db
   db:
     image: postgres
-    container_name: db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=blablacar_db
-      - POSTGRES_USER=Yurii
-      - POSTGRES_PASSWORD=71014
+    expose:
+      - 5432
+    env_file:
+      - .env.production
   redis:
     image: redis
   celery:
@@ -31,11 +28,8 @@ services:
     command: celery -A Blablacar worker -l info
     volumes:
       - .:/usr/src/blablacar
-    environment:
-      - DB_HOST=db
-      - DB_NAME=blablacar_db
-      - DB_USER=Yurii
-      - DB_PASS=71014
+    env_file:
+      - .env.production
     depends_on:
       - db
       - web
@@ -45,15 +39,21 @@ services:
     command: celery -A Blablacar beat -l info
     volumes:
       - .:/usr/src/blablacar
-    environment:
-      - DB_HOST=db
-      - DB_NAME=blablacar_db
-      - DB_USER=Yurii
-      - DB_PASS=71014
+    env_file:
+      - .env.production
     depends_on:
       - db
       - web
       - redis
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/usr/src/blablacar/static/
+    ports:
+      - "8001:80"
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
+  static_volume:

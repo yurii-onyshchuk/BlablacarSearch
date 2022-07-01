@@ -1,5 +1,7 @@
 db.sqlite3
 celerybeat-schedule
-Blablacar/static/css/bootstrap.css
+Blablacar/static/Blablacar/css/bootstrap.css
+static
 .idea/
-.env
+/.env.development
+/.env.production
