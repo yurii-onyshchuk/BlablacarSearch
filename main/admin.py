@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import Task, TaskInfo, Trip
+from .utils import get_request_url, query_params_from_db_task
 
 
 class TaskInfoInline(admin.StackedInline):
@@ -39,7 +40,8 @@ class TaskAdmin(admin.ModelAdmin):
     save_as = True
 
     def URL(self, obj):
-        return mark_safe(f'<a href="{obj.get_api_url()}">{obj.get_api_url()}</a>')
+        return mark_safe(
+            f'<a href="{get_request_url(**query_params_from_db_task(obj))}">{get_request_url(**query_params_from_db_task(obj))}</a>')
 
     URL.short_description = "API-посилання"
 

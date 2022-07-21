@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 from .widgets import InputGroupWidget
 from .models import Task
-from .utils import get_city_coordinate
+from main.utils import get_city_coordinate
 
 
 class SearchForm(forms.ModelForm):
@@ -23,14 +23,14 @@ class SearchForm(forms.ModelForm):
                                               required=False, min_value=1, max_value=50,
                                               widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
-    from_city_coord = None
-    to_city_coord = None
+    from_coordinate = None
+    to_coordinate = None
 
     def clean_from_city(self):
         from_city = self.cleaned_data['from_city']
         coordinate = get_city_coordinate(from_city)
         if coordinate:
-            self.from_city_coord = coordinate
+            self.from_coordinate = coordinate
             return from_city
         else:
             raise ValidationError(f'Міста "{from_city}" не знайдено..')
@@ -39,7 +39,7 @@ class SearchForm(forms.ModelForm):
         to_city = self.cleaned_data['to_city']
         coordinate = get_city_coordinate(to_city)
         if coordinate:
-            self.to_city_coord = coordinate
+            self.to_coordinate = coordinate
             return to_city
         else:
             raise ValidationError(f'Міста "{to_city}" не знайдено..')

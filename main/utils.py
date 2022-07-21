@@ -1,11 +1,11 @@
 import os
 import requests
-import time
+from django.conf import settings
 from datetime import datetime
 from django.core.mail import send_mail
 from django.template.loader import get_template
 from geopy.geocoders import Nominatim
-from main.models import Task, TaskInfo, Trip
+from main.models import Task, TaskInfo, Trip, User
 
 
 def get_city_coordinate(city: str):
@@ -31,6 +31,33 @@ def get_response(url):
         print("Timeout Error:", errt)
     except requests.exceptions.RequestException as err:
         print("OOps: Something Else", err)
+
+
+def check_new_trips():
+    tasks = Task.objects.filter(notification=True)
+    for task in tasks:
+        suitable_trip = Checker(task).get_suitable_trips()
+        if suitable_trip:
+            for trip in suitable_trip:
+                send_notification(task, trip)
+
+
+def send_notification(task, trip):
+    subject = "Нова поїздка BlaBlaCar"
+    from_email = os.getenv('EMAIL_HOST_USER')
+    recipient_list = [task.user.email]
+    context = {'link': Parser.get_trip_link(trip),
+               'from_city': Parser.get_from_city(trip),
+               'to_city': Parser.get_to_city(trip),
+               'from_address': Parser.get_from_address(trip),
+               'to_address': Parser.get_to_address(trip),
+               'departure_time': datetime.fromisoformat(Parser.get_departure_time(trip)),
+               'arrival_time': datetime.fromisoformat(Parser.get_arrival_time(trip)),
+               'price': Parser.get_price(trip),
+               'vehicle': Parser.get_vehicle(trip)}
+    html_message = get_template('main/new_trip_email.html').render(context)
+    send_mail(subject=subject, message='', from_email=from_email, recipient_list=recipient_list,
+              html_message=html_message)
 
 
 class Parser:
@@ -124,59 +151,89 @@ class TripDeserializer:
 class Checker:
     def __init__(self, task):
         self.task = task
-
-    def trip_accord_to_task(self, trip):
-        return Parser.get_from_city(trip) == self.task.from_city and Parser.get_to_city(trip) == self.task.to_city
-
-    def trip_exists_list(self):
-        link_list = [i[0] for i in Trip.objects.filter(task=self.task).values_list('link')]
-        return link_list
+        self.parser = Parser(get_response(get_request_url(**query_params_from_db_task(task))).json())
 
     def get_suitable_trips(self):
-        response = get_response(self.task.get_api_url())
-        parser = Parser(response.json())
-
-        task_info = parser.get_task_info()
-        TaskInfo(task=self.task, **task_info).save()
-
-        trip_list = parser.get_trips_list()
-        trip_exists_list = self.trip_exists_list()
-        suitable_trips = [trip for trip in trip_list if
-                          self.trip_accord_to_task(trip) and not Parser.get_trip_link(trip) in trip_exists_list]
-        trip_info_list = [parser.get_trip_info(trip) for trip in suitable_trips]
-        Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in trip_info_list])
-
+        available_trip_list = self.parser.get_trips_list()
+        exists_trip_links_list = self.get_exists_trip_links_list()
+        new_found_trips = [trip for trip in available_trip_list if
+                           self.parser.get_trip_link(trip) not in exists_trip_links_list]
+        suitable_trips = [trip for trip in new_found_trips if self.trip_accord_to_task(trip)]
         return suitable_trips
 
-    @staticmethod
-    def check_new_trips():
-        tasks = Task.objects.filter(notification=True)
-        for task in tasks:
-            suitable_trip = Checker(task).get_suitable_trips()
-            if suitable_trip:
-                for trip in suitable_trip:
-                    Checker.send_notification(task, trip)
+    def update_data_at_db(self):
+        TaskInfo(task=self.task, **self.get_task_info()).save()
+        Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in self.get_trip_info_list()])
+        Trip.objects.filter(link__in=self.get_unavailable_trip_links()).delete()
 
-    @staticmethod
-    def send_notification(task, trip):
-        subject = "Нова поїздка BlaBlaCar"
-        from_email = os.getenv('EMAIL_HOST_USER')
-        recipient_list = [task.user.email]
-        context = {'link': Parser.get_trip_link(trip),
-                   'from_city': Parser.get_from_city(trip),
-                   'to_city': Parser.get_to_city(trip),
-                   'from_address': Parser.get_from_address(trip),
-                   'to_address': Parser.get_to_address(trip),
-                   'departure_time': datetime.fromisoformat(Parser.get_departure_time(trip)),
-                   'arrival_time': datetime.fromisoformat(Parser.get_arrival_time(trip)),
-                   'price': Parser.get_price(trip),
-                   'vehicle': Parser.get_vehicle(trip)}
-        html_message = get_template('main/new_trip_email.html').render(context)
-        send_mail(subject=subject, message='', from_email=from_email, recipient_list=recipient_list,
-                  html_message=html_message)
+    def exact_from_city_match(self, trip) -> bool:
+        return Parser.get_from_city(trip) == self.task.from_city
 
-    @staticmethod
-    def run_check_cycle():
-        while True:
-            Checker.check_new_trips()
-            time.sleep(120)
+    def exact_to_city_match(self, trip) -> bool:
+        return Parser.get_to_city(trip) == self.task.to_city
+
+    def exact_city_match(self, trip) -> bool:
+        return self.exact_from_city_match(trip) and self.exact_to_city_match(trip)
+
+    def trip_accord_to_task(self, trip) -> bool:
+        return self.exact_from_city_match(trip)
+
+    def get_exists_trip_links_list(self):
+        return [i[0] for i in Trip.objects.filter(task=self.task).values_list('link')]
+
+    def get_task_info(self):
+        return self.parser.get_task_info()
+
+    def get_trip_info_list(self):
+        return [self.parser.get_trip_info(trip) for trip in self.get_suitable_trips()]
+
+    def get_unavailable_trip_links(self):
+        available_trip_list = self.parser.get_trips_list()
+        available_trip_links_list = [self.parser.get_trip_link(trip) for trip in available_trip_list]
+        exists_trip_links_list = self.get_exists_trip_links_list()
+        return [trip_link for trip_link in exists_trip_links_list if trip_link not in available_trip_links_list]
+
+
+def get_trip_list_from_api(url):
+    parser = Parser(get_response(url).json())
+    trip_list = parser.get_trips_list()
+    trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
+    trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
+    return trip_list
+
+
+def query_params_from_db_task(task):
+    query_params = task.__dict__.copy()
+    query_params['start_date_local'] = query_params['start_date_local'].strftime("%Y-%m-%dT%H:%M")
+    if query_params.get('end_date_local'):
+        query_params['end_date_local'] = query_params['end_date_local'].strftime("%Y-%m-%dT%H:%M")
+    query_params['key'] = User.objects.get(id=query_params['user_id']).API_key
+    if query_params.get('radius_in_kilometers'):
+        query_params['radius_in_meters'] = int(query_params['radius_in_kilometers']) * 1000
+        del query_params['radius_in_kilometers']
+    query_params['count'] = '100'
+    [query_params.pop(key) for key in ['_state', 'id', 'from_city', 'to_city', 'user_id', 'notification']]
+    return query_params
+
+
+def get_request_url(**query_params):
+    url = f'{settings.BASE_BLABLACAR_API_URL}?'
+    if query_params.get('radius_in_kilometers'):
+        query_params['radius_in_meters'] = int(query_params['radius_in_kilometers']) * 1000
+        del query_params['radius_in_kilometers']
+    for key, value in query_params.items():
+        if value:
+            url += f'{key}={value}&'
+    url = url.strip('&')
+    return url
+
+
+def save_task_to_db(self, form):
+    task = form.save(commit=False)
+    task.user = self.request.user
+    task.from_coordinate = form.from_coordinate
+    task.to_coordinate = form.to_coordinate
+    if self.request.POST.get('notification', False):
+        task.notification = True
+    task.save()
+    Checker(task).update_data_at_db()

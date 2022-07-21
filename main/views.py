@@ -1,12 +1,9 @@
-from django.conf import settings
-from datetime import datetime
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, FormView
-from . import forms
 from .models import Task, Trip, User
-from .utils import Checker, Parser, TripDeserializer, get_response
+from . import forms, utils
 
 
 class HomePage(LoginRequiredMixin, FormView):
@@ -17,44 +14,31 @@ class HomePage(LoginRequiredMixin, FormView):
         context = super(HomePage, self).get_context_data(**kwargs)
         context['title'] = 'Пошук поїздок'
         context['heading'] = 'Куди їдемо?'
-        if 'api_url' in kwargs:
+        if 'request_url' in kwargs:
             context['show_trips'] = True
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
-            response = get_response(kwargs['api_url'])
-            parser = Parser(response.json())
-            trip_list = parser.get_trips_list()
-            trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
-            trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
-            context['trip_list'] = trip_list
+            context['trip_list'] = utils.get_trip_list_from_api(kwargs['request_url'])
         return context
 
     def form_valid(self, form):
         if self.request.POST.get('save', None):
-            task = form.save(commit=False)
-            task.user = self.request.user
-            task.from_coordinate = form.from_city_coord
-            task.to_coordinate = form.to_city_coord
-            if self.request.POST.get('notification', False):
-                task.notification = True
-            task.save()
-            Checker(task).get_suitable_trips()
+            utils.save_task_to_db(self, form)
             return redirect('task_list')
         else:
-            api_url = f'{settings.BASE_BLABLACAR_API_URL}?' \
-                      f'key={User.objects.get(username=self.request.user).API_key}&' \
-                      f'from_coordinate={form.from_city_coord}&' \
-                      f'to_coordinate={form.to_city_coord}&' \
-                      f'locale=uk-UA&' \
-                      f'currency=UAH&' \
-                      f'start_date_local={self.request.POST.get("start_date_local")}&' \
-                      f'requested_seats={self.request.POST.get("requested_seats")}&' \
-                      f'count=100'
-            if self.request.POST.get('end_date_local'):
-                api_url += f'&end_date_local={self.request.POST.get("end_date_local")}'
-            if self.request.POST.get('radius_in_kilometers'):
-                api_url += f'&radius_in_meters={int(self.request.POST.get("radius_in_kilometers")) * 1000}'
-            return self.render_to_response(self.get_context_data(form=form, api_url=api_url))
+            query_params = {
+                'from_coordinate': form.from_coordinate,
+                'to_coordinate': form.to_coordinate,
+                'locale': 'uk-UA',
+                'currency': 'UAH',
+                'start_date_local': self.request.POST.get("start_date_local"),
+                'end_date_local': self.request.POST.get("end_date_local"),
+                'requested_seats': self.request.POST.get("requested_seats"),
+                'radius_in_kilometers': self.request.POST.get("radius_in_kilometers"),
+                'key': User.objects.get(username=self.request.user).API_key,
+                'count': '100'}
+            return self.render_to_response(
+                self.get_context_data(form=form, request_url=utils.get_request_url(**query_params)))
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
@@ -64,8 +48,8 @@ class CreateTask(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.from_coordinate = form.from_city_coord
-        form.instance.to_coordinate = form.to_city_coord
+        form.instance.from_coordinate = form.from_coordinate
+        form.instance.to_coordinate = form.to_coordinate
         return super(CreateTask, self).form_valid(form)
 
     def get_success_url(self):
@@ -86,8 +70,8 @@ class TaskDetail(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
         context['title'] = 'Деталі поїздки'
-        Checker(self.object).get_suitable_trips()
-        context['trip_list'] = Trip.objects.filter(task=self.object, departure_time__gt=datetime.now())
+        utils.Checker(self.object).update_data_at_db()
+        context['trip_list'] = Trip.objects.filter(task=self.object)
         return context
 
 
@@ -97,15 +81,16 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.from_coordinate = form.from_city_coord
-        form.instance.to_coordinate = form.to_city_coord
+        form.instance.from_coordinate = form.from_coordinate
+        form.instance.to_coordinate = form.to_coordinate
         Trip.objects.filter(task=self.object).delete()
         return super(TaskUpdate, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         context['title'] = 'Оновлення поїздки'
-        context['url'] = Task.objects.get(user=self.request.user, pk=self.kwargs['pk']).get_api_url()
+        context['url'] = utils.get_request_url(
+            **utils.query_params_from_db_task(Task.objects.get(user=self.request.user, pk=self.kwargs['pk'])))
         return context
 
     def get_success_url(self):
