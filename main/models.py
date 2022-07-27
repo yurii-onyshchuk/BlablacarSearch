@@ -17,6 +17,8 @@ class Task(models.Model):
     radius_in_kilometers = models.PositiveIntegerField(verbose_name='Радіус пошуку, км', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
+    only_from_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті відправлення', default=False)
+    only_to_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті прибуття', default=False)
 
     class Meta:
         verbose_name = 'Запланована поїздка'

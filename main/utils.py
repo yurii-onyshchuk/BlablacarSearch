@@ -167,16 +167,22 @@ class Checker:
         Trip.objects.filter(link__in=self.get_unavailable_trip_links()).delete()
 
     def exact_from_city_match(self, trip) -> bool:
-        return Parser.get_from_city(trip) == self.task.from_city
+        if self.task.only_from_city:
+            return Parser.get_from_city(trip) == self.task.from_city
+        else:
+            return True
 
     def exact_to_city_match(self, trip) -> bool:
-        return Parser.get_to_city(trip) == self.task.to_city
+        if self.task.only_to_city:
+            return Parser.get_to_city(trip) == self.task.to_city
+        else:
+            return True
 
     def exact_city_match(self, trip) -> bool:
         return self.exact_from_city_match(trip) and self.exact_to_city_match(trip)
 
     def trip_accord_to_task(self, trip) -> bool:
-        return self.exact_from_city_match(trip)
+        return self.exact_city_match(trip)
 
     def get_exists_trip_links_list(self):
         return [i[0] for i in Trip.objects.filter(task=self.task).values_list('link')]
@@ -212,7 +218,8 @@ def query_params_from_db_task(task):
         query_params['radius_in_meters'] = int(query_params['radius_in_kilometers']) * 1000
         del query_params['radius_in_kilometers']
     query_params['count'] = '100'
-    [query_params.pop(key) for key in ['_state', 'id', 'from_city', 'to_city', 'user_id', 'notification']]
+    [query_params.pop(key) for key in
+     ['_state', 'id', 'from_city', 'to_city', 'user_id', 'notification', 'only_from_city', 'only_to_city']]
     return query_params
 
 
@@ -235,5 +242,9 @@ def save_task_to_db(self, form):
     task.to_coordinate = form.to_coordinate
     if self.request.POST.get('notification', False):
         task.notification = True
+    if self.request.POST.get('only_from_city', False):
+        task.only_from_city = True
+    if self.request.POST.get('only_to_city', False):
+        task.only_to_city = True
     task.save()
     Checker(task).update_data_at_db()
