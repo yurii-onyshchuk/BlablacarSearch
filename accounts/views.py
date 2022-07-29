@@ -39,7 +39,9 @@ class APIQuotaView(TemplateView):
 
 class UserSettingsView(LoginRequiredMixin, UpdateView):
     extra_context = {'title': 'Налаштування акаунту'}
-    model = User
     template_name = 'accounts/settings.html'
     form_class = forms.UserSettingForm
     success_url = reverse_lazy('index')
+
+    def get_queryset(self):
+        return User.objects.filter(username=self.request.user)

@@ -17,11 +17,11 @@ def get_city_coordinate(city: str):
         return f'{latitude},{longitude}'
 
 
-def get_response(url):
+def get_response(url, params):
     try:
-        response = requests.get(url)
+        response = requests.get(url, params)
         response.raise_for_status()
-        print(f'New request to {url}')
+        print(f'New request to {response.url}')
         return response
     except requests.exceptions.HTTPError as errh:
         print("Http Error:", errh)
@@ -31,6 +31,15 @@ def get_response(url):
         print("Timeout Error:", errt)
     except requests.exceptions.RequestException as err:
         print("OOps: Something Else", err)
+
+
+def get_trip_list_from_api(params):
+    response_json = get_response(settings.BASE_BLABLACAR_API_URL, params).json()
+    parser = Parser(response_json)
+    trip_list = parser.get_trips_list()
+    trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
+    trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
+    return trip_list
 
 
 def check_new_trips():
@@ -151,7 +160,8 @@ class TripDeserializer:
 class Checker:
     def __init__(self, task):
         self.task = task
-        self.parser = Parser(get_response(get_request_url(**query_params_from_db_task(task))).json())
+        self.parser = Parser(
+            get_response(settings.BASE_BLABLACAR_API_URL, task.get_query_params()).json())
 
     def get_suitable_trips(self):
         available_trip_list = self.parser.get_trips_list()
@@ -160,11 +170,6 @@ class Checker:
                            self.parser.get_trip_link(trip) not in exists_trip_links_list]
         suitable_trips = [trip for trip in new_found_trips if self.trip_accord_to_task(trip)]
         return suitable_trips
-
-    def update_data_at_db(self):
-        TaskInfo(task=self.task, **self.get_task_info()).save()
-        Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in self.get_trip_info_list()])
-        Trip.objects.filter(link__in=self.get_unavailable_trip_links()).delete()
 
     def exact_from_city_match(self, trip) -> bool:
         if self.task.only_from_city:
@@ -199,52 +204,7 @@ class Checker:
         exists_trip_links_list = self.get_exists_trip_links_list()
         return [trip_link for trip_link in exists_trip_links_list if trip_link not in available_trip_links_list]
 
-
-def get_trip_list_from_api(url):
-    parser = Parser(get_response(url).json())
-    trip_list = parser.get_trips_list()
-    trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
-    trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
-    return trip_list
-
-
-def query_params_from_db_task(task):
-    query_params = task.__dict__.copy()
-    query_params['start_date_local'] = query_params['start_date_local'].strftime("%Y-%m-%dT%H:%M")
-    if query_params.get('end_date_local'):
-        query_params['end_date_local'] = query_params['end_date_local'].strftime("%Y-%m-%dT%H:%M")
-    query_params['key'] = User.objects.get(id=query_params['user_id']).API_key
-    if query_params.get('radius_in_kilometers'):
-        query_params['radius_in_meters'] = int(query_params['radius_in_kilometers']) * 1000
-        del query_params['radius_in_kilometers']
-    query_params['count'] = '100'
-    [query_params.pop(key) for key in
-     ['_state', 'id', 'from_city', 'to_city', 'user_id', 'notification', 'only_from_city', 'only_to_city']]
-    return query_params
-
-
-def get_request_url(**query_params):
-    url = f'{settings.BASE_BLABLACAR_API_URL}?'
-    if query_params.get('radius_in_kilometers'):
-        query_params['radius_in_meters'] = int(query_params['radius_in_kilometers']) * 1000
-        del query_params['radius_in_kilometers']
-    for key, value in query_params.items():
-        if value:
-            url += f'{key}={value}&'
-    url = url.strip('&')
-    return url
-
-
-def save_task_to_db(self, form):
-    task = form.save(commit=False)
-    task.user = self.request.user
-    task.from_coordinate = form.from_coordinate
-    task.to_coordinate = form.to_coordinate
-    if self.request.POST.get('notification', False):
-        task.notification = True
-    if self.request.POST.get('only_from_city', False):
-        task.only_from_city = True
-    if self.request.POST.get('only_to_city', False):
-        task.only_to_city = True
-    task.save()
-    Checker(task).update_data_at_db()
+    def update_data_at_db(self):
+        TaskInfo(task=self.task, **self.get_task_info()).save()
+        Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in self.get_trip_info_list()])
+        Trip.objects.filter(link__in=self.get_unavailable_trip_links()).delete()

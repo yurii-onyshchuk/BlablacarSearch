@@ -7,38 +7,36 @@ from . import forms, utils
 
 
 class HomePage(LoginRequiredMixin, FormView):
+    extra_context = {'title': 'Пошук поїздок', 'heading': 'Куди їдемо?'}
     template_name = 'main/index.html'
     form_class = forms.SearchForm
 
     def get_context_data(self, **kwargs):
         context = super(HomePage, self).get_context_data(**kwargs)
-        context['title'] = 'Пошук поїздок'
-        context['heading'] = 'Куди їдемо?'
-        if 'request_url' in kwargs:
+        if 'query_params' in kwargs:
             context['show_trips'] = True
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
-            context['trip_list'] = utils.get_trip_list_from_api(kwargs['request_url'])
+            context['trip_list'] = utils.get_trip_list_from_api(kwargs['query_params'])
         return context
 
     def form_valid(self, form):
-        if self.request.POST.get('save', None):
-            utils.save_task_to_db(self, form)
+        if self.request.POST.get('search', None):
+            form.cleaned_data['key'] = User.objects.get(username=self.request.user).API_key
+            query_params = form.get_query_params()
+            return self.render_to_response(self.get_context_data(form=form, query_params=query_params))
+        elif self.request.POST.get('save', None):
+            task = form.save(commit=False)
+            task.user = self.request.user
+            if self.request.POST.get('notification', False):
+                task.notification = True
+            if self.request.POST.get('only_from_city', False):
+                task.only_from_city = True
+            if self.request.POST.get('only_to_city', False):
+                task.only_to_city = True
+            task.save()
+            utils.Checker(task).update_data_at_db()
             return redirect('task_list')
-        else:
-            query_params = {
-                'from_coordinate': form.from_coordinate,
-                'to_coordinate': form.to_coordinate,
-                'locale': 'uk-UA',
-                'currency': 'UAH',
-                'start_date_local': self.request.POST.get("start_date_local"),
-                'end_date_local': self.request.POST.get("end_date_local"),
-                'requested_seats': self.request.POST.get("requested_seats"),
-                'radius_in_kilometers': self.request.POST.get("radius_in_kilometers"),
-                'key': User.objects.get(username=self.request.user).API_key,
-                'count': '100'}
-            return self.render_to_response(
-                self.get_context_data(form=form, request_url=utils.get_request_url(**query_params)))
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
@@ -48,8 +46,6 @@ class CreateTask(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.from_coordinate = form.from_coordinate
-        form.instance.to_coordinate = form.to_coordinate
         return super(CreateTask, self).form_valid(form)
 
     def get_success_url(self):
@@ -65,7 +61,7 @@ class TaskList(LoginRequiredMixin, ListView):
 
 class TaskDetail(LoginRequiredMixin, DetailView):
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user, pk=self.kwargs['pk'])
+        return Task.objects.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
@@ -76,22 +72,16 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
-    model = Task
+    extra_context = {'title': 'Оновлення поїздки'}
     form_class = forms.TaskForm
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.from_coordinate = form.from_coordinate
-        form.instance.to_coordinate = form.to_coordinate
         Trip.objects.filter(task=self.object).delete()
         return super(TaskUpdate, self).form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super(TaskUpdate, self).get_context_data(**kwargs)
-        context['title'] = 'Оновлення поїздки'
-        context['url'] = utils.get_request_url(
-            **utils.query_params_from_db_task(Task.objects.get(user=self.request.user, pk=self.kwargs['pk'])))
-        return context
 
     def get_success_url(self):
         return reverse_lazy('task_detail', kwargs={'pk': self.kwargs['pk']})
@@ -99,5 +89,7 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
 class DeleteTask(LoginRequiredMixin, DeleteView):
     extra_context = {'title': 'Видалення поїздки'}
-    model = Task
     success_url = reverse_lazy('task_list')
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)

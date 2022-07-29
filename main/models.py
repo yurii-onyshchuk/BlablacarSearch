@@ -5,6 +5,7 @@ from accounts.models import User
 
 
 class Task(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
     from_city = models.CharField(verbose_name='Звідки?', max_length=32)
     to_city = models.CharField(verbose_name='Куди?', max_length=32)
     from_coordinate = models.CharField(verbose_name='Координата відправлення', max_length=32)
@@ -14,8 +15,8 @@ class Task(models.Model):
     start_date_local = models.DateTimeField(verbose_name='Починаючи з часу', default=datetime.now)
     end_date_local = models.DateTimeField(verbose_name='Закінчуючи часом', blank=True, null=True)
     requested_seats = models.PositiveSmallIntegerField(verbose_name='Кількість місць', default=1)
+    radius_in_meters = models.PositiveIntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
     radius_in_kilometers = models.PositiveIntegerField(verbose_name='Радіус пошуку, км', blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
     only_from_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті відправлення', default=False)
     only_to_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті прибуття', default=False)
@@ -30,14 +31,27 @@ class Task(models.Model):
     def get_absolute_url(self):
         return reverse('task_detail', kwargs={'pk': self.pk})
 
+    def get_query_params(self):
+        query_params = {'key': self.user.API_key}
+        query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
+                            'radius_in_meters', 'locale', 'currency']
+        for key in query_params_key:
+            value = self.__dict__[key]
+            if key == 'start_date_local':
+                value = value.isoformat()
+            if key == 'end_date_local' and value:
+                value = value.isoformat()
+            query_params[key] = value
+        query_params['count'] = 100
+        return query_params
+
 
 class TaskInfo(models.Model):
+    task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True, verbose_name='Завдання')
     link = models.URLField(verbose_name='Посилання на пошук поїздку', blank=True, null=True)
     count = models.PositiveSmallIntegerField(verbose_name='Загальна кількість знайдених поїздок', blank=True, null=True)
     full_trip_count = models.PositiveSmallIntegerField(verbose_name='Загальна кількість знайдених повних поїздок',
-                                                       blank=True,
-                                                       null=True)
-    task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True, verbose_name='Завдання')
+                                                       blank=True, null=True)
 
     class Meta:
         verbose_name = 'Інформація по запланованій поїздці'
@@ -48,6 +62,7 @@ class TaskInfo(models.Model):
 
 
 class Trip(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Завдання')
     link = models.URLField(verbose_name='Посилання на поїздку')
     from_city = models.CharField(verbose_name='Пункт відправлення', max_length=32)
     from_address = models.CharField(verbose_name='Адреса відправлення', max_length=128, blank=True, null=True)
@@ -57,7 +72,6 @@ class Trip(models.Model):
     arrival_time = models.DateTimeField(verbose_name='Час прибуття')
     price = models.CharField(verbose_name='Ціна', max_length=16)
     vehicle = models.CharField(verbose_name='Автомобіль', max_length=32, blank=True, null=True)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Завдання')
 
     class Meta:
         verbose_name = 'Доступна поїздка'
