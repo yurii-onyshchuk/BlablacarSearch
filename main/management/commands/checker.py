@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from main.utils import Checker
+from main.utils import check_new_trips
 import time
 
 
@@ -10,5 +10,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         while True:
-            Checker.check_new_trips()
+            check_new_trips()
             time.sleep(120)
