@@ -45,8 +45,10 @@ def get_trip_list_from_api(params):
 def check_new_trips():
     tasks = Task.objects.filter(notification=True)
     for task in tasks:
-        suitable_trip = Checker(task).get_suitable_trips()
+        task_checker = Checker(task)
+        suitable_trip = task_checker.get_suitable_trips()
         if suitable_trip:
+            task_checker.update_data_at_db()
             for trip in suitable_trip:
                 send_notification(task, trip)
 
