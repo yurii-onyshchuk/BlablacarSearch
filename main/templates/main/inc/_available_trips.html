@@ -1,12 +1,13 @@
 <h3 class="text-center my-2">Доступні поїздки<span
-        class="badge bg-secondary ms-2">{{ trip_list|length }}</span>
+        class="filter-count badge bg-secondary ms-2">{{ trip_list|length }}</span>
 </h3>
-{% for trip in trip_list %}
-    {% include 'main/inc/_trip_card.html' %}
-{% empty %}
-    <div class="card shadow-lg mb-3">
+<div class="grid">
+    {% for trip in trip_list %}
+        {% include 'main/inc/_trip_card.html' %}
+    {% endfor %}
+    <div class="card shadow-lg mb-3 d-none" id="empty-trip-list">
         <div class="card-body text-center">
             <b>На даний момент доступних поїздок {{ task.from_city }}-{{ task.to_city }} немає</b>
         </div>
     </div>
-{% endfor %}
+</div>
