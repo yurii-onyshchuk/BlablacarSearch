@@ -5,9 +5,9 @@
     {% for trip in trip_list %}
         {% include 'main/inc/_trip_card.html' %}
     {% endfor %}
-    <div class="card shadow-lg mb-3 d-none" id="empty-trip-list">
-        <div class="card-body text-center">
-            <b>На даний момент доступних поїздок {{ task.from_city }}-{{ task.to_city }} немає</b>
-        </div>
+</div>
+<div class="card shadow-lg" id="empty-trip-list">
+    <div class="card-body text-center">
+        <b>На даний момент доступних поїздок немає</b>
     </div>
 </div>

@@ -42,8 +42,8 @@ nav {
 
 /* ---- Filter button ---- */
 .button {
-  display: block;
-  padding: 10px 10px;
+  display: inline-block;
+  padding: 10px 5px;
   margin-bottom: 10px;
   border: none;
   border-radius: 7px;
