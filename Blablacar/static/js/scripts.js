@@ -118,8 +118,8 @@ $(document).ready(function () {
     });
 
     // Sort items on button click
-    $('.sort-by-button-group').on('click', 'button', function () {
-        let sortByValue = $(this).attr('data-sort-by');
+    $('.sort-by-button-group').change(function () {
+        let sortByValue = $('option:selected', this).attr('data-sort-by');
         $grid.isotope({sortBy: sortByValue});
     });
 
@@ -133,6 +133,3 @@ $(document).ready(function () {
     });
     //  END ISOTOPE FILTER AND SORTING  //
 });
-
-
-
