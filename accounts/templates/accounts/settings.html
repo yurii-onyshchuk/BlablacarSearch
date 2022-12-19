@@ -16,7 +16,9 @@
                     {{ form.as_p }}
                     <div class="row">
                         <div class="col-lg mb-3">
-                            <a href="{% url 'password_change' %}">Змінити пароль</a>
+                            <a class="me-5" href="{% url 'password_change' %}">Змінити пароль</a>
+                            <a style="cursor: pointer" class="delete_account" data-bs-target="#delete_account"
+                               data-bs-toggle="modal">Видалити акаунт</a>
                         </div>
                     </div>
                     <div class="row">
@@ -28,4 +30,5 @@
             </div>
         </div>
     </div>
+    {% include 'accounts/modal_confirm_account_delete.html' %}
 {% endblock %}

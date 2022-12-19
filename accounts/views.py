@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, TemplateView
+from django.views.generic import CreateView, UpdateView, TemplateView, DeleteView
 from . import forms
 from .models import User
 
@@ -45,3 +45,12 @@ class UserSettingsView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         return User.objects.filter(username=self.request.user)
+
+
+class DeleteAccount(LoginRequiredMixin, DeleteView):
+    extra_context = {'title': 'Видалення облікового запису'}
+    success_url = reverse_lazy('login')
+
+    def get_queryset(self):
+        print(123)
+        return User.objects.filter(pk=self.request.user.pk)

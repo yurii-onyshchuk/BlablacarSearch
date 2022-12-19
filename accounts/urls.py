@@ -10,6 +10,7 @@ urlpatterns = [
 
     path('api_quota/', views.APIQuotaView.as_view(), name='api_quota'),
     path('<int:pk>/settings/', views.UserSettingsView.as_view(), name='settings'),
+    path('<int:pk>/delete-account/', views.DeleteAccount.as_view(), name='delete_account'),
     path('password_change/', PasswordChangeView.as_view(template_name='accounts/password_change_form.html',
                                                         form_class=forms.UserPasswordChangeForm),
          name='password_change'),

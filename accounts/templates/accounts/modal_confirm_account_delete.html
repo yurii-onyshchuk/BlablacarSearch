@@ -1,0 +1,22 @@
+<div class="modal fade" id="delete_account" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Видалення акаунта</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">Я усвідомлено видаляю свій акаунт з особистими даними та списками запланованих
+                    поїздок. Відмовляюся від можливості отримувати сповіщення про появу нових поїздок.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <form method="post" action="{% url 'delete_account' request.user.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Видалити</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
