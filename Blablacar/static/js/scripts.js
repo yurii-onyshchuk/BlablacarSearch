@@ -27,8 +27,17 @@ $(document).ready(function () {
 //  ISOTOPE FILTER AND SORTING  //
 
     // City from search form
-    const fromCityInput = $("input[id='from_city']")[0]['value']
-    const toCityInput = $("input[id='to_city']")[0]['value']
+
+    let fromCityInput = $("input[id='from_city']")[0]
+    let toCityInput = $("input[id='to_city']")[0]
+
+    if (fromCityInput && toCityInput) {
+        fromCityInput = fromCityInput['value']
+        toCityInput = toCityInput['value']
+    } else {
+        fromCityInput = $(".detail-task-card .from_city").text()
+        toCityInput = $(".detail-task-card .to_city").text()
+    }
 
     // Store filter for each group
     let filters = {};
@@ -48,6 +57,8 @@ $(document).ready(function () {
     let filterFns = {
         from_city: function () {
             const fromCity = $(this).find('.from-city').text();
+            console.log(fromCityInput)
+            console.log(fromCity)
             return fromCity.match(fromCityInput);
         },
 
@@ -83,6 +94,7 @@ $(document).ready(function () {
             let $this = $(this);
 
             for (let prop in filters) {
+
                 let filter = filters[prop];
                 // use function if it matches
                 filter = filterFns[filter] || filter;

@@ -1,0 +1,33 @@
+<section class="sorting-area my-3">
+    <h5 class="text-center">Сортування</h5>
+    <div class="sorting">
+        <select class="form-select button-group sort-by-button-group" aria-label="Default select example">
+            <option selected value="1" data-sort-by="original-order">За часом відправлення</option>
+            <option value="2" data-sort-by="price">За ціною</option>
+        </select>
+    </div>
+</section>
+<section class="filters-area">
+    <h5 class="text-center my-2">Фільтри</h5>
+    <div class="filters">
+        <div class="ui-group">
+            <h6>За населеним пунктом</h6>
+            <div class="button-group filters-button-group" data-filter-group="city">
+                <button class="button is-checked" data-filter="*">Всі поїздки (з містами поблизу)</button>
+                <button class="button" data-filter="from_to_city">
+                    Тільки {{ from_city }}-{{ to_city }}</button>
+                <button class="button d-inline-block" data-filter="from_city">Відправлення
+                    з {{ from_city }}</button>
+                <button class="button d-inline-block" data-filter="to_city">Прибуття
+                    в {{ to_city }}</button>
+            </div>
+        </div>
+        <div class="ui-group">
+            <h6>За автомобілем</h6>
+            <div class="button-group filters-button-group" data-filter-group="vehicle">
+                <button class="button is-checked" data-filter="*">Будь-яке авто</button>
+                <button class="button d-inline-block" data-filter="with_vehicle">Вказано марку авто</button>
+            </div>
+        </div>
+    </div>
+</section>
