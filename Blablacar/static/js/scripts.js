@@ -145,3 +145,14 @@ $(document).ready(function () {
     });
     //  END ISOTOPE FILTER AND SORTING  //
 });
+
+
+$(document).ready(function () {
+    if (window.innerWidth < 768) {
+        $('.filters-area #heading-filters button').addClass('collapsed');
+        $('.filters-area #collapse-filters').addClass('collapse').removeClass('show');
+    } else {
+        $('.filters-area #heading-filters button').removeClass('collapsed');
+        $('.filters-area #collapse-filters').removeClass('collapse').addClass('show');
+    }
+});

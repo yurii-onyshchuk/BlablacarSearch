@@ -82,10 +82,10 @@ class SearchForm(forms.ModelForm):
 class TaskForm(SearchForm):
     notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='',
                                       widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    only_from_city = forms.BooleanField(label='Шукати тільки у місті відправлення (без міст поблизу)', required=False,
+    only_from_city = forms.BooleanField(label='Не шукати міста поблизу', required=False,
                                         label_suffix='',
                                         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    only_to_city = forms.BooleanField(label='Шукати тільки у місті прибуття (без міст поблизу)', required=False,
+    only_to_city = forms.BooleanField(label='Не шукати міста поблизу', required=False,
                                       label_suffix='',
                                       widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
