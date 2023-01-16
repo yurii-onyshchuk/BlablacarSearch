@@ -5,8 +5,8 @@ from . import views, forms
 
 urlpatterns = [
     path('register/', views.UserRegister.as_view(), name='register'),
-    path('login/', views.UserAuthentication.as_view(next_page='task_list'), name='login'),
-    path('logout', LogoutView.as_view(next_page='index'), name='logout'),
+    path('login/', views.UserAuthentication.as_view(), name='login'),
+    path('logout', LogoutView.as_view(next_page='login'), name='logout'),
 
     path('api_quota/', views.APIQuotaView.as_view(), name='api_quota'),
     path('<int:pk>/settings/', views.UserSettingsView.as_view(), name='settings'),

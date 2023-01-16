@@ -136,6 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
 
 BASE_BLABLACAR_API_URL = 'https://public-api.blablacar.com/api/v3/trips'
 
