@@ -1,7 +1,7 @@
-db.sqlite3
-celerybeat-schedule
-Blablacar/static/Blablacar/css/bootstrap.css
-static
 .idea/
+*.pyc
+*.sqlite3
+celerybeat-schedule
+/static
 /.env.development
 /.env.production
