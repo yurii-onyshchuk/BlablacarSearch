@@ -1,47 +1,48 @@
-<nav class="navbar navbar-dark navbar-expand-md">
-    <div class="container-xl">
-        <a class="navbar-brand" href="{% url 'index' %}">BlaBlaCar Search</a>
-        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            {% if user.is_authenticated %}
-                <ul class="nav navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="{% url 'index' %}"><i class="fa-solid fa-magnifying-glass me-2"></i>Пошук поїздок</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="{% url 'task_list' %}"><i class="fa-solid fa-car me-2"></i>Заплановані поїздки</a>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown"
-                           aria-expanded="false" href="">{{ request.user }}<i
-                                class="fa-solid fa-user-large ms-2"></i></a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="{% url 'api_quota' %}"><i
-                                    class="fa-solid fa-cloud-question"></i>Ліміт API-запитів</a></li>
-                            <li><a class="dropdown-item" href="{% url 'settings' request.user.pk %}"><i
-                                    class="fa-solid fa-gear me-2"></i>Налаштування</a></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Вихід<i
-                                    class="fa-solid fa-right-from-bracket ms-2"></i></a></li>
-                        </ul>
-                </ul>
-            {% else %}
-                <ul class="nav navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Вхід</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Реєстрація</a>
-                    </li>
-                </ul>
-            {% endif %}
+<header>
+    <nav class="navbar navbar-dark navbar-expand-md">
+        <div class="container-xl">
+            <a class="navbar-brand" href="{% url 'index' %}">BlaBlaCar Search</a>
+            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_authenticated %}
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="{% url 'index' %}"><i class="fa-solid fa-magnifying-glass me-2"></i>Пошук
+                                поїздок</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="{% url 'task_list' %}"><i class="fa-solid fa-car me-2"></i>Заплановані поїздки</a>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                               aria-expanded="false" href="">{{ request.user }}<i
+                                    class="fa-solid fa-user-large ms-2"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="{% url 'personal_cabinet' %}"><i
+                                        class="bi bi-person me-2 fs-6"></i>Особистий кабінет</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i
+                                        class="bi bi-box-arrow-right me-2 fs-6"></i>Вихід</a></li>
+                            </ul>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Вхід</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sign_up' %}">Реєстрація</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+</header>

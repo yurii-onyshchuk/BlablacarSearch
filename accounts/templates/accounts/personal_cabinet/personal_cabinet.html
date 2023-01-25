@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} :: {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="personal-cabinet max-w-1000">
+        <div class="text-center text-sm-start mb-3">
+            <h3><i class="bi bi-person fs-3 me-2"></i>{{ title }}</h3>
+            <h6 class="text-muted text-start border-bottom pb-2">{{ subtitle }}</h6>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col">
+                <a href="{% url 'personal_info' user.pk %}" class="text-reset" role="button">
+                    <div class="card">
+                        <div class="row g-0">
+                            <div class="col-2 position-relative">
+                                <i class="bi bi-card-checklist position-absolute top-50 start-50 translate-middle fs-2"></i>
+                            </div>
+                            <div class="col">
+                                <div class="card-body ps-0 ps-md-1">
+                                    <h1 class="h5">Особисті дані</h1>
+                                    <p class="card-text small text-muted">Змінити імя користувача, прізвище та
+                                        електронну
+                                        адресу</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col">
+                <a href="{% url 'personal_safety' user.pk %}" class="text-reset" role="button">
+                    <div class="card">
+                        <div class="row g-0">
+                            <div class="col-2 position-relative">
+                                <i class="bi bi-shield-lock position-absolute top-50 start-50 translate-middle fs-2"></i>
+                            </div>
+                            <div class="col">
+                                <div class="card-body ps-0 ps-md-1">
+                                    <h1 class="h5">Безпека</h1>
+                                    <p class="card-text small text-muted">Змінити пароль для входу або видалити
+                                        обліковий запис</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col">
+                <a href="{% url 'api_quota' %}" class="text-reset" role="button">
+                    <div class="card">
+                        <div class="row g-0">
+                            <div class="col-2 position-relative">
+                                <i class="bi bi-cloud-upload position-absolute top-50 start-50 translate-middle fs-2"></i>
+                            </div>
+                            <div class="col">
+                                <div class="card-body ps-0 ps-md-1">
+                                    <h1 class="h5">Ліміт API-запитів</h1>
+                                    <p class="card-text small text-muted">Перевірити ліміт та залишок доступних запитів
+                                        до серверу BlaBlaCar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

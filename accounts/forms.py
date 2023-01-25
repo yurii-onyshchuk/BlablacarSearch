@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from .models import User
 
 
-class UserRegisterForm(UserCreationForm):
+class UserSignUpForm(UserCreationForm):
     first_name = forms.CharField(label="Ім'я")
     last_name = forms.CharField(label='Прізвище')
     username = forms.CharField(label="Ім'я користувача")
@@ -17,7 +17,7 @@ class UserRegisterForm(UserCreationForm):
     password2 = forms.CharField(label='Підтвердження паролю', widget=forms.PasswordInput())
 
     def __init__(self, *args, **kwargs):
-        super(UserRegisterForm, self).__init__(*args, **kwargs)
+        super(UserSignUpForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({'autofocus': False})
 
         for field_name, field in self.fields.items():

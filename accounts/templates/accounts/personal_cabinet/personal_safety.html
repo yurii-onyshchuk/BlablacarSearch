@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} :: {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="personal-safety max-w-1000">
+        <div class="text-center text-sm-start mb-3">
+            <h3><i class="bi bi-shield-lock fs-3 me-2"></i>{{ title }}</h3>
+            <h6 class="text-muted text-start border-bottom pb-2">{{ subtitle }}</h6>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 g-3">
+            <div class="col">
+                <h3>Зміна паролю</h3>
+                <p>Ви впевнені, що хочете змінити пароль до свого облікового запису?</p>
+                <a href="{% url 'password_change' %}" type="button" class="btn btn-main">Змінити
+                    пароль</a>
+            </div>
+            <div class="col">
+                <h3 class="pt-4 pt-sm-0">Видалити акаунт</h3>
+                <p>Ви впевнені, що хочете видалити свій обліковий запис?</p>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#delete_account">Видалити
+                </button>
+                {% include 'accounts/personal_cabinet/modal_confirm_account_delete.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

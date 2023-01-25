@@ -1,15 +1,13 @@
-<section class="sorting-area mt-3 mt-md-5 mb-3">
-    <div class="sorting">
-        <select class="form-select button-group sort-by-button-group py-2" aria-label="Default select example">
-            <option selected value="departure_time" data-sort-by="original-order">За часом відправлення</option>
-            <option value="price" data-sort-by="price">За ціною</option>
-        </select>
-    </div>
+<section class="sorting-area mt-0 mt-md-5 pt-md-3 mb-3">
+    <select class="form-select button-group sort-by-button-group  py-2" aria-label="Default select example">
+        <option selected value="departure_time" data-sort-by="original-order">За часом відправлення</option>
+        <option value="price" data-sort-by="price">За ціною</option>
+    </select>
 </section>
 <section class="filters-area accordion mb-3" id="accordion-filters">
     <div class="accordion-item">
         <h5 class="accordion-header text-center" id="heading-filters">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapse-filters"
                     aria-expanded="false" aria-controls="collapse-filters">
                 <i class="bi bi-funnel me-2"></i>Фільтри
@@ -20,8 +18,9 @@
             <div class="filters accordion-body">
                 <div class="ui-group">
                     <h6>За населеним пунктом</h6>
-                    <div class="button-group filters-button-group" data-filter-group="city">
-                        <button class="button is-checked" data-filter="*">Всі поїздки (з містами поблизу)</button>
+                    <div class="button-group filters-button-group border-bottom mb-3" data-filter-group="city">
+                        <button class="button is-checked" data-filter="*">Всі поїздки (з містами поблизу)
+                        </button>
                         <button class="button" data-filter="from_to_city">
                             Тільки м.{{ from_city }}-м.{{ to_city }}</button>
                         <button class="button d-inline-block" data-filter="from_city">Відправлення

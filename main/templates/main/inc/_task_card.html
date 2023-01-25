@@ -1,36 +1,34 @@
-<div class="col-md-6 col-xl-4 mb-3">
-    <div class="card shadow">
-        <div class="card-header pb-0">
-            <div class="row align-items-center">
-                <div class="col-10 position-relative">
-                    <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
-                    <h4>{{ task.from_city }}-{{ task.to_city }}</h4>
-                </div>
-                <div class="col-2 text-sm-center text-lg-end">
-                    <a class="btn" data-bs-toggle="modal" data-bs-target="#task_delete_{{ task.pk }}"><i
-                            class="material-icons">&#xE5CD;</i></a>
-                    {% include 'main/inc/_modal_confirm_delete.html' %}
-                </div>
+<div class="card shadow">
+    <div class="card-header pb-0">
+        <div class="row align-items-center">
+            <div class="col-10 position-relative">
+                <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
+                <h4>{{ task.from_city }}-{{ task.to_city }}</h4>
+            </div>
+            <div class="col-2 text-sm-center text-lg-end">
+                <a class="btn" data-bs-toggle="modal" data-bs-target="#task_delete_{{ task.pk }}"><i
+                        class="material-icons">&#xE5CD;</i></a>
+                {% include 'main/inc/_modal_confirm_delete.html' %}
             </div>
         </div>
-        <div class="card-body position-relative">
-            <div class="card-text">
-                <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
-                <p>Починаючи з часу: <b>{{ task.start_date_local }}</b></p>
-                {% if task.end_date_local %}
-                    <p>Закінчуючи часом: <b>{{ task.end_date_local }}</b></p>
-                {% else %}
-                    <p>Закінчуючи часом: <b>кінець доби</b></p>
-                {% endif %}
-                <p>Кількість місць: <b>{{ task.requested_seats }}</b></p>
-                {% if task.radius_in_kilometers %}
-                    <p>Радіус пошуку: <b>{{ task.radius_in_kilometers }} км</b></p>
-                {% endif %}
-                {% if task.notification %}
-                    <p class="text-end mb-0"><b><i class="fa-solid fa-envelope-circle-check me-2"></i>Сповіщення про
-                        нові поїздки </b></p>
-                {% endif %}
-            </div>
+    </div>
+    <div class="card-body position-relative">
+        <div class="card-text">
+            <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
+            <p>Починаючи з часу: <b>{{ task.start_date_local }}</b></p>
+            {% if task.end_date_local %}
+                <p>Закінчуючи часом: <b>{{ task.end_date_local }}</b></p>
+            {% else %}
+                <p>Закінчуючи часом: <b>кінець доби</b></p>
+            {% endif %}
+            <p>Кількість місць: <b>{{ task.requested_seats }}</b></p>
+            {% if task.radius_in_kilometers %}
+                <p>Радіус пошуку: <b>{{ task.radius_in_kilometers }} км</b></p>
+            {% endif %}
+            {% if task.notification %}
+                <p class="text-end mb-0"><b><i class="fa-solid fa-envelope-circle-check me-2"></i>Сповіщення про
+                    нові поїздки </b></p>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -5,11 +5,9 @@
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    <div class="container-xl mb-4">
-        {% if show_trips %}
-            {% include 'main/inc/_index_result.html' %}
-        {% else %}
-            {% include 'main/inc/_index_search.html' %}
-        {% endif %}
-    </div>
+    {% if show_trips %}
+        {% include 'main/inc/_index_result.html' %}
+    {% else %}
+        {% include 'main/inc/_index_search.html' %}
+    {% endif %}
 {% endblock %}
