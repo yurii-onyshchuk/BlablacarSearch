@@ -10,13 +10,10 @@ class Task(models.Model):
     to_city = models.CharField(verbose_name='Куди?', max_length=32)
     from_coordinate = models.CharField(verbose_name='Координата відправлення', max_length=32)
     to_coordinate = models.CharField(verbose_name='Координата прибуття', max_length=32)
-    locale = models.CharField(verbose_name='Локалізація', default='uk-UA', max_length=5)
-    currency = models.CharField(verbose_name='Валюта', default='UAH', max_length=3)
     start_date_local = models.DateTimeField(verbose_name='Починаючи з часу', default=datetime.now)
     end_date_local = models.DateTimeField(verbose_name='Закінчуючи часом', blank=True, null=True)
     requested_seats = models.PositiveSmallIntegerField(verbose_name='Кількість місць', default=1)
     radius_in_meters = models.PositiveIntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
-    radius_in_kilometers = models.PositiveIntegerField(verbose_name='Радіус пошуку, км', blank=True, null=True)
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
     only_from_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті відправлення', default=False)
     only_to_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті прибуття', default=False)
@@ -34,14 +31,19 @@ class Task(models.Model):
     def get_query_params(self):
         query_params = {'key': self.user.API_key}
         query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
-                            'radius_in_meters', 'locale', 'currency']
+                            'radius_in_meters']
         for key in query_params_key:
             value = self.__dict__[key]
-            if key == 'start_date_local':
-                value = value.isoformat()
-            if key == 'end_date_local' and value:
-                value = value.isoformat()
-            query_params[key] = value
+            if value:
+                if key == 'start_date_local':
+                    value = value.isoformat()
+                if key == 'end_date_local':
+                    value = value.isoformat()
+                if key == 'radius_in_meters':
+                    value = value
+                query_params[key] = value
+        query_params['locale'] = 'uk-UA'
+        query_params['currency'] = 'UAH'
         query_params['count'] = 100
         return query_params
 

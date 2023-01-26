@@ -33,6 +33,25 @@ def get_response(url, params):
         print("OOps: Something Else", err)
 
 
+def get_query_params(request, form):
+    query_params = {'key': User.objects.get(username=request.user).API_key}
+    query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats']
+    for key in query_params_key:
+        value = form.cleaned_data[key]
+        if value:
+            if key == 'start_date_local':
+                value = value.isoformat()
+            if key == 'end_date_local':
+                value = value.isoformat()
+            query_params[key] = value
+    if form.cleaned_data['radius_in_kilometers']:
+        query_params['radius_in_meters'] = form.cleaned_data['radius_in_kilometers'] * 1000
+    query_params['locale'] = 'uk-UA'
+    query_params['currency'] = 'UAH'
+    query_params['count'] = 100
+    return query_params
+
+
 def get_trip_list_from_api(params):
     response_json = get_response(settings.BASE_BLABLACAR_API_URL, params).json()
     parser = Parser(response_json)
@@ -162,8 +181,7 @@ class TripDeserializer:
 class Checker:
     def __init__(self, task):
         self.task = task
-        self.parser = Parser(
-            get_response(settings.BASE_BLABLACAR_API_URL, task.get_query_params()).json())
+        self.parser = Parser(get_response(settings.BASE_BLABLACAR_API_URL, task.get_query_params()).json())
 
     def get_suitable_trips(self):
         available_trip_list = self.parser.get_trips_list()

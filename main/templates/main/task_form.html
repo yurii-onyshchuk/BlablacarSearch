@@ -10,11 +10,7 @@
             <form method="POST" class="task-form">
                 {% csrf_token %}
                 {{ form|crispy }}
-                <div class="row">
-                    <div class="col-sm col-md-4 col-xxl-3 mt-2">
-                        <button class="btn btn-main w-100" type="submit">Зберегти</button>
-                    </div>
-                </div>
+                <button class="btn btn-main w-100" type="submit">Зберегти</button>
             </form>
         </div>
     </div>

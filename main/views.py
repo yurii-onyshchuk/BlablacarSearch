@@ -2,17 +2,22 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, FormView
-from .models import Task, Trip, User
+from .models import Task, Trip
 from . import forms, utils
 
 
-class HomePage(LoginRequiredMixin, FormView):
+class SearchPage(LoginRequiredMixin, FormView):
     extra_context = {'title': 'Пошук поїздок', 'heading': 'Куди їдемо?'}
     template_name = 'main/index.html'
-    form_class = forms.SearchForm
+
+    def get_form_class(self):
+        if self.request.POST.get('save', None):
+            return forms.TaskForm
+        else:
+            return forms.SearchForm
 
     def get_context_data(self, **kwargs):
-        context = super(HomePage, self).get_context_data(**kwargs)
+        context = super(SearchPage, self).get_context_data(**kwargs)
         if 'query_params' in kwargs:
             context['show_trips'] = True
             context['title'] = 'Доступні поїздки'
@@ -22,8 +27,7 @@ class HomePage(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         if self.request.POST.get('search', None):
-            form.cleaned_data['key'] = User.objects.get(username=self.request.user).API_key
-            query_params = form.get_query_params()
+            query_params = utils.get_query_params(self.request, form)
             return self.render_to_response(self.get_context_data(form=form, query_params=query_params))
         elif self.request.POST.get('save', None):
             task = form.save(commit=False)
@@ -74,6 +78,12 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     extra_context = {'title': 'Оновлення поїздки'}
     form_class = forms.TaskForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if context['form'].initial['radius_in_meters']:
+            context['form'].initial['radius_in_kilometers'] = int(context['form'].initial['radius_in_meters'] / 1000)
+        return context
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)

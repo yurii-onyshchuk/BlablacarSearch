@@ -1,3 +1,5 @@
+{% load main_tags %}
+
 <div class="card shadow">
     <div class="card-header pb-0">
         <div class="row align-items-center">
@@ -22,8 +24,8 @@
                 <p>Закінчуючи часом: <b>кінець доби</b></p>
             {% endif %}
             <p>Кількість місць: <b>{{ task.requested_seats }}</b></p>
-            {% if task.radius_in_kilometers %}
-                <p>Радіус пошуку: <b>{{ task.radius_in_kilometers }} км</b></p>
+            {% if task.radius_in_meters %}
+                <p>Радіус пошуку: <b>{{ task.radius_in_meters|to_kilometers }} км</b></p>
             {% endif %}
             {% if task.notification %}
                 <p class="text-end mb-0"><b><i class="fa-solid fa-envelope-circle-check me-2"></i>Сповіщення про
