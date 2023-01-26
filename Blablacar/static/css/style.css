@@ -69,6 +69,7 @@ nav {
     --bs-btn-disabled-color: #6c757d;
     --bs-btn-disabled-bg: transparent;
     --bs-gradient: none;
+    margin-top: 0.3rem;
 }
 
 .task-form p:has(>span input#from_city),

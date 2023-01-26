@@ -9,22 +9,18 @@ from main.utils import get_city_coordinate
 class SearchForm(forms.ModelForm):
     key = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     from_city = forms.CharField(label='Звідки?', widget=InputGroupWidget())
-    to_city = forms.CharField(label='Куди?', widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'to_city'}))
+    to_city = forms.CharField(label='Куди?')
     from_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     to_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
-                                           widget=forms.DateTimeInput(
-                                               attrs={'class': 'form-control', 'type': "datetime-local"},
-                                               format="%Y-%m-%dT%H:%M"))
+                                           widget=forms.DateTimeInput(attrs={'type': "datetime-local"},
+                                                                      format="%Y-%m-%dT%H:%M"))
     end_date_local = forms.DateTimeField(label="Закінчуючи часом (не обов'язково)", required=False,
-                                         widget=forms.DateTimeInput(
-                                             attrs={'class': 'form-control', 'type': "datetime-local"},
-                                             format="%Y-%m-%dT%H:%M"))
-    requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8,
-                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
+                                         widget=forms.DateTimeInput(attrs={'type': "datetime-local"},
+                                                                    format="%Y-%m-%dT%H:%M"))
+    requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8)
     radius_in_kilometers = forms.IntegerField(label="Радіус пошуку навколо вказаних міст, км (не обов'язково)",
-                                              required=False, min_value=1, max_value=50,
-                                              widget=forms.NumberInput(attrs={'class': 'form-control'}))
+                                              required=False, min_value=1, max_value=50)
     radius_in_meters = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False,
                                        empty_value=None)
     locale = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), initial='uk-UA', required=False)
@@ -80,14 +76,9 @@ class SearchForm(forms.ModelForm):
 
 
 class TaskForm(SearchForm):
-    notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='',
-                                      widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    only_from_city = forms.BooleanField(label='Не шукати міста поблизу', required=False,
-                                        label_suffix='',
-                                        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    only_to_city = forms.BooleanField(label='Не шукати міста поблизу', required=False,
-                                      label_suffix='',
-                                      widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='')
+    only_from_city = forms.BooleanField(label='Не шукати міста поблизу', required=False, label_suffix='')
+    only_to_city = forms.BooleanField(label='Не шукати міста поблизу', required=False, label_suffix='')
 
     class Meta(SearchForm.Meta):
         fields = ['from_coordinate', 'to_coordinate', 'from_city', 'only_from_city', 'to_city', 'only_to_city',

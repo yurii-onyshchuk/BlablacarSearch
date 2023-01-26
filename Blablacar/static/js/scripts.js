@@ -3,15 +3,11 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
 // Exchange of city fields
-document.onclick = function () {
-    let elem = window.event.srcElement;
-
-    if (elem.className.includes("btn-exchange")) {
-        let from_city = document.getElementById('from_city').value;
-        document.getElementById('from_city').value = document.getElementById('to_city').value;
-        document.getElementById('to_city').value = from_city;
-    }
-};
+$(document).on('click', '#city-exchange', function () {
+    let from_city = document.getElementById('id_from_city').value;
+    document.getElementById('id_from_city').value = document.getElementById('id_to_city').value;
+    document.getElementById('id_to_city').value = from_city;
+});
 
 $(document).ready(function () {
 
@@ -28,8 +24,8 @@ $(document).ready(function () {
 
     // City from search form
 
-    let fromCityInput = $("input[id='from_city']")[0]
-    let toCityInput = $("input[id='to_city']")[0]
+    let fromCityInput = $("input[id='id_from_city']")[0]
+    let toCityInput = $("input[id='id_to_city']")[0]
 
     if (fromCityInput && toCityInput) {
         fromCityInput = fromCityInput['value']
