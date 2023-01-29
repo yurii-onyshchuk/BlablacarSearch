@@ -5,36 +5,34 @@
                 <h5 class="modal-title">Параметри запланованої поїздки</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST">
-                <div class="modal-body">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" name="notification" value="True"
-                               id="id_notification">
-                        <label class="form-check-label" for="id_notification">
-                            <i class="fa-solid fa-bell me-2"></i>
-                            Оповіщати про нові поїздки {{ form.data.from_city }}-{{ form.data.to_city }}?
-                        </label>
-                    </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" name="only_from_city" value="True"
-                               id="id_only_from_city">
-                        <label class="form-check-label" for="id_only_from_city">
-                            Відправлення тільки з м.{{ form.data.from_city }} (без міст поблизу)?
-                        </label>
-                    </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" name="only_to_city" value="True"
-                               id="id_only_to_city">
-                        <label class="form-check-label" for="id_only_to_city">
-                            Прибуття тільки у м.{{ form.data.to_city }} (без міст поблизу)?
-                        </label>
-                    </div>
+            <div class="modal-body">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="notification" value="True"
+                           id="id_notification">
+                    <label class="form-check-label" for="id_notification">
+                        <i class="fa-solid fa-bell me-2"></i>
+                        Оповіщати про нові поїздки {{ form.data.from_city }}-{{ form.data.to_city }}?
+                    </label>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <input class="btn btn-secondary" type="reset" data-bs-dismiss="modal" value="Скасувати"/>
-                    <input class="btn btn-main" type="submit" name="save" value="Зберегти"/>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="only_from_city" value="True"
+                           id="id_only_from_city">
+                    <label class="form-check-label" for="id_only_from_city">
+                        Відправлення тільки з м.{{ form.data.from_city }} (без міст поблизу)?
+                    </label>
                 </div>
-            </form>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="only_to_city" value="True"
+                           id="id_only_to_city">
+                    <label class="form-check-label" for="id_only_to_city">
+                        Прибуття тільки у м.{{ form.data.to_city }} (без міст поблизу)?
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <input class="btn btn-secondary" type="reset" data-bs-dismiss="modal" value="Скасувати"/>
+                <input class="btn btn-main" type="submit" name="add_to_task" value="Зберегти"/>
+            </div>
         </div>
     </div>
 </div>

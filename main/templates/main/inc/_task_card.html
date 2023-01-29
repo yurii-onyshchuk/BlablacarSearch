@@ -1,15 +1,15 @@
 {% load main_tags %}
 
 <div class="card shadow">
-    <div class="card-header pb-0">
+    <div class="card-header">
         <div class="row align-items-center">
             <div class="col-10 position-relative">
                 <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
-                <h4>{{ task.from_city }}-{{ task.to_city }}</h4>
+                <h4 class="mb-0">{{ task.from_city }}-{{ task.to_city }}</h4>
             </div>
             <div class="col-2 text-sm-center text-lg-end">
-                <a class="btn" data-bs-toggle="modal" data-bs-target="#task_delete_{{ task.pk }}"><i
-                        class="material-icons">&#xE5CD;</i></a>
+                <button type="button" class="btn-close" data-bs-toggle="modal" title="Видалити поїздку"
+                        data-bs-target="#task_delete_{{ task.pk }}" aria-label="Close"></button>
                 {% include 'main/inc/_modal_confirm_delete.html' %}
             </div>
         </div>

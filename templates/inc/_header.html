@@ -23,8 +23,14 @@
                     <ul class="nav navbar-nav ms-auto">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown"
-                               aria-expanded="false" href="">{{ request.user }}<i
-                                    class="fa-solid fa-user-large ms-2"></i></a>
+                               aria-expanded="false" href="">
+                                {% if request.user.first_name and request.user.last_name %}
+                                    {{ request.user.first_name }} {{ request.user.last_name }}
+                                {% else %}
+                                    {{ request.user }}
+                                {% endif %}
+                                <i class="fa-solid fa-user-large ms-2"></i>
+                            </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
                                 <li><a class="dropdown-item" href="{% url 'personal_cabinet' %}"><i
                                         class="bi bi-person me-2 fs-6"></i>Особистий кабінет</a></li>

@@ -11,7 +11,7 @@ class SearchPage(LoginRequiredMixin, FormView):
     template_name = 'main/index.html'
 
     def get_form_class(self):
-        if self.request.POST.get('save', None):
+        if self.request.POST.get('add_to_task', None):
             return forms.TaskForm
         else:
             return forms.SearchForm
@@ -19,9 +19,9 @@ class SearchPage(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super(SearchPage, self).get_context_data(**kwargs)
         if 'query_params' in kwargs:
-            context['show_trips'] = True
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
+            context['show_trips'] = True
             context['trip_list'] = utils.get_trip_list_from_api(kwargs['query_params'])
         return context
 
@@ -29,18 +29,11 @@ class SearchPage(LoginRequiredMixin, FormView):
         if self.request.POST.get('search', None):
             query_params = utils.get_query_params(self.request, form)
             return self.render_to_response(self.get_context_data(form=form, query_params=query_params))
-        elif self.request.POST.get('save', None):
+        elif self.request.POST.get('add_to_task', None):
             task = form.save(commit=False)
             task.user = self.request.user
-            if self.request.POST.get('notification', False):
-                task.notification = True
-            if self.request.POST.get('only_from_city', False):
-                task.only_from_city = True
-            if self.request.POST.get('only_to_city', False):
-                task.only_to_city = True
             task.save()
-            utils.Checker(task).update_data_at_db()
-            return redirect('task_list')
+            return redirect('task_detail', pk=task.pk)
 
 
 class CreateTask(LoginRequiredMixin, CreateView):
