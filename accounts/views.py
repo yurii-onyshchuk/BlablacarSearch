@@ -20,7 +20,12 @@ class UserSignUp(CreateView):
         user = form.save()
         if user is not None:
             login(self.request, user)
+            messages.success(self.request, 'Успішна реєстрація!')
         return redirect('index')
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Помилка реєстрації!')
+        return super(UserSignUp, self).form_invalid(form)
 
 
 class UserAuthentication(LoginView):

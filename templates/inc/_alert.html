@@ -1,0 +1,19 @@
+<div class="max-w-1000">
+    {% for message in messages %}
+        <div id="liveAlertPlaceholder">
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        {% else %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>

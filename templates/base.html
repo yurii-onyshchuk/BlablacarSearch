@@ -12,11 +12,16 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>{% block title %}BlaBlaCar{% endblock %}</title>
 </head>
-{% include 'inc/_header.html' %}
 <body>
+{% include 'inc/_header.html' %}
 <section class="content">
     <div class="container-xl">
         <div class="row">
+            {% if messages %}
+                <div class="col-12">
+                    {% include 'inc/_alert.html' %}
+                </div>
+            {% endif %}
             <div class="col">
                 {% block content %}
                 {% endblock %}
