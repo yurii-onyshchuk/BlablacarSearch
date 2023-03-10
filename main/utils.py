@@ -1,11 +1,17 @@
 import os
 import requests
-from django.conf import settings
 from datetime import datetime
+
+from geopy.geocoders import Nominatim
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.template.loader import get_template
-from geopy.geocoders import Nominatim
-from main.models import Task, TaskInfo, Trip, User
+
+from main.models import Task, TaskInfo, Trip, APIKey
+
+User = get_user_model()
 
 
 def get_city_coordinate(city: str):

@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
     PasswordResetConfirmView, PasswordResetDoneView, PasswordResetCompleteView
+
 from . import views, forms
 
 urlpatterns = [

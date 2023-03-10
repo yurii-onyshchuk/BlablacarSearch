@@ -1,4 +1,5 @@
 import requests
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
@@ -8,6 +9,7 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, TemplateView, DeleteView
+
 from . import forms
 from .utils import RedirectAuthenticatedUserMixin
 

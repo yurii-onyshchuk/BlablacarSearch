@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, SetPasswordForm
-from .models import User
+
+User = get_user_model()
 
 
 class UserSignUpForm(UserCreationForm):
@@ -21,7 +22,7 @@ class UserSignUpForm(UserCreationForm):
         email = data.pop('email')
         password = data.pop('password1')
         data.pop('password2')
-        user = get_user_model().objects.create_user(email, password, **data)
+        user = User.objects.create_user(email, password, **data)
         return user
 
     class Meta:

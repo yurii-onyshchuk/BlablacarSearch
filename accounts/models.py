@@ -1,8 +1,10 @@
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-from autoslug import AutoSlugField
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
+
+from autoslug import AutoSlugField
+
 from .managers import CustomUserManager
 
 username_validator = UnicodeUsernameValidator()

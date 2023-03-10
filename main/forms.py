@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from django import forms
 from django.core.exceptions import ValidationError
-from datetime import datetime
-from .widgets import InputGroupWidget
+
 from .models import Task
-from main.utils import get_city_coordinate
+from .widgets import InputGroupWidget
+from .utils import get_city_coordinate
 
 
 class SearchForm(forms.Form):

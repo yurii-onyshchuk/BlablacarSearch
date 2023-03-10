@@ -1,5 +1,6 @@
 from Blablacar.celery import app
-from main import utils
+
+from . import utils
 
 
 @app.task

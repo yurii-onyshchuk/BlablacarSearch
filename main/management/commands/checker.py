@@ -1,6 +1,8 @@
-from django.core.management import BaseCommand
-from main.utils import check_new_trips
 import time
+
+from django.core.management import BaseCommand
+
+from main.utils import check_new_trips
 
 
 class Command(BaseCommand):

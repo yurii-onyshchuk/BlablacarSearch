@@ -1,7 +1,10 @@
+from datetime import datetime
+
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-from datetime import datetime
-from accounts.models import User
+
+User = get_user_model()
 
 
 class Task(models.Model):
