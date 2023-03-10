@@ -10,9 +10,9 @@ urlpatterns = [
 
     path('personal-cabinet/', views.PersonalCabinet.as_view(), name='personal_cabinet'),
 
-    path('<int:pk>/personal-info/', views.PersonalInfoUpdateView.as_view(), name='personal_info'),
-    path('<int:pk>/personal-safety/', views.PersonalSafetyView.as_view(), name='personal_safety'),
-    path('<int:pk>/delete-account/', views.DeleteAccount.as_view(), name='delete_account'),
+    path('<str:slug>/personal-info/', views.PersonalInfoUpdateView.as_view(), name='personal_info'),
+    path('<str:slug>/personal-safety/', views.PersonalSafetyView.as_view(), name='personal_safety'),
+    path('<str:slug>/delete-account/', views.DeleteAccount.as_view(), name='delete_account'),
 
     path('api_quota/', views.APIQuotaView.as_view(), name='api_quota'),
 

@@ -10,7 +10,7 @@
         </div>
         <div class="row row-cols-1 row-cols-md-2 g-3">
             <div class="col">
-                <a href="{% url 'personal_info' user.pk %}" class="text-reset" role="button">
+                <a href="{% url 'personal_info' user.slug %}" class="text-reset" role="button">
                     <div class="card">
                         <div class="row g-0">
                             <div class="col-2 position-relative">
@@ -20,8 +20,7 @@
                                 <div class="card-body ps-0 ps-md-1">
                                     <h1 class="h5">Особисті дані</h1>
                                     <p class="card-text small text-muted">Змінити імя користувача, прізвище та
-                                        електронну
-                                        адресу</p>
+                                        електронну адресу</p>
                                 </div>
                             </div>
                         </div>
@@ -29,7 +28,7 @@
                 </a>
             </div>
             <div class="col">
-                <a href="{% url 'personal_safety' user.pk %}" class="text-reset" role="button">
+                <a href="{% url 'personal_safety' user.slug %}" class="text-reset" role="button">
                     <div class="card">
                         <div class="row g-0">
                             <div class="col-2 position-relative">

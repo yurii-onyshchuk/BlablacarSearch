@@ -1,20 +1,24 @@
 import requests
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, TemplateView, DeleteView
 from . import forms
-from .models import User
+from .utils import RedirectAuthenticatedUserMixin
+
+User = get_user_model()
 
 
-class UserSignUp(CreateView):
+class UserSignUp(RedirectAuthenticatedUserMixin, CreateView):
     extra_context = {'title': 'Реєстрація'}
     template_name = 'accounts/signup.html'
     form_class = forms.UserSignUpForm
+    redirect_authenticated_user_url = reverse_lazy('index')
 
     def form_valid(self, form):
         user = form.save()
@@ -31,7 +35,7 @@ class UserSignUp(CreateView):
 class UserAuthentication(LoginView):
     extra_context = {'title': 'Вхід'}
     template_name = 'accounts/login.html'
-    form_class = forms.UserAuthenticationForm
+    form_class = AuthenticationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('index')
 
@@ -46,10 +50,10 @@ class PersonalInfoUpdateView(LoginRequiredMixin, UpdateView):
     extra_context = {'title': 'Особисті дані',
                      'subtitle': 'Керуйте своїми особистими та контактними даними'}
     template_name = 'accounts/personal_cabinet/personal_info.html'
-    form_class = forms.UserSettingForm
+    form_class = forms.UserForm
 
     def get_queryset(self):
-        return User.objects.filter(username=self.request.user)
+        return User.objects.filter(pk=self.request.user.pk)
 
     def get_success_url(self):
         messages.success(self.request, 'Особисті дані успішно змінено!')
@@ -80,7 +84,7 @@ class APIQuotaView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(APIQuotaView, self).get_context_data()
-        url = f'{settings.BASE_BLABLACAR_API_URL}?key={User.objects.get(username=self.request.user).API_key}'
+        url = f'{settings.BASE_BLABLACAR_API_URL}?key={User.objects.get(pk=self.request.user.pk).API_key}'
         response = requests.get(url)
         context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
                             'remaining_day': response.headers['x-ratelimit-remaining-day'],

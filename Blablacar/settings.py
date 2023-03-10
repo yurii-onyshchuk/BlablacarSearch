@@ -140,6 +140,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
+AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 

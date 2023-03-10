@@ -34,7 +34,7 @@ def get_response(url, params):
 
 
 def get_query_params(request, form):
-    query_params = {'key': User.objects.get(username=request.user).API_key}
+    query_params = {'key': User.objects.get(pk=request.user.pk).API_key}
     query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats']
     for key in query_params_key:
         value = form.cleaned_data[key]
