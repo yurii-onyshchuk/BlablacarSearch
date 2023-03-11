@@ -1,9 +1,12 @@
+import requests
+
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, FormView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, FormView, TemplateView
 
-from .models import Task, Trip
+from .models import Task, Trip, APIKey
 from . import forms, utils
 
 
@@ -97,3 +100,19 @@ class DeleteTask(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+
+class APIQuotaView(TemplateView):
+    extra_context = {'title': 'Ліміт API-запитів',
+                     'subtitle': 'Перевірити ліміт та залишок доступних запитів до серверу BlaBlaCar'}
+    template_name = 'accounts/personal_cabinet/personal_quota.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(APIQuotaView, self).get_context_data()
+        url = f'{settings.BASE_BLABLACAR_API_URL}?key={APIKey.objects.get(user=self.request.user)}'
+        response = requests.get(url)
+        context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
+                            'remaining_day': response.headers['x-ratelimit-remaining-day'],
+                            'limit_minute': response.headers['x-ratelimit-limit-minute'],
+                            'remaining_minute': response.headers['x-ratelimit-remaining-minute'], }
+        return context

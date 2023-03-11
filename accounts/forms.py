@@ -6,10 +6,6 @@ User = get_user_model()
 
 
 class UserSignUpForm(UserCreationForm):
-    API_key = forms.CharField(help_text=f'Не маєте API ключа? Створіть акаунт на '
-                                        f'<a href="https://support.blablacar.com/hc/en-gb/articles/360014200220--How-to-use-BlaBlaCar-search-API-" '
-                                        f'target="_blank">BlaBlaCar API</a>', label='API ключ', )
-
     def __init__(self, *args, **kwargs):
         super(UserSignUpForm, self).__init__(*args, **kwargs)
         self.fields['email'].widget.attrs.update({'autofocus': False})
@@ -27,7 +23,7 @@ class UserSignUpForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', 'API_key',)
+        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', )
 
 
 class UserSetPasswordForm(SetPasswordForm):
@@ -50,4 +46,4 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'username', 'API_key')
+        fields = ('first_name', 'last_name', 'email', 'username',)

@@ -32,7 +32,7 @@ class Task(models.Model):
         return reverse('task_detail', kwargs={'pk': self.pk})
 
     def get_query_params(self):
-        query_params = {'key': self.user.API_key}
+        query_params = {'key': APIKey.objects.get(user=self.user)}
         query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
                             'radius_in_meters']
         for key in query_params_key:
@@ -85,3 +85,15 @@ class Trip(models.Model):
 
     def __str__(self):
         return f'{self.from_city}-{self.to_city}: {self.departure_time.strftime("%d.%m.%Y %H:%M")}'
+
+
+class APIKey(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
+    API_key = models.CharField(verbose_name='API ключ', max_length=32, blank=True)
+
+    class Meta:
+        verbose_name = 'API ключ'
+        verbose_name_plural = 'API ключі'
+
+    def __str__(self):
+        return str(self.API_key)

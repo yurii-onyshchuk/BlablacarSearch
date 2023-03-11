@@ -15,8 +15,6 @@ urlpatterns = [
     path('<str:slug>/personal-safety/', views.PersonalSafetyView.as_view(), name='personal_safety'),
     path('<str:slug>/delete-account/', views.DeleteAccount.as_view(), name='delete_account'),
 
-    path('api_quota/', views.APIQuotaView.as_view(), name='api_quota'),
-
     path('password_change/', PasswordChangeView.as_view(template_name='accounts/password_change/password_change_form.html',
                                                         form_class=forms.UserPasswordChangeForm),
          name='password_change'),

@@ -3,7 +3,7 @@ from datetime import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Task
+from .models import Task, APIKey
 from .widgets import InputGroupWidget
 from .utils import get_city_coordinate
 
@@ -65,3 +65,13 @@ class TaskForm(SearchForm, forms.ModelForm):
         fields = ['from_coordinate', 'to_coordinate', 'radius_in_meters',
                   'from_city', 'only_from_city', 'to_city', 'only_to_city', 'start_date_local', 'end_date_local',
                   'requested_seats', 'radius_in_kilometers', 'notification', ]
+
+
+class APIKeyForm(forms.ModelForm):
+    API_key = forms.CharField(help_text=f'Не маєте API ключа? Створіть акаунт на '
+                                        f'<a href="https://support.blablacar.com/hc/en-gb/articles/360014200220--How-to-use-BlaBlaCar-search-API-" '
+                                        f'target="_blank">BlaBlaCar API</a>', label='API ключ', )
+
+    class Meta:
+        model = APIKey
+        fields = ['API_key', ]

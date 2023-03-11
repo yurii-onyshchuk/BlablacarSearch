@@ -17,7 +17,6 @@ class User(AbstractUser):
     last_name = models.CharField(_("last name"), max_length=150)
     slug = AutoSlugField(_("slug"), populate_from='username', unique=True)
     email = models.EmailField(_("email"), unique=True)
-    API_key = models.CharField(_('API ключ'), max_length=32)
 
     objects = CustomUserManager()
 

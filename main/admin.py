@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Task, TaskInfo, Trip
+from .models import Task, TaskInfo, Trip, APIKey
 
 
 class TaskInfoInline(admin.StackedInline):
@@ -63,3 +63,8 @@ class TripAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href="{obj.link}">{obj.link}</a>')
 
     url.short_description = "Посилання на поїздку"
+
+
+@admin.register(APIKey)
+class APIKeyAdmin(admin.ModelAdmin):
+    list_display = ('user', 'API_key',)
