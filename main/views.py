@@ -31,7 +31,9 @@ class SearchPage(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         if self.request.POST.get('search', None):
-            query_params = utils.get_query_params(self.request, form)
+            data = form.cleaned_data
+            data['user'] = self.request.user
+            query_params = utils.get_query_params_from_form(data)
             return self.render_to_response(self.get_context_data(form=form, query_params=query_params))
         elif self.request.POST.get('add_to_task', None):
             task = form.save(commit=False)
@@ -109,7 +111,7 @@ class APIQuotaView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(APIQuotaView, self).get_context_data()
-        url = f'{settings.BASE_BLABLACAR_API_URL}?key={APIKey.objects.get(user=self.request.user)}'
+        url = f'{settings.BLABLACAR_API_URL}?key={APIKey.objects.get(user=self.request.user).API_key}'
         response = requests.get(url)
         context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
                             'remaining_day': response.headers['x-ratelimit-remaining-day'],

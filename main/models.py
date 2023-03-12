@@ -31,25 +31,6 @@ class Task(models.Model):
     def get_absolute_url(self):
         return reverse('task_detail', kwargs={'pk': self.pk})
 
-    def get_query_params(self):
-        query_params = {'key': APIKey.objects.get(user=self.user)}
-        query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
-                            'radius_in_meters']
-        for key in query_params_key:
-            value = self.__dict__[key]
-            if value:
-                if key == 'start_date_local':
-                    value = value.isoformat()
-                if key == 'end_date_local':
-                    value = value.isoformat()
-                if key == 'radius_in_meters':
-                    value = value
-                query_params[key] = value
-        query_params['locale'] = 'uk-UA'
-        query_params['currency'] = 'UAH'
-        query_params['count'] = 100
-        return query_params
-
 
 class TaskInfo(models.Model):
     task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True, verbose_name='Завдання')

@@ -39,19 +39,49 @@ def get_response(url, params):
         print("OOps: Something Else", err)
 
 
-def get_query_params(request, form):
-    query_params = {'key': APIKey.objects.get(user=request.user)}
+def get_API_key(user):
+    api_key = settings.BLABLACAR_API_KEY
+    try:
+        user_api_key = APIKey.objects.get(user=user).API_key
+        if user_api_key:
+            api_key = user_api_key
+    except Exception:
+        pass
+    return api_key
+
+
+def get_query_params_from_form(data):
+    query_params = {'key': get_API_key(user=data['user'])}
     query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats']
     for key in query_params_key:
-        value = form.cleaned_data[key]
+        value = data[key]
         if value:
-            if key == 'start_date_local':
-                value = value.isoformat()
-            if key == 'end_date_local':
+            if key == 'start_date_local' or key == 'end_date_local':
                 value = value.isoformat()
             query_params[key] = value
-    if form.cleaned_data['radius_in_kilometers']:
-        query_params['radius_in_meters'] = form.cleaned_data['radius_in_kilometers'] * 1000
+    if data['radius_in_kilometers']:
+        query_params['radius_in_meters'] = data['radius_in_kilometers'] * 1000
+    query_params = _get_base_query_params(query_params)
+    return query_params
+
+
+def get_query_params_from_task(task):
+    query_params = {'key': get_API_key(user=task.user)}
+    query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
+                        'radius_in_meters']
+    for key in query_params_key:
+        value = task.__dict__[key]
+        if value:
+            if key == 'start_date_local' or key == 'end_date_local':
+                value = value.isoformat()
+            if key == 'radius_in_meters':
+                value = value
+            query_params[key] = value
+    query_params = _get_base_query_params(query_params)
+    return query_params
+
+
+def _get_base_query_params(query_params):
     query_params['locale'] = 'uk-UA'
     query_params['currency'] = 'UAH'
     query_params['count'] = 100
@@ -59,7 +89,7 @@ def get_query_params(request, form):
 
 
 def get_trip_list_from_api(params):
-    response_json = get_response(settings.BASE_BLABLACAR_API_URL, params).json()
+    response_json = get_response(settings.BLABLACAR_API_URL, params).json()
     parser = Parser(response_json)
     trip_list = parser.get_trips_list()
     trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
@@ -187,7 +217,7 @@ class TripDeserializer:
 class Checker:
     def __init__(self, task):
         self.task = task
-        self.parser = Parser(get_response(settings.BASE_BLABLACAR_API_URL, task.get_query_params()).json())
+        self.parser = Parser(get_response(settings.BLABLACAR_API_URL, get_query_params_from_task(task)).json())
 
     def get_suitable_trips(self):
         available_trip_list = self.parser.get_trips_list()

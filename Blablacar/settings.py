@@ -144,7 +144,10 @@ AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 
-BASE_BLABLACAR_API_URL = 'https://public-api.blablacar.com/api/v3/trips'
+BLABLACAR_API_KEY = os.getenv('BLABLACAR_API_KEY')
+BLABLACAR_API_URL = 'https://public-api.blablacar.com/api/v3/trips'
+BLABLACAR_QUERY_PARAMETERS = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local',
+                              'requested_seats', 'radius_in_meters', 'locale', 'currency', 'count']
 
 INTERNAL_IPS = [os.getenv('INTERNAL_IPS')]
 
