@@ -16,7 +16,7 @@ class Task(models.Model):
     start_date_local = models.DateTimeField(verbose_name='Починаючи з часу', default=datetime.now)
     end_date_local = models.DateTimeField(verbose_name='Закінчуючи часом', blank=True, null=True)
     requested_seats = models.PositiveSmallIntegerField(verbose_name='Кількість місць', default=1)
-    radius_in_meters = models.PositiveIntegerField(verbose_name='Радіус пошуку, м', blank=True, null=True)
+    radius_in_kilometers = models.PositiveIntegerField(verbose_name='Радіус пошуку, км', blank=True, null=True)
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
     only_from_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті відправлення', default=False)
     only_to_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті прибуття', default=False)

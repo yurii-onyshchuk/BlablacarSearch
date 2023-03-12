@@ -50,38 +50,19 @@ def get_API_key(user):
     return api_key
 
 
-def get_query_params_from_form(data):
-    query_params = {'key': get_API_key(user=data['user'])}
-    query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats']
+def get_query_params(user, data):
+    query_params = {'key': get_API_key(user=user)}
+    query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
+                        'radius_in_kilometers']
     for key in query_params_key:
         value = data[key]
         if value:
             if key == 'start_date_local' or key == 'end_date_local':
                 value = value.isoformat()
+            if key == 'radius_in_kilometers':
+                key = 'radius_in_meters'
+                value *= 1000
             query_params[key] = value
-    if data['radius_in_kilometers']:
-        query_params['radius_in_meters'] = data['radius_in_kilometers'] * 1000
-    query_params = _get_base_query_params(query_params)
-    return query_params
-
-
-def get_query_params_from_task(task):
-    query_params = {'key': get_API_key(user=task.user)}
-    query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
-                        'radius_in_meters']
-    for key in query_params_key:
-        value = task.__dict__[key]
-        if value:
-            if key == 'start_date_local' or key == 'end_date_local':
-                value = value.isoformat()
-            if key == 'radius_in_meters':
-                value = value
-            query_params[key] = value
-    query_params = _get_base_query_params(query_params)
-    return query_params
-
-
-def _get_base_query_params(query_params):
     query_params['locale'] = 'uk-UA'
     query_params['currency'] = 'UAH'
     query_params['count'] = 100
@@ -217,7 +198,8 @@ class TripDeserializer:
 class Checker:
     def __init__(self, task):
         self.task = task
-        self.parser = Parser(get_response(settings.BLABLACAR_API_URL, get_query_params_from_task(task)).json())
+        self.query_params = get_query_params(task.user, task.__dict__)
+        self.parser = Parser(get_response(settings.BLABLACAR_API_URL, self.query_params).json())
 
     def get_suitable_trips(self):
         available_trip_list = self.parser.get_trips_list()

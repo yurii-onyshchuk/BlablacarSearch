@@ -31,9 +31,7 @@ class SearchPage(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         if self.request.POST.get('search', None):
-            data = form.cleaned_data
-            data['user'] = self.request.user
-            query_params = utils.get_query_params_from_form(data)
+            query_params = utils.get_query_params(self.request.user, form.cleaned_data)
             return self.render_to_response(self.get_context_data(form=form, query_params=query_params))
         elif self.request.POST.get('add_to_task', None):
             task = form.save(commit=False)
@@ -77,12 +75,6 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     extra_context = {'title': 'Оновлення поїздки'}
     form_class = forms.TaskForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if context['form'].initial['radius_in_meters']:
-            context['form'].initial['radius_in_kilometers'] = int(context['form'].initial['radius_in_meters'] / 1000)
-        return context
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)

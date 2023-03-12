@@ -48,23 +48,14 @@ class SearchForm(forms.Form):
 class TaskForm(SearchForm, forms.ModelForm):
     from_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     to_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
-    radius_in_meters = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False,
-                                       empty_value=None)
     only_from_city = forms.BooleanField(label='Ігнорувати міста поблизу', required=False, label_suffix='')
     only_to_city = forms.BooleanField(label='Ігнорувати міста поблизу', required=False, label_suffix='')
     notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='')
 
-    def clean_radius_in_kilometers(self):
-        radius_in_kilometers = self.cleaned_data['radius_in_kilometers']
-        if radius_in_kilometers:
-            self.cleaned_data['radius_in_meters'] = radius_in_kilometers * 1000
-        return radius_in_kilometers
-
     class Meta:
         model = Task
-        fields = ['from_coordinate', 'to_coordinate', 'radius_in_meters',
-                  'from_city', 'only_from_city', 'to_city', 'only_to_city', 'start_date_local', 'end_date_local',
-                  'requested_seats', 'radius_in_kilometers', 'notification', ]
+        fields = ['from_coordinate', 'to_coordinate', 'from_city', 'only_from_city', 'to_city', 'only_to_city',
+                  'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_kilometers', 'notification', ]
 
 
 class APIKeyForm(forms.ModelForm):
