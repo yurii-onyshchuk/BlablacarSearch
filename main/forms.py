@@ -1,6 +1,8 @@
 from datetime import datetime
 
+import requests
 from django import forms
+from django.conf import settings
 from django.core.exceptions import ValidationError
 
 from .models import Task, APIKey
@@ -50,6 +52,14 @@ class TaskForm(SearchForm, forms.ModelForm):
     to_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     only_from_city = forms.BooleanField(label='Ігнорувати міста поблизу', required=False, label_suffix='')
     only_to_city = forms.BooleanField(label='Ігнорувати міста поблизу', required=False, label_suffix='')
+
+    class Meta:
+        model = Task
+        fields = ['from_coordinate', 'to_coordinate', 'from_city', 'only_from_city', 'to_city', 'only_to_city',
+                  'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_kilometers', ]
+
+
+class TaskProForm(TaskForm):
     notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='')
 
     class Meta:
@@ -61,8 +71,17 @@ class TaskForm(SearchForm, forms.ModelForm):
 class APIKeyForm(forms.ModelForm):
     API_key = forms.CharField(help_text=f'Не маєте API ключа? Створіть акаунт на '
                                         f'<a href="https://support.blablacar.com/hc/en-gb/articles/360014200220--How-to-use-BlaBlaCar-search-API-" '
-                                        f'target="_blank">BlaBlaCar API</a>', label='API ключ', )
+                                        f'target="_blank">BlaBlaCar API</a>', label='API ключ', required=False)
 
     class Meta:
         model = APIKey
         fields = ['API_key', ]
+
+    def clean_API_key(self):
+        API_key = self.cleaned_data['API_key']
+        if API_key != '':
+            url = f'{settings.BLABLACAR_API_URL}?key={API_key}'
+            response = requests.get(url)
+            if not response.status_code == 400:
+                raise ValidationError('Вказаний API-ключ не дійсний')
+        return API_key

@@ -9,5 +9,5 @@ urlpatterns = [
     path('task/<int:pk>/detail/', views.TaskDetail.as_view(), name='task_detail'),
     path('task/<int:pk>/update/', views.TaskUpdate.as_view(), name='task_update'),
     path('task/<int:pk>/delete/', views.DeleteTask.as_view(), name='task_delete'),
-    path('api_quota/', views.APIQuotaView.as_view(), name='api_quota'),
+    path('api_key/', views.APIKeyView.as_view(), name='api_key'),
 ]

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %}{{ title }} :: {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="quota max-w-1000">
+        <div class="text-center text-sm-start mb-3">
+            <h3><i class="bi bi-cloud-upload fs-3 me-2"></i>{{ title }}</h3>
+            <h6 class="text-muted text-start border-bottom pb-2">{{ subtitle }}</h6>
+        </div>
+        {% if quota %}
+            <div class="layout-form mb-5">
+                <h5 class="text-center">Інформація за вказаним API-ключем</h5>
+                <table class="table text-center">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Залишок</th>
+                        <th scope="col">Ліміт</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">На день</th>
+                        <td>{{ quota.remaining_day }}</td>
+                        <td>{{ quota.limit_day }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">На хвилину</th>
+                        <td>{{ quota.remaining_minute }}</td>
+                        <td>{{ quota.limit_minute }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        <form class="layout-form" action="{% url 'api_key' %}" method="POST">
+            {{ form|crispy }}
+            {% csrf_token %}
+            <button class="btn btn-main w-100" type="submit">Зберегти</button>
+        </form>
+    </div>
+
+{% endblock %}

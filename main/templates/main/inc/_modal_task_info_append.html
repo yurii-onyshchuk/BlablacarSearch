@@ -1,3 +1,5 @@
+{% load main_tags %}
+
 <div class="modal fade" id="task_info_append" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -6,14 +8,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" name="notification" value="True"
-                           id="id_notification">
-                    <label class="form-check-label" for="id_notification">
-                        <i class="fa-solid fa-bell me-2"></i>
-                        Оповіщати про нові поїздки {{ form.data.from_city }}-{{ form.data.to_city }}?
-                    </label>
-                </div>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" name="only_from_city" value="True"
                            id="id_only_from_city">
@@ -28,6 +22,21 @@
                         Прибуття тільки у м.{{ form.data.to_city }} (без міст поблизу)?
                     </label>
                 </div>
+                {% available_user_API_key user as available_user_API_key %}
+                {% if available_user_API_key %}
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" name="notification" value="True"
+                               id="id_notification">
+                        <label class="form-check-label" for="id_notification">
+                            <i class="fa-solid fa-bell me-2"></i>
+                            Оповіщати про нові поїздки {{ form.data.from_city }}-{{ form.data.to_city }}?
+                        </label>
+                    </div>
+                {% else %}
+                    <p>Для можливості отримання сповіщень про нові поїздки встановіть особистий
+                        <a href="{% url 'api_key' %}">API-ключ</a>
+                    </p>
+                {% endif %}
             </div>
             <div class="modal-footer justify-content-center">
                 <input class="btn btn-secondary" type="reset" data-bs-dismiss="modal" value="Скасувати"/>

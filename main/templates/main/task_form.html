@@ -10,6 +10,11 @@
             <form method="POST" class="task-form">
                 {% csrf_token %}
                 {{ form|crispy }}
+                {% if not form.notification %}
+                    <p>Для можливості отримання сповіщень про нові поїздки встановіть особистий
+                        <a href="{% url 'api_key' %}">API-ключ</a>
+                    </p>
+                {% endif %}
                 <button class="btn btn-main w-100" type="submit">Зберегти</button>
             </form>
         </div>

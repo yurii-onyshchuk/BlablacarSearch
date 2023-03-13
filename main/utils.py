@@ -39,15 +39,21 @@ def get_response(url, params):
         print("OOps: Something Else", err)
 
 
-def get_API_key(user):
-    api_key = settings.BLABLACAR_API_KEY
+def get_user_API_key(user):
     try:
         user_api_key = APIKey.objects.get(user=user).API_key
         if user_api_key:
-            api_key = user_api_key
+            return user_api_key
     except Exception:
-        pass
-    return api_key
+        return None
+
+
+def get_API_key(user):
+    user_api_key = get_user_API_key(user)
+    if user_api_key:
+        return user_api_key
+    else:
+        return settings.BLABLACAR_API_KEY
 
 
 def get_query_params(user, data):
