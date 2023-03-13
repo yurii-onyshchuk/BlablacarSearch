@@ -24,11 +24,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown"
                                aria-expanded="false" href="">
-                                {% if request.user.first_name and request.user.last_name %}
-                                    {{ request.user.first_name }} {{ request.user.last_name }}
-                                {% else %}
-                                    {{ request.user }}
-                                {% endif %}
+                                {{ request.user.first_name }} {{ request.user.last_name }}
                                 <i class="fa-solid fa-user-large ms-2"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">

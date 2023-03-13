@@ -1,3 +1,6 @@
+import requests
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -5,10 +8,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, TemplateView, DeleteView
+from django.views.generic import CreateView, UpdateView, TemplateView, DeleteView, FormView
 
 from . import forms
-from .utils import RedirectAuthenticatedUserMixin
+from .mixins import RedirectAuthenticatedUserMixin
+from .models import APIKey
+from .utils import get_user_API_key
+from main.models import Task
 
 User = get_user_model()
 
@@ -74,3 +80,36 @@ class DeleteAccount(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         messages.success(self.request, 'Акаунт успішно видалено!')
         return reverse_lazy('login')
+
+
+class APIKeyView(FormView):
+    extra_context = {'title': 'Особистий API-ключ',
+                     'subtitle': 'Встановити особистий API-ключ, перевірити ліміт та залишок доступних запитів до '
+                                 'серверу BlaBlaCar'}
+    template_name = 'accounts/personal_cabinet/personal_api_key.html'
+    form_class = forms.APIKeyForm
+    success_url = reverse_lazy('personal_cabinet')
+
+    def get_context_data(self, **kwargs):
+        context = super(APIKeyView, self).get_context_data()
+        user_API_key = get_user_API_key(self.request.user)
+        if user_API_key:
+            context['form'].initial['API_key'] = user_API_key
+            response = requests.get(settings.BLABLACAR_API_URL, {'key': user_API_key})
+            context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
+                                'remaining_day': response.headers['x-ratelimit-remaining-day'],
+                                'limit_minute': response.headers['x-ratelimit-limit-minute'],
+                                'remaining_minute': response.headers['x-ratelimit-remaining-minute'], }
+        return context
+
+    def form_valid(self, form):
+        API_key = form.cleaned_data['API_key']
+        if API_key:
+            APIKey.objects.update_or_create(user=self.request.user, defaults={'API_key': API_key})
+            messages.success(self.request, 'API-ключ успішно оновлено!')
+        else:
+            APIKey.objects.get(user=self.request.user).delete()
+            Task.objects.filter(user=self.request.user).update(notification=False)
+            messages.warning(self.request,
+                             'API-ключ не встановлено! Ви не зможете отримувати сповіщення про нові поїздки.')
+        return super(APIKeyView, self).form_valid(form)

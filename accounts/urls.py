@@ -13,6 +13,7 @@ urlpatterns = [
 
     path('<str:slug>/personal-info/', views.PersonalInfoUpdateView.as_view(), name='personal_info'),
     path('<str:slug>/personal-safety/', views.PersonalSafetyView.as_view(), name='personal_safety'),
+    path('api_key/', views.APIKeyView.as_view(), name='api_key'),
     path('<str:slug>/delete-account/', views.DeleteAccount.as_view(), name='delete_account'),
 
     path('password_change/', PasswordChangeView.as_view(template_name='accounts/password_change/password_change_form.html',

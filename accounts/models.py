@@ -28,7 +28,16 @@ class User(AbstractUser):
         verbose_name_plural = 'Користувачі'
 
     def __str__(self):
-        if self.first_name and self.last_name:
-            return f'{self.first_name} {self.last_name}'
-        else:
-            return self.email
+        return str(self.email)
+
+
+class APIKey(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
+    API_key = models.CharField(verbose_name='API ключ', max_length=32, blank=True)
+
+    class Meta:
+        verbose_name = 'API-ключ'
+        verbose_name_plural = 'API-ключі'
+
+    def __str__(self):
+        return str(self.API_key)

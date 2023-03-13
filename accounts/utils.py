@@ -1,8 +1,20 @@
-from django.shortcuts import redirect
+from django.conf import settings
+
+from accounts.models import APIKey
 
 
-class RedirectAuthenticatedUserMixin:
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect(self.redirect_authenticated_user_url)
-        return super().get(request, *args, **kwargs)
+def get_user_API_key(user):
+    try:
+        user_api_key = APIKey.objects.get(user=user).API_key
+        if user_api_key:
+            return user_api_key
+    except APIKey.DoesNotExist:
+        return None
+
+
+def get_API_key(user):
+    user_api_key = get_user_API_key(user)
+    if user_api_key:
+        return user_api_key
+    else:
+        return settings.BLABLACAR_API_KEY

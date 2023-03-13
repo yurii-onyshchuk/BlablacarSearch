@@ -1,9 +1,10 @@
 from . import forms
-from .models import APIKey
+from accounts.utils import get_user_API_key
 
 
 def get_task_form(user):
-    if APIKey.objects.get(user=user).API_key:
+    user_api_key = get_user_API_key(user)
+    if user_api_key:
         return forms.TaskProForm
     else:
         return forms.TaskForm

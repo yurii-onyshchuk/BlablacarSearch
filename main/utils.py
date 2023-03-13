@@ -9,7 +9,8 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.template.loader import get_template
 
-from main.models import Task, TaskInfo, Trip, APIKey
+from accounts.utils import get_API_key
+from main.models import Task, TaskInfo, Trip
 
 User = get_user_model()
 
@@ -21,39 +22,6 @@ def get_city_coordinate(city: str):
         latitude = location.latitude
         longitude = location.longitude
         return f'{latitude},{longitude}'
-
-
-def get_response(url, params):
-    try:
-        response = requests.get(url, params)
-        response.raise_for_status()
-        print(f'New request to {response.url}')
-        return response
-    except requests.exceptions.HTTPError as errh:
-        print("Http Error:", errh)
-    except requests.exceptions.ConnectionError as errc:
-        print("Error Connecting:", errc)
-    except requests.exceptions.Timeout as errt:
-        print("Timeout Error:", errt)
-    except requests.exceptions.RequestException as err:
-        print("OOps: Something Else", err)
-
-
-def get_user_API_key(user):
-    try:
-        user_api_key = APIKey.objects.get(user=user).API_key
-        if user_api_key:
-            return user_api_key
-    except Exception:
-        return None
-
-
-def get_API_key(user):
-    user_api_key = get_user_API_key(user)
-    if user_api_key:
-        return user_api_key
-    else:
-        return settings.BLABLACAR_API_KEY
 
 
 def get_query_params(user, data):
@@ -76,7 +44,7 @@ def get_query_params(user, data):
 
 
 def get_trip_list_from_api(params):
-    response_json = get_response(settings.BLABLACAR_API_URL, params).json()
+    response_json = requests.get(settings.BLABLACAR_API_URL, params).json()
     parser = Parser(response_json)
     trip_list = parser.get_trips_list()
     trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
@@ -205,7 +173,8 @@ class Checker:
     def __init__(self, task):
         self.task = task
         self.query_params = get_query_params(task.user, task.__dict__)
-        self.parser = Parser(get_response(settings.BLABLACAR_API_URL, self.query_params).json())
+        self.json_response = requests.get(settings.BLABLACAR_API_URL, self.query_params).json()
+        self.parser = Parser(self.json_response)
 
     def get_suitable_trips(self):
         available_trip_list = self.parser.get_trips_list()

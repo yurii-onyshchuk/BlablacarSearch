@@ -1,4 +1,4 @@
-{% load main_tags %}
+{% load accounts_tags %}
 
 <div class="modal fade" id="task_info_append" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -33,9 +33,9 @@
                         </label>
                     </div>
                 {% else %}
-                    <p>Для можливості отримання сповіщень про нові поїздки встановіть особистий
+                    <h6 class="mt-3 text-center">Для можливості отримання сповіщень про нові поїздки встановіть особистий
                         <a href="{% url 'api_key' %}">API-ключ</a>
-                    </p>
+                    </h6>
                 {% endif %}
             </div>
             <div class="modal-footer justify-content-center">

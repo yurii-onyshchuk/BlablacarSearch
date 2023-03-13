@@ -66,15 +66,3 @@ class Trip(models.Model):
 
     def __str__(self):
         return f'{self.from_city}-{self.to_city}: {self.departure_time.strftime("%d.%m.%Y %H:%M")}'
-
-
-class APIKey(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
-    API_key = models.CharField(verbose_name='API ключ', max_length=32, blank=True)
-
-    class Meta:
-        verbose_name = 'API ключ'
-        verbose_name_plural = 'API ключі'
-
-    def __str__(self):
-        return str(self.API_key)
