@@ -1,12 +1,13 @@
 import os
 import requests
-from datetime import datetime
+from datetime import datetime, time
 
 from geopy.geocoders import Nominatim
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.db.models import Q
 from django.template.loader import get_template
 
 from accounts.utils import get_API_key
@@ -52,8 +53,21 @@ def get_trip_list_from_api(params):
     return trip_list
 
 
+def get_active_task():
+    start_of_today = datetime.combine(datetime.today(), time.min)
+    tasks = Task.objects.filter(
+        Q(notification=True) &
+        ~Q(
+            Q(start_date_local__lte=datetime.now(), end_date_local__lte=datetime.now()) |
+            Q(start_date_local__lte=start_of_today, end_date_local__lte=datetime.now()) |
+            Q(start_date_local__lte=start_of_today, end_date_local__isnull=True)
+        )
+    )
+    return tasks
+
+
 def check_new_trips():
-    tasks = Task.objects.filter(notification=True)
+    tasks = get_active_task()
     for task in tasks:
         task_checker = Checker(task)
         suitable_trip = task_checker.get_suitable_trips()
