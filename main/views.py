@@ -48,7 +48,15 @@ class TaskList(LoginRequiredMixin, ListView):
     extra_context = {'title': 'Заплановані поїздки'}
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+        return utils.get_actual_user_task(user=self.request.user)
+
+
+class TaskListArchive(LoginRequiredMixin, ListView):
+    extra_context = {'title': 'Архівовані поїздки', 'task_list_archive': True}
+    template_name = 'main/task_list_archive.html'
+
+    def get_queryset(self):
+        return utils.get_archived_user_task(user=self.request.user)
 
 
 class TaskDetail(LoginRequiredMixin, DetailView):
@@ -84,3 +92,6 @@ class DeleteTask(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+    def get_success_url(self):
+        return self.request.META.get('HTTP_REFERER', self.success_url)

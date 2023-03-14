@@ -5,9 +5,6 @@
 {% block content %}
     {% if task_list %}
         <h2 class="page-title">{{ title }}</h2>
-        <div class="text-end mb-3">
-            <a href="{% url 'task_list_archive' %}">Архівні поїздки</a>
-        </div>
         <div class="row">
             {% for task in task_list %}
                 <div class="col-md-6 col-xl-4 mb-3">
@@ -19,14 +16,8 @@
         <div class="row justify-content-center my-5">
             <div class="col-6 text-center">
                 <h1><i class="fa-solid fa-car"></i></h1>
-                <h1>Запланованих поїздок немає</h1>
+                <h1>Архівних поїздок немає</h1>
             </div>
         </div>
     {% endif %}
-    <div class="row">
-        <div class="col text-center {% if task_list %}text-md-start{% endif %}">
-            <a href="{% url 'create_task' %}" class="btn btn-secondary">
-                <i class="fa-solid fa-magnifying-glass me-2"></i>Запланувати нову поїздку</a>
-        </div>
-    </div>
 {% endblock %}

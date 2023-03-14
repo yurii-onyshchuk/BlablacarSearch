@@ -2,7 +2,9 @@
     <div class="card-header">
         <div class="row align-items-center">
             <div class="col-10 position-relative">
-                <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
+                {% if not task_list_archive %}
+                    <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
+                {% endif %}
                 <h4 class="mb-0">{{ task.from_city }}-{{ task.to_city }}</h4>
             </div>
             <div class="col-2 text-sm-center text-lg-end">
@@ -14,7 +16,9 @@
     </div>
     <div class="card-body position-relative">
         <div class="card-text">
-            <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
+            {% if not task_list_archive %}
+                <a href="{{ task.get_absolute_url }}" class="stretched-link"></a>
+            {% endif %}
             <p>Починаючи з часу: <b>{{ task.start_date_local }}</b></p>
             {% if task.end_date_local %}
                 <p>Закінчуючи часом: <b>{{ task.end_date_local }}</b></p>
