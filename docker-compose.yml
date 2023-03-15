@@ -5,8 +5,8 @@ services:
     build: .
     command: sh -c "gunicorn Blablacar.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-      - .:/usr/src/blablacar
-      - static_volume:/usr/src/blablacar/static/
+      - .:/usr/src/Blablacar
+      - static_volume:/usr/src/Blablacar/static/
     expose:
       - 8000
     env_file:
@@ -27,7 +27,7 @@ services:
     build: .
     command: celery -A Blablacar worker -l info
     volumes:
-      - .:/usr/src/blablacar
+      - .:/usr/src/Blablacar
     env_file:
       - .env.production
     depends_on:
@@ -38,7 +38,7 @@ services:
     build: .
     command: celery -A Blablacar beat -l info
     volumes:
-      - .:/usr/src/blablacar
+      - .:/usr/src/Blablacar
     env_file:
       - .env.production
     depends_on:
@@ -48,9 +48,9 @@ services:
   nginx:
     build: ./nginx
     volumes:
-      - static_volume:/usr/src/blablacar/static/
+      - static_volume:/usr/src/Blablacar/static/
     ports:
-      - "8001:80"
+      - "8003:80"
     depends_on:
       - web
 

@@ -1,3 +1,5 @@
 .idea
+venv
 *.pyc
+*.sqlite3
 celerybeat-schedule

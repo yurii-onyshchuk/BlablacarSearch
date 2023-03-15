@@ -3,7 +3,7 @@ FROM python
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /usr/src/blablacar
+WORKDIR /usr/src/Blablacar
 
 COPY requirements.txt ./
 
