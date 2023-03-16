@@ -48,7 +48,7 @@ class TaskList(LoginRequiredMixin, ListView):
     extra_context = {'title': 'Заплановані поїздки'}
 
     def get_queryset(self):
-        return utils.get_actual_user_task(user=self.request.user)
+        return utils.get_actual_user_tasks(user=self.request.user)
 
 
 class TaskListArchive(LoginRequiredMixin, ListView):
@@ -56,7 +56,7 @@ class TaskListArchive(LoginRequiredMixin, ListView):
     template_name = 'main/task_list_archive.html'
 
     def get_queryset(self):
-        return utils.get_archived_user_task(user=self.request.user)
+        return utils.get_archived_user_tasks(user=self.request.user)
 
 
 class TaskDetail(LoginRequiredMixin, DetailView):

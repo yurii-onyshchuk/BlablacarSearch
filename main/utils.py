@@ -53,47 +53,31 @@ def get_trip_list_from_api(params):
     return trip_list
 
 
-def get_actual_user_task(user):
+def Q_obj_actual_task_time():
     start_of_today = datetime.combine(datetime.today(), time.min)
-    tasks = Task.objects.filter(
-        Q(user=user) &
-        ~Q(
-            Q(start_date_local__lte=datetime.now(), end_date_local__lte=datetime.now()) |
-            Q(start_date_local__lte=start_of_today, end_date_local__lte=datetime.now()) |
-            Q(start_date_local__lte=start_of_today, end_date_local__isnull=True)
-        )
+    return ~Q(
+        Q(end_date_local__lte=datetime.now()) |
+        Q(start_date_local__lte=start_of_today, end_date_local__isnull=True)
     )
+
+
+def get_actual_user_tasks(user):
+    tasks = Task.objects.filter(Q(user=user) & Q_obj_actual_task_time())
     return tasks
 
 
-def get_archived_user_task(user):
-    start_of_today = datetime.combine(datetime.today(), time.min)
-    tasks = Task.objects.filter(
-        Q(user=user) &
-        Q(
-            Q(start_date_local__lte=datetime.now(), end_date_local__lte=datetime.now()) |
-            Q(start_date_local__lte=start_of_today, end_date_local__lte=datetime.now()) |
-            Q(start_date_local__lte=start_of_today, end_date_local__isnull=True)
-        )
-    )
+def get_archived_user_tasks(user):
+    tasks = Task.objects.filter(Q(user=user) & ~Q_obj_actual_task_time())
     return tasks
 
 
-def get_active_task():
-    start_of_today = datetime.combine(datetime.today(), time.min)
-    tasks = Task.objects.filter(
-        Q(notification=True) &
-        ~Q(
-            Q(start_date_local__lte=datetime.now(), end_date_local__lte=datetime.now()) |
-            Q(start_date_local__lte=start_of_today, end_date_local__lte=datetime.now()) |
-            Q(start_date_local__lte=start_of_today, end_date_local__isnull=True)
-        )
-    )
+def get_active_tasks():
+    tasks = Task.objects.filter(Q(notification=True) & Q_obj_actual_task_time())
     return tasks
 
 
 def check_new_trips():
-    tasks = get_active_task()
+    tasks = get_active_tasks()
     for task in tasks:
         task_checker = Checker(task)
         suitable_trip = task_checker.get_suitable_trips()
