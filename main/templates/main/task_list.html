@@ -3,11 +3,11 @@
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
+    <div class="text-end mb-3 archive-link">
+        <h6><a href="{% url 'task_list_archive' %}">Архівні поїздки <i class="bi bi-clock-history ms-1"></i></a></h6>
+    </div>
     {% if task_list %}
         <h2 class="page-title">{{ title }}</h2>
-        <div class="text-end mb-3">
-            <a href="{% url 'task_list_archive' %}">Архівні поїздки</a>
-        </div>
         <div class="row">
             {% for task in task_list %}
                 <div class="col-md-6 col-xl-4 mb-3">
