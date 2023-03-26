@@ -18,7 +18,7 @@ class SearchPage(LoginRequiredMixin, SearchFormMixin, FormView):
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
             context['show_trips'] = True
-            context['trip_list'] = utils.get_trip_list_from_api(kwargs['query_params'])
+            context['trip_list'] = utils.get_trip_list_from_response(kwargs['query_params'])
         return context
 
     def form_valid(self, form):
@@ -66,7 +66,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
         context['title'] = 'Деталі поїздки'
-        utils.Checker(self.object).update_data_at_db()
+        utils.TaskChecker(self.object).update_data_at_db()
         context['trip_list'] = Trip.objects.filter(task=self.object)
         return context
 

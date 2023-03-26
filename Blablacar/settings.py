@@ -140,6 +140,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 BLABLACAR_API_KEY = os.getenv('BLABLACAR_API_KEY')
 BLABLACAR_API_URL = 'https://public-api.blablacar.com/api/v3/trips'
+BLABLACAR_LOCALE = 'uk-UA'
+BLABLACAR_CURRENCY = 'UAH'
+BLABLACAR_DEFAULT_TRIP_COUNT = 100
 
 INTERNAL_IPS = [os.getenv('INTERNAL_IPS')]
 

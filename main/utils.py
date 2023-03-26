@@ -38,18 +38,26 @@ def get_query_params(user, data):
                 key = 'radius_in_meters'
                 value *= 1000
             query_params[key] = value
-    query_params['locale'] = 'uk-UA'
-    query_params['currency'] = 'UAH'
-    query_params['count'] = 100
+    query_params['locale'] = settings.BLABLACAR_LOCALE
+    query_params['currency'] = settings.BLABLACAR_CURRENCY
+    query_params['count'] = settings.BLABLACAR_DEFAULT_TRIP_COUNT
     return query_params
 
 
-def get_trip_list_from_api(params):
-    response_json = requests.get(settings.BLABLACAR_API_URL, params).json()
-    parser = Parser(response_json)
-    trip_list = parser.get_trips_list()
-    trip_info_list = [parser.get_trip_info(trip) for trip in trip_list]
-    trip_list = [TripDeserializer(trip_info) for trip_info in trip_info_list]
+def get_Blablacar_response(params):
+    response = requests.get(settings.BLABLACAR_API_URL, params)
+    if response.status_code == 200:
+        print(f'Request to {response.url}')
+        return response
+    else:
+        raise response.raise_for_status()
+
+
+def get_trip_list_from_response(params):
+    response = get_Blablacar_response(params)
+    parser = TripParser(response.json())
+    trips = parser.get_trips()
+    trip_list = [parser.get_single_trip(trip) for trip in trips]
     return trip_list
 
 
@@ -76,47 +84,34 @@ def get_active_tasks():
     return tasks
 
 
-def check_new_trips():
-    tasks = get_active_tasks()
-    for task in tasks:
-        task_checker = Checker(task)
-        suitable_trip = task_checker.get_suitable_trips()
-        if suitable_trip:
-            task_checker.update_data_at_db()
-            for trip in suitable_trip:
-                send_notification(task, trip)
+class TripParser:
+    def __init__(self, json_response):
+        self.json_response = json_response
 
+    def get_task_info(self):
+        return {'link': self.get_search_link(),
+                'count': self.get_search_info()['count'],
+                'full_trip_count': self.get_search_info()['full_trip_count']}
 
-def send_notification(task, trip):
-    subject = "Нова поїздка BlaBlaCar"
-    from_email = os.getenv('EMAIL_HOST_USER')
-    recipient_list = [task.user.email]
-    context = {'link': Parser.get_trip_link(trip),
-               'from_city': Parser.get_from_city(trip),
-               'to_city': Parser.get_to_city(trip),
-               'from_address': Parser.get_from_address(trip),
-               'to_address': Parser.get_to_address(trip),
-               'departure_time': datetime.fromisoformat(Parser.get_departure_time(trip)),
-               'arrival_time': datetime.fromisoformat(Parser.get_arrival_time(trip)),
-               'price': Parser.get_price(trip),
-               'vehicle': Parser.get_vehicle(trip)}
-    html_message = get_template('main/new_trip_email.html').render(context)
-    send_mail(subject=subject, message='', from_email=from_email, recipient_list=recipient_list,
-              html_message=html_message)
-
-
-class Parser:
-    def __init__(self, response_json: dict):
-        self.response_json = response_json
+    def get_single_trip(self, trip):
+        return {'link': self.get_trip_link(trip),
+                'from_city': self.get_from_city(trip),
+                'from_address': self.get_from_address(trip),
+                'departure_time': datetime.fromisoformat(self.get_departure_time(trip)),
+                'to_city': self.get_to_city(trip),
+                'to_address': self.get_to_address(trip),
+                'arrival_time': datetime.fromisoformat(self.get_arrival_time(trip)),
+                'price': self.get_price(trip),
+                'vehicle': self.get_vehicle(trip)}
 
     def get_search_link(self):
-        return self.response_json['link']
+        return self.json_response['link']
 
     def get_search_info(self):
-        return self.response_json['search_info']
+        return self.json_response['search_info']
 
-    def get_trips_list(self):
-        return self.response_json['trips']
+    def get_trips(self):
+        return self.json_response['trips']
 
     @staticmethod
     def get_trip_link(trip):
@@ -163,60 +158,23 @@ class Parser:
         except KeyError:
             return None
 
-    def get_task_info(self):
-        return {'link': self.get_search_link(),
-                'count': self.get_search_info()['count'],
-                'full_trip_count': self.get_search_info()['full_trip_count']}
 
-    def get_trip_info(self, trip):
-        return {'link': self.get_trip_link(trip),
-                'from_city': self.get_from_city(trip),
-                'from_address': self.get_from_address(trip),
-                'departure_time': self.get_departure_time(trip),
-                'to_city': self.get_to_city(trip),
-                'to_address': self.get_to_address(trip),
-                'arrival_time': self.get_arrival_time(trip),
-                'price': self.get_price(trip),
-                'vehicle': self.get_vehicle(trip)}
-
-
-class TripDeserializer:
-    def __init__(self, trip_info: dict):
-        self.link = trip_info['link']
-        self.from_city = trip_info['from_city']
-        self.from_address = trip_info['from_address']
-        self.departure_time = datetime.fromisoformat(trip_info['departure_time'])
-        self.to_city = trip_info['to_city']
-        self.to_address = trip_info['to_address']
-        self.arrival_time = datetime.fromisoformat(trip_info['arrival_time'])
-        self.price = trip_info['price']
-        self.vehicle = trip_info['vehicle']
-
-
-class Checker:
+class TaskChecker:
     def __init__(self, task):
         self.task = task
         self.query_params = get_query_params(task.user, task.__dict__)
-        self.json_response = requests.get(settings.BLABLACAR_API_URL, self.query_params).json()
-        self.parser = Parser(self.json_response)
-
-    def get_suitable_trips(self):
-        available_trip_list = self.parser.get_trips_list()
-        exists_trip_links_list = self.get_exists_trip_links_list()
-        new_found_trips = [trip for trip in available_trip_list if
-                           self.parser.get_trip_link(trip) not in exists_trip_links_list]
-        suitable_trips = [trip for trip in new_found_trips if self.trip_accord_to_task(trip)]
-        return suitable_trips
+        self.json_response = get_Blablacar_response(self.query_params).json()
+        self.parser = TripParser(self.json_response)
 
     def exact_from_city_match(self, trip) -> bool:
         if self.task.only_from_city:
-            return Parser.get_from_city(trip) == self.task.from_city
+            return TripParser.get_from_city(trip) == self.task.from_city
         else:
             return True
 
     def exact_to_city_match(self, trip) -> bool:
         if self.task.only_to_city:
-            return Parser.get_to_city(trip) == self.task.to_city
+            return TripParser.get_to_city(trip) == self.task.to_city
         else:
             return True
 
@@ -227,21 +185,49 @@ class Checker:
         return self.exact_city_match(trip)
 
     def get_exists_trip_links_list(self):
-        return [i[0] for i in Trip.objects.filter(task=self.task).values_list('link')]
-
-    def get_task_info(self):
-        return self.parser.get_task_info()
+        exists_trip_links_list = [i[0] for i in Trip.objects.filter(task=self.task).values_list('link')]
+        return exists_trip_links_list
 
     def get_trip_info_list(self):
-        return [self.parser.get_trip_info(trip) for trip in self.get_suitable_trips()]
+        get_trip_info_list = [self.parser.get_single_trip(trip) for trip in self.get_suitable_trips()]
+        return get_trip_info_list
+
+    def get_suitable_trips(self):
+        available_trip_list = self.parser.get_trips()
+        exists_trip_links_list = self.get_exists_trip_links_list()
+        new_found_trips = [trip for trip in available_trip_list if
+                           self.parser.get_trip_link(trip) not in exists_trip_links_list]
+        suitable_trips = [trip for trip in new_found_trips if self.trip_accord_to_task(trip)]
+        return suitable_trips
 
     def get_unavailable_trip_links(self):
-        available_trip_list = self.parser.get_trips_list()
+        available_trip_list = self.parser.get_trips()
         available_trip_links_list = [self.parser.get_trip_link(trip) for trip in available_trip_list]
         exists_trip_links_list = self.get_exists_trip_links_list()
         return [trip_link for trip_link in exists_trip_links_list if trip_link not in available_trip_links_list]
 
     def update_data_at_db(self):
-        TaskInfo(task=self.task, **self.get_task_info()).save()
-        Trip.objects.bulk_create([Trip(task=self.task, **trip_info) for trip_info in self.get_trip_info_list()])
-        Trip.objects.filter(link__in=self.get_unavailable_trip_links()).delete()
+        TaskInfo(task=self.task, **self.parser.get_task_info()).save()
+        Trip.objects.filter(task=self.task, link__in=self.get_unavailable_trip_links()).delete()
+        new = [Trip(task=self.task, **trip_info) for trip_info in self.get_trip_info_list()]
+        Trip.objects.bulk_create(new)
+
+    def send_notification(self, task, trip):
+        subject = "Нова поїздка BlaBlaCar"
+        from_email = os.getenv('EMAIL_HOST_USER')
+        recipient_list = [task.user.email]
+        context = self.parser.get_single_trip(trip)
+        html_message = get_template('main/new_trip_email.html').render(context)
+        send_mail(subject=subject, message='', from_email=from_email, recipient_list=recipient_list,
+                  html_message=html_message)
+
+
+def check_new_trips():
+    tasks = get_active_tasks()
+    for task in tasks:
+        task_checker = TaskChecker(task)
+        suitable_trip = task_checker.get_suitable_trips()
+        if suitable_trip:
+            task_checker.update_data_at_db()
+            for trip in suitable_trip:
+                task_checker.send_notification(task, trip)
