@@ -5,7 +5,7 @@
 {% block title %}{{ title }} :: {{ block.super }}{% endblock %}
 
 {% block content %}
-    {% if show_trips %}
+    {% if show_results %}
         {% include 'main/inc/_index_result.html' %}
     {% else %}
         {% include 'main/inc/_index_search.html' %}

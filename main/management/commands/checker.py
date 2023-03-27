@@ -2,7 +2,7 @@ import time
 
 from django.core.management import BaseCommand
 
-from main.utils import check_new_trips
+from main.services.task_service import check_new_trips
 
 
 class Command(BaseCommand):

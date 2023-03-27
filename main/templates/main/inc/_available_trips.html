@@ -2,7 +2,7 @@
     <span class="filter-count badge bg-secondary ms-2">{{ trip_list|length }}</span>
 </h3>
 <div class="grid">
-    {% for trip in trip_list %}
+    {% for trip in response_data.trips %}
         {% include 'main/inc/_trip_card.html' %}
     {% endfor %}
 </div>

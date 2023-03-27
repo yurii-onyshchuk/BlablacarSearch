@@ -4,8 +4,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import Task
+from .services.geo_service import get_city_coordinate
 from .widgets import InputGroupWidget
-from .utils import get_city_coordinate
 
 
 class SearchForm(forms.Form):

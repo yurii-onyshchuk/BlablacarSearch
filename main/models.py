@@ -20,31 +20,17 @@ class Task(models.Model):
     notification = models.BooleanField(verbose_name='Отримувати сповіщення про нові поїздки', default=False)
     only_from_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті відправлення', default=False)
     only_to_city = models.BooleanField(verbose_name='Пошук тільки у ваказному місті прибуття', default=False)
+    link = models.URLField(verbose_name='Посилання на пошук поїздок за завданням', blank=True, null=True)
 
     class Meta:
-        verbose_name = 'Запланована поїздка'
-        verbose_name_plural = 'Заплановані поїздки'
+        verbose_name = 'Завдання на пошук поїздок'
+        verbose_name_plural = 'Завдання на пошук поїздок'
 
     def __str__(self):
         return f'{self.from_city}-{self.to_city}: {self.start_date_local.strftime("%d.%m.%Y %H:%M")}'
 
     def get_absolute_url(self):
         return reverse('task_detail', kwargs={'pk': self.pk})
-
-
-class TaskInfo(models.Model):
-    task = models.OneToOneField(Task, on_delete=models.CASCADE, primary_key=True, verbose_name='Завдання')
-    link = models.URLField(verbose_name='Посилання на пошук поїздку', blank=True, null=True)
-    count = models.PositiveSmallIntegerField(verbose_name='Загальна кількість знайдених поїздок', blank=True, null=True)
-    full_trip_count = models.PositiveSmallIntegerField(verbose_name='Загальна кількість знайдених повних поїздок',
-                                                       blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Інформація по запланованій поїздці'
-        verbose_name_plural = 'Інформація по запланованих поїздках'
-
-    def __str__(self):
-        return f'{self.task.from_city}-{self.task.to_city}: {self.task.start_date_local.strftime("%d.%m.%Y %H:%M")}'
 
 
 class Trip(models.Model):

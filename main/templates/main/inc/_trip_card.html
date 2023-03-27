@@ -1,33 +1,37 @@
+{% load custom_date %}
+
 <div class="trip-item card mb-2 shadow w-100">
     <div class="card-body">
         <a href="{{ trip.link }}" class="stretched-link" target="_blank"></a>
         <div class="row card-title">
             <div class="col-6">
-                <b class="from-city">{{ trip.from_city }}</b>
-                <p class="from-address mb-0">{{ trip.from_address }}</p>
+                <b class="from-city">{{ trip.waypoints.0.place.city }}</b>
+                <p class="from-address mb-0">{{ trip.waypoints.0.place.address }}</p>
             </div>
             <div class="col-6">
-                <b class="to-city">{{ trip.to_city }}</b>
-                <p class="to-address mb-0">{{ trip.to_address }}</p>
+                <b class="to-city">{{ trip.waypoints.1.place.city }}</b>
+                <p class="to-address mb-0">{{ trip.waypoints.1.place.address }}</p>
             </div>
         </div>
         <div class="row card-subtitle">
             <div class="col-6">
-                <p class="departure-time">{{ trip.departure_time|date:"d E Y р. H:i" }}</p>
+                <p class="departure-time">{{ trip.waypoints.0.date_time|fromisoformat|date:"d E Y р. H:i" }}</p>
             </div>
             <div class="col-6">
-                <p class="arrival-time"> {{ trip.arrival_time|date:"d E Y р. H:i" }}</p>
+                <p class="arrival-time"> {{ trip.waypoints.1.date_time|fromisoformat|date:"d E Y р. H:i" }}</p>
             </div>
         </div>
         <div class="row card-text">
             <div class="col-6">
                 {% if trip.vehicle %}
-                    <p class="vehicle mb-0"><i class="fa-solid fa-car-side pe-2"></i>{{ trip.vehicle }}
+                    <p class="vehicle mb-0"><i
+                            class="fa-solid fa-car-side pe-2"></i>{{ trip.vehicle.make }} {{ trip.vehicle.model }}
                     </p>
                 {% endif %}
             </div>
             <div class="col-6 text-end">
-                <p class="price mb-0"><i class="fa-solid fa-coins pe-2"></i>{{ trip.price }}</p>
+                <p class="price mb-0"><i
+                        class="fa-solid fa-coins pe-2"></i>{{ trip.price.amount }} {{ trip.price.currency }}</p>
             </div>
         </div>
     </div>
