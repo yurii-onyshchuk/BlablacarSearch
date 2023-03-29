@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 
+from accounts.services.user_service import get_user_API_key
 from . import forms
-from accounts.utils import get_user_API_key
 from .services.request_service import get_Blablacar_response_data, get_query_params
 from .services.task_service import TaskChecker
 

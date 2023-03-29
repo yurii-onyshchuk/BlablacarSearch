@@ -3,7 +3,7 @@ import requests
 
 from django.conf import settings
 
-from accounts.utils import get_API_key
+from accounts.services.user_service import get_API_key
 
 
 def request_to_Blablacar(query_params):

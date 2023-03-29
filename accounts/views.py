@@ -10,7 +10,7 @@ from django.views.generic import CreateView, UpdateView, TemplateView, DeleteVie
 from . import forms
 from .mixins import RedirectAuthenticatedUserMixin
 from .models import APIKey
-from .utils import get_user_API_key
+from .services.user_service import get_user_API_key
 from main.models import Task
 from main.services.request_service import request_to_Blablacar
 

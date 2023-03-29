@@ -1,6 +1,6 @@
 from django import template
 
-from accounts.utils import get_user_API_key
+from accounts.services.user_service import get_user_API_key
 
 register = template.Library()
 
