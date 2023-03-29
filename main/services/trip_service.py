@@ -2,8 +2,8 @@ from datetime import datetime
 
 
 class TripParser:
-    def __init__(self, trip):
-        self.trip_data = trip
+    def __init__(self, trip: dict):
+        self.trip = trip
 
     def get_trip_info(self):
         return {'link': self.get_trip_link(),
@@ -17,37 +17,37 @@ class TripParser:
                 'vehicle': self.get_vehicle()}
 
     def get_trip_link(self):
-        return self.trip_data['link']
+        return self.trip['link']
 
     def get_departure_time(self):
-        return self.trip_data["waypoints"][0]["date_time"]
+        return self.trip["waypoints"][0]["date_time"]
 
     def get_from_city(self):
-        return self.trip_data["waypoints"][0]["place"]['city']
+        return self.trip["waypoints"][0]["place"]['city']
 
     def get_from_address(self):
         try:
-            return self.trip_data["waypoints"][0]["place"]['address']
+            return self.trip["waypoints"][0]["place"]['address']
         except KeyError:
             return None
 
     def get_to_city(self):
-        return self.trip_data["waypoints"][1]["place"]['city']
+        return self.trip["waypoints"][1]["place"]['city']
 
     def get_to_address(self):
         try:
-            return self.trip_data["waypoints"][1]["place"]['address']
+            return self.trip["waypoints"][1]["place"]['address']
         except KeyError:
             return None
 
     def get_arrival_time(self):
-        return self.trip_data["waypoints"][1]["date_time"]
+        return self.trip["waypoints"][1]["date_time"]
 
     def get_price(self):
-        return f'{self.trip_data["price"]["amount"]} {self.trip_data["price"]["currency"]}'
+        return f'{self.trip["price"]["amount"]} {self.trip["price"]["currency"]}'
 
     def get_vehicle(self):
         try:
-            return f'{self.trip_data["vehicle"]["make"]} {self.trip_data["vehicle"]["model"]}'
+            return f'{self.trip["vehicle"]["make"]} {self.trip["vehicle"]["model"]}'
         except KeyError:
             return None

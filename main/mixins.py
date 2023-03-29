@@ -15,8 +15,7 @@ class TaskEditMixin:
         form.instance.link = response_data['link']
         form.instance.user = self.request.user
         task = form.save(commit=True)
-        filtered_response_data = TaskChecker(task, response_data).response_filter_accord_to_task()
-        TaskChecker(task, filtered_response_data).update_saved_trips()
+        TaskChecker(task, response_data).update_saved_trips()
         return super().form_valid(form)
 
 

@@ -1,6 +1,7 @@
 import copy
 import os
 from datetime import datetime, time
+from typing import Iterable
 
 from django.core.mail import send_mail
 from django.db.models import Q
@@ -14,70 +15,52 @@ from main.services.trip_service import TripParser
 class TaskChecker:
     def __init__(self, task, response_data):
         self.task = task
-        self.saved_trip = self.get_saved_trips()
+        self.saved_trip = Trip.objects.filter(task=self.task)
         self.response_data = response_data
-        self.actual_trip = self.get_actual_trips()
 
-    def get_actual_trips(self) -> list:
-        actual_trips = [trip for trip in self.response_data['trips']]
-        return actual_trips
+    def get_actual_trip_links(self) -> set:
+        return set(trip['link'] for trip in self.response_data['trips'])
 
-    def get_saved_trips(self):
-        saved_trips = Trip.objects.filter(task=self.task)
-        return saved_trips
+    def get_saved_trip_links(self) -> set:
+        return set(self.saved_trip.values_list('link', flat=True))
 
-    def get_actual_trip_links(self):
-        actual_trip_links = set(trip['link'] for trip in self.response_data['trips'])
-        return actual_trip_links
+    def get_new_unsaved_trip_links(self) -> set:
+        return self.get_actual_trip_links().difference(self.get_saved_trip_links())
 
-    def get_saved_trip_links(self):
-        saved_trip_links = set(self.saved_trip.values_list('link', flat=True))
-        return saved_trip_links
-
-    def get_new_unsaved_trip_links(self):
-        new_unsaved_trip_links = self.get_actual_trip_links().difference(self.get_saved_trip_links())
-        return new_unsaved_trip_links
-
-    def get_not_actual_saved_trip_links(self):
-        not_actual_saved_trip_links = self.get_saved_trip_links().difference(self.get_actual_trip_links())
-        return not_actual_saved_trip_links
+    def get_not_actual_saved_trip_links(self) -> set:
+        return self.get_saved_trip_links().difference(self.get_actual_trip_links())
 
     def get_new_relevant_trip_list(self) -> list[dict]:
-        new_unsaved_trip_links = self.get_new_unsaved_trip_links()
-        new_unsaved_trips = []
-        for trip in self.response_data['trips']:
-            if trip['link'] in new_unsaved_trip_links:
-                new_unsaved_trips.append(trip)
-        new_relevant_trip_lists = [trip for trip in new_unsaved_trips if self.trip_accord_to_task(trip)]
-        return new_relevant_trip_lists
+        return [trip for trip in self.response_data['trips']
+                if trip['link'] in self.get_new_unsaved_trip_links() and self.trip_accord_to_task(trip)]
 
-    def exact_from_city_match(self, trip) -> bool:
+    def exact_from_city_match(self, trip: dict) -> bool:
         if self.task.only_from_city:
             return TripParser(trip).get_from_city() == self.task.from_city
         else:
             return True
 
-    def exact_to_city_match(self, trip) -> bool:
+    def exact_to_city_match(self, trip: dict) -> bool:
         if self.task.only_to_city:
             return TripParser(trip).get_to_city() == self.task.to_city
         else:
             return True
 
-    def exact_city_match(self, trip) -> bool:
+    def exact_city_match(self, trip: dict) -> bool:
         return self.exact_from_city_match(trip) and self.exact_to_city_match(trip)
 
-    def trip_accord_to_task(self, trip) -> bool:
+    def trip_accord_to_task(self, trip: dict) -> bool:
         return self.exact_city_match(trip)
 
-    def response_filter_accord_to_task(self) -> dict:
+    def filter_response_accord_to_task(self) -> dict:
         filter_response_data = copy.deepcopy(self.response_data)
         for trip in self.response_data['trips']:
             if not self.trip_accord_to_task(trip):
                 filter_response_data['trips'].remove(trip)
         return filter_response_data
 
-    def delete_not_actual_saved_trips(self, trip_link_list):
-        Trip.objects.filter(task=self.task, link__in=trip_link_list).delete()
+    def delete_not_actual_saved_trips(self, trip_links: Iterable):
+        Trip.objects.filter(task=self.task, link__in=trip_links).delete()
 
     def save_new_trips(self, trip_list: list[dict]):
         Trip_objs = [Trip(task=self.task, **TripParser(trip).get_trip_info()) for trip in trip_list]
@@ -105,7 +88,7 @@ def check_new_trips():
                 send_notification(task, trip)
 
 
-def send_notification(task, trip):
+def send_notification(task, trip: dict):
     subject = "Нова поїздка BlaBlaCar"
     from_email = os.getenv('EMAIL_HOST_USER')
     recipient_list = [task.user.email]

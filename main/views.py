@@ -53,9 +53,9 @@ class TaskDetail(LoginRequiredMixin, DetailView):
         context = super(TaskDetail, self).get_context_data(**kwargs)
         query_params = get_query_params(self.object.user, self.object.__dict__)
         response_data = get_Blablacar_response_data(query_params)
-        filtered_response_data = TaskChecker(self.object, response_data).response_filter_accord_to_task()
-        TaskChecker(self.object, filtered_response_data).update_saved_trips()
-        context['response_data'] = filtered_response_data
+        task_checker = TaskChecker(self.object, response_data)
+        task_checker.update_saved_trips()
+        context['response_data'] = task_checker.filter_response_accord_to_task()
         context['title'] = 'Деталі поїздки'
         return context
 
