@@ -8,18 +8,16 @@ from accounts.utils import get_API_key
 
 def request_to_Blablacar(query_params):
     response = requests.get(settings.BLABLACAR_API_URL, query_params)
+    print(f'Request to {response.url}')
+    return response
+
+
+def get_Blablacar_response_data(query_params) -> dict:
+    response = request_to_Blablacar(query_params)
     if response.status_code == 200:
-        print(f'Request to {response.url}')
-        return response
+        return json.loads(response.text)
     else:
         raise response.raise_for_status()
-
-
-def get_Blablacar_response_data(user=None, data=None, query_params=None) -> dict:
-    if not query_params:
-        query_params = get_query_params(user, data)
-    json_data = request_to_Blablacar(query_params=query_params).text
-    return json.loads(json_data)
 
 
 def get_query_params(user, data: dict):

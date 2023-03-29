@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.template.loader import get_template
 
 from main.models import Task, Trip
-from main.services.request_service import get_Blablacar_response_data
+from main.services.request_service import get_Blablacar_response_data, get_query_params
 from main.services.trip_service import TripParser
 
 
@@ -95,7 +95,8 @@ class TaskChecker:
 def check_new_trips():
     tasks = get_active_tasks()
     for task in tasks:
-        response_data = get_Blablacar_response_data(task.user, task.__dict__)
+        query_params = get_query_params(task.user, task.__dict__)
+        response_data = get_Blablacar_response_data(query_params)
         task_checker = TaskChecker(task, response_data)
         new_relevant_trip_list = task_checker.get_new_relevant_trip_list()
         if new_relevant_trip_list:

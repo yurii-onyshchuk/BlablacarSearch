@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 
 from . import forms
 from accounts.utils import get_user_API_key
-from .services.request_service import get_Blablacar_response_data
+from .services.request_service import get_Blablacar_response_data, get_query_params
 from .services.task_service import TaskChecker
 
 
@@ -10,7 +10,8 @@ class TaskEditMixin:
     success_url = reverse_lazy('task_list')
 
     def form_valid(self, form):
-        response_data = get_Blablacar_response_data(self.request.user, form.cleaned_data)
+        query_params = get_query_params(self.request.user, form.cleaned_data)
+        response_data = get_Blablacar_response_data(query_params)
         form.instance.link = response_data['link']
         form.instance.user = self.request.user
         task = form.save(commit=True)

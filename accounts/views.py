@@ -1,6 +1,3 @@
-import requests
-
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -15,6 +12,7 @@ from .mixins import RedirectAuthenticatedUserMixin
 from .models import APIKey
 from .utils import get_user_API_key
 from main.models import Task
+from main.services.request_service import request_to_Blablacar
 
 User = get_user_model()
 
@@ -95,7 +93,7 @@ class APIKeyView(FormView):
         user_API_key = get_user_API_key(self.request.user)
         if user_API_key:
             context['form'].initial['API_key'] = user_API_key
-            response = requests.get(settings.BLABLACAR_API_URL, {'key': user_API_key})
+            response = request_to_Blablacar({'key': user_API_key})
             context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
                                 'remaining_day': response.headers['x-ratelimit-remaining-day'],
                                 'limit_minute': response.headers['x-ratelimit-limit-minute'],

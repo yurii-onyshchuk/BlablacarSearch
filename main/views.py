@@ -15,7 +15,7 @@ class SearchPage(LoginRequiredMixin, TaskEditMixin, SearchFormMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super(SearchPage, self).get_context_data(**kwargs)
         if 'query_params' in kwargs:
-            response_data = get_Blablacar_response_data(query_params=kwargs['query_params'])
+            response_data = get_Blablacar_response_data(kwargs['query_params'])
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
             context['show_results'] = True
@@ -51,7 +51,8 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(TaskDetail, self).get_context_data(**kwargs)
-        response_data = get_Blablacar_response_data(self.object.user, self.object.__dict__)
+        query_params = get_query_params(self.object.user, self.object.__dict__)
+        response_data = get_Blablacar_response_data(query_params)
         filtered_response_data = TaskChecker(self.object, response_data).response_filter_accord_to_task()
         TaskChecker(self.object, filtered_response_data).update_saved_trips()
         context['response_data'] = filtered_response_data
