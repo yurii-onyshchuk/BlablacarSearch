@@ -1,7 +1,7 @@
 from Blablacar.celery import app
-from main.services.task_service import check_new_trips
+from main.services import task_service
 
 
 @app.task
 def check_new_trips():
-    check_new_trips()
+    task_service.check_new_trips()
