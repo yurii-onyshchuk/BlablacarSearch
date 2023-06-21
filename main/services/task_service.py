@@ -18,21 +18,22 @@ class TaskChecker:
         self.saved_trip = Trip.objects.filter(task=self.task)
         self.response_data = response_data
 
-    def get_actual_trip_links(self) -> set:
-        return set(trip['link'] for trip in self.response_data['trips'])
+    def get_actual_trip_hashes(self) -> set:
+        return set(TripParser(trip).get_trip_hash() for trip in self.response_data['trips'])
 
-    def get_saved_trip_links(self) -> set:
-        return set(self.saved_trip.values_list('link', flat=True))
+    def get_saved_trip_hashes(self) -> set:
+        return set(self.saved_trip.values_list('trip_hash', flat=True))
 
-    def get_new_unsaved_trip_links(self) -> set:
-        return self.get_actual_trip_links().difference(self.get_saved_trip_links())
+    def get_new_unsaved_trip_hashes(self) -> set:
+        return self.get_actual_trip_hashes().difference(self.get_saved_trip_hashes())
 
-    def get_not_actual_saved_trip_links(self) -> set:
-        return self.get_saved_trip_links().difference(self.get_actual_trip_links())
+    def get_not_actual_saved_trip_hashes(self) -> set:
+        return self.get_saved_trip_hashes().difference(self.get_actual_trip_hashes())
 
     def get_new_relevant_trip_list(self) -> list[dict]:
         return [trip for trip in self.response_data['trips']
-                if trip['link'] in self.get_new_unsaved_trip_links() and self.trip_accord_to_task(trip)]
+                if TripParser(trip).get_trip_hash() in self.get_new_unsaved_trip_hashes()
+                and self.trip_accord_to_task(trip)]
 
     def exact_from_city_match(self, trip: dict) -> bool:
         if self.task.only_from_city:
@@ -59,18 +60,18 @@ class TaskChecker:
                 filter_response_data['trips'].remove(trip)
         return filter_response_data
 
-    def delete_not_actual_saved_trips(self, trip_links: Iterable):
-        Trip.objects.filter(task=self.task, link__in=trip_links).delete()
+    def delete_not_actual_saved_trips(self, trip_hashes: Iterable):
+        Trip.objects.filter(task=self.task, trip_hash__in=trip_hashes).delete()
 
     def save_new_trips(self, trip_list: list[dict]):
         Trip_objs = [Trip(task=self.task, **TripParser(trip).get_trip_info()) for trip in trip_list]
         Trip.objects.bulk_create(Trip_objs)
 
     def update_saved_trips(self):
-        not_actual_saved_trip_links = self.get_not_actual_saved_trip_links()
+        not_actual_saved_trip_hashes = self.get_not_actual_saved_trip_hashes()
         new_relevant_trips = self.get_new_relevant_trip_list()
-        if not_actual_saved_trip_links:
-            self.delete_not_actual_saved_trips(not_actual_saved_trip_links)
+        if not_actual_saved_trip_hashes:
+            self.delete_not_actual_saved_trips(not_actual_saved_trip_hashes)
         if new_relevant_trips:
             self.save_new_trips(new_relevant_trips)
 

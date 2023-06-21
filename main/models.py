@@ -44,6 +44,7 @@ class Trip(models.Model):
     arrival_time = models.DateTimeField(verbose_name='Час прибуття')
     price = models.CharField(verbose_name='Ціна', max_length=16)
     vehicle = models.CharField(verbose_name='Автомобіль', max_length=32, blank=True, null=True)
+    trip_hash = models.CharField(verbose_name='Хеш поїздки', max_length=64)
 
     class Meta:
         verbose_name = 'Доступна поїздка'

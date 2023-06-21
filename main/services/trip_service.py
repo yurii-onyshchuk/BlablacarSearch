@@ -1,3 +1,4 @@
+import hashlib
 from datetime import datetime
 
 
@@ -14,7 +15,13 @@ class TripParser:
                 'to_address': self.get_to_address(),
                 'arrival_time': datetime.fromisoformat(self.get_arrival_time()),
                 'price': self.get_price(),
-                'vehicle': self.get_vehicle()}
+                'vehicle': self.get_vehicle(),
+                'trip_hash': self.get_trip_hash()}
+
+    def get_trip_hash(self):
+        trip = self.trip.copy()
+        del trip['link']
+        return hashlib.sha256(str(trip).encode()).hexdigest()
 
     def get_trip_link(self):
         return self.trip['link']
