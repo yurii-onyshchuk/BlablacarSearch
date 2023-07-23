@@ -37,6 +37,11 @@
     --bs-btn-disabled-border-color: #0dcaf0;
 }
 
+.btn-social {
+    color: black;
+    background-color: #ffffff;
+}
+
 a, a:hover {
     text-decoration: none;
 }
@@ -57,6 +62,7 @@ nav {
 .archive-link a {
     color: #868686;
 }
+
 .archive-link a:hover {
     color: #727272;
 }
