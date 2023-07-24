@@ -6,6 +6,8 @@
 {% block content %}
     <div class="layout-form">
         <h1 class="page-title">{{ title }}</h1>
+        {% include 'accounts/inc/_social_auth.html' %}
+        <p class="text-center mt-3 mb-1">або</p>
         <form method="POST">
             {% csrf_token %}
             {{ form|crispy }}
