@@ -113,6 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'accounts.User'
 AUTHENTICATION_BACKENDS = ['social_core.backends.google.GoogleOAuth2',
+                           'social_core.backends.linkedin.LinkedinOAuth2',
                            'social_core.backends.github.GithubOAuth2',
                            'accounts.backends.EmailBackend']
 
@@ -137,7 +138,21 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {
             'access_type': 'online',
         }
-    }
+    },
+    'linkedin': {
+        'SCOPE': [
+            'r_liteprofile',
+            'r_emailaddress'
+        ],
+        'PROFILE_FIELDS': [
+            'id',
+            'first-name',
+            'last-name',
+            'email-address',
+            'picture-url',
+            'public-profile-url',
+        ]
+    },
 }
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
@@ -146,9 +161,11 @@ SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY')
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET')
+
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('SOCIAL_AUTH_GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('SOCIAL_AUTH_GITHUB_SECRET')
-SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
