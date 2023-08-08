@@ -12,7 +12,7 @@
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
-                <form method="post" action="{% url 'delete_account' request.user.pk %}">
+                <form method="post" action="{% url 'delete_account' request.user.slug %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Видалити</button>
                 </form>
