@@ -1,42 +1,99 @@
 <div class="social-auth row mt-3 gx-2">
     <div class="col-12">
-        <a class="btn btn-block btn-social btn-google w-100 my-2"
+        <a class="btn btn-social w-100 my-2"
            href="{% url "social:begin" "google-oauth2" %}">
-            <div aria-hidden="true" class="social-img">
-                <svg width="18" height="25" viewBox="0 0 18 25" xmlns="http://www.w3.org/2000/svg" class="MfSWZ05"
-                     aria-hidden="true">
-                    <g fill="none" fill-rule="evenodd">
-                        <path d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-                              fill="#4285F4"></path>
-                        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"
-                              fill="#34A853"></path>
-                        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
-                              fill="#FBBC05"></path>
-                        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
-                              fill="#EA4335"></path>
-                        <path d="M0 0h18v18H0z"></path>
+            <div class="social-img" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,256,256"
+                     style="fill:#000000;">
+                    <g transform="translate(-26.88,-26.88) scale(1.21,1.21)">
+                        <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                           stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                           font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                           style="mix-blend-mode: normal">
+                            <g transform="scale(5.33333,5.33333)">
+                                <path d="M43.611,20.083h-1.611v-0.083h-18v8h11.303c-1.649,4.657 -6.08,8 -11.303,8c-6.627,0 -12,-5.373 -12,-12c0,-6.627 5.373,-12 12,-12c3.059,0 5.842,1.154 7.961,3.039l5.657,-5.657c-3.572,-3.329 -8.35,-5.382 -13.618,-5.382c-11.045,0 -20,8.955 -20,20c0,11.045 8.955,20 20,20c11.045,0 20,-8.955 20,-20c0,-1.341 -0.138,-2.65 -0.389,-3.917z"
+                                      fill="#ffc107"></path>
+                                <path d="M6.306,14.691l6.571,4.819c1.778,-4.402 6.084,-7.51 11.123,-7.51c3.059,0 5.842,1.154 7.961,3.039l5.657,-5.657c-3.572,-3.329 -8.35,-5.382 -13.618,-5.382c-7.682,0 -14.344,4.337 -17.694,10.691z"
+                                      fill="#ff3d00"></path>
+                                <path d="M24,44c5.166,0 9.86,-1.977 13.409,-5.192l-6.19,-5.238c-2.008,1.521 -4.504,2.43 -7.219,2.43c-5.202,0 -9.619,-3.317 -11.283,-7.946l-6.522,5.025c3.31,6.477 10.032,10.921 17.805,10.921z"
+                                      fill="#4caf50"></path>
+                                <path d="M43.611,20.083h-1.611v-0.083h-18v8h11.303c-0.792,2.237 -2.231,4.166 -4.087,5.571c0.001,-0.001 0.002,-0.001 0.003,-0.002l6.19,5.238c-0.438,0.398 6.591,-4.807 6.591,-14.807c0,-1.341 -0.138,-2.65 -0.389,-3.917z"
+                                      fill="#1976d2"></path>
+                            </g>
+                        </g>
                     </g>
                 </svg>
             </div>
-            Продовжити з Google
-        </a>
-    </div>
-        <div class="col-12">
-        <a class="btn btn-block btn-social btn-linkedin w-100 my-2"
-           href="{% url "social:begin" "linkedin-oauth2" %}">
-            <div aria-hidden="true" class="social-img">
-                <span class="fa fa-linkedin"></span>
-            </div>
-            Продовжити з Linkedin
+            Продовжити через Google
         </a>
     </div>
     <div class="col-12">
-        <a class="btn btn-block btn-social btn-github w-100 my-2"
-           href="{% url "social:begin" "github" %}">
-            <div aria-hidden="true" class="social-img">
-                <span class="fa fa-github"></span>
+        <a class="btn btn-social w-100 my-2"
+           href="{% url "social:begin" 'facebook' %}">
+            <div class="social-img" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,256,256"
+                     style="fill:#000000;">
+                    <g transform="translate(-34.56,-34.56) scale(1.27,1.27)">
+                        <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                           stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                           font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                           style="mix-blend-mode: normal">
+                            <g transform="scale(5.33333,5.33333)">
+                                <path d="M24,5c-10.49341,0 -19,8.50659 -19,19c0,10.49341 8.50659,19 19,19c10.49341,0 19,-8.50659 19,-19c0,-10.49341 -8.50659,-19 -19,-19z"
+                                      fill="#039be5"></path>
+                                <path d="M26.572,29.036h4.917l0.772,-4.995h-5.69v-2.73c0,-2.075 0.678,-3.915 2.619,-3.915h3.119v-4.359c-0.548,-0.074 -1.707,-0.236 -3.897,-0.236c-4.573,0 -7.254,2.415 -7.254,7.917v3.323h-4.701v4.995h4.701v13.729c0.931,0.14 1.874,0.235 2.842,0.235c0.875,0 1.729,-0.08 2.572,-0.194z"
+                                      fill="#ffffff"></path>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
             </div>
-            Продовжити з GitHub
+            Продовжити через Facebook
+        </a>
+    </div>
+    <div class="col-12">
+        <a class="btn btn-social w-100 my-2"
+           href="{% url "social:begin" "linkedin-oauth2" %}">
+            <div class="social-img" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,256,256"
+                     style="fill:#000000;">
+                    <g transform="translate(-43.52,-43.52) scale(1.34,1.34)">
+                        <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                           stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                           font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                           style="mix-blend-mode: normal">
+                            <g transform="scale(5.33333,5.33333)">
+                                <path d="M42,37c0,2.762 -2.238,5 -5,5h-26c-2.761,0 -5,-2.238 -5,-5v-26c0,-2.762 2.239,-5 5,-5h26c2.762,0 5,2.238 5,5z"
+                                      fill="#0288d1"></path>
+                                <path d="M12,19h5v17h-5zM14.485,17h-0.028c-1.492,0 -2.457,-1.112 -2.457,-2.501c0,-1.419 0.995,-2.499 2.514,-2.499c1.521,0 2.458,1.08 2.486,2.499c0,1.388 -0.965,2.501 -2.515,2.501zM36,36h-5v-9.099c0,-2.198 -1.225,-3.698 -3.192,-3.698c-1.501,0 -2.313,1.012 -2.707,1.99c-0.144,0.35 -0.101,1.318 -0.101,1.807v9h-5v-17h5v2.616c0.721,-1.116 1.85,-2.616 4.738,-2.616c3.578,0 6.261,2.25 6.261,7.274l0.001,9.726z"
+                                      fill="#ffffff"></path>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            Продовжити через Linkedin
+        </a>
+    </div>
+    <div class="col-12">
+        <a class="btn btn-social w-100 my-2"
+           href="{% url "social:begin" "github" %}">
+            <div class="social-img" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,256,256"
+                     style="fill:#000000;">
+                    <g transform="translate(-64,-64) scale(1.5,1.5)">
+                        <g fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                           stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                           font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                           style="mix-blend-mode: normal">
+                            <g transform="translate(0,2.10133) scale(3.55556,3.55556)">
+                                <path d="M36,12c13.255,0 24,10.745 24,24c0,10.656 -6.948,19.685 -16.559,22.818c0.003,-0.009 0.007,-0.022 0.007,-0.022c0,0 -1.62,-0.759 -1.586,-2.114c0.038,-1.491 0,-4.971 0,-6.248c0,-2.193 -1.388,-3.747 -1.388,-3.747c0,0 10.884,0.122 10.884,-11.491c0,-4.481 -2.342,-6.812 -2.342,-6.812c0,0 1.23,-4.784 -0.426,-6.812c-1.856,-0.2 -5.18,1.774 -6.6,2.697c0,0 -2.25,-0.922 -5.991,-0.922c-3.742,0 -5.991,0.922 -5.991,0.922c-1.419,-0.922 -4.744,-2.897 -6.6,-2.697c-1.656,2.029 -0.426,6.812 -0.426,6.812c0,0 -2.342,2.332 -2.342,6.812c0,11.613 10.884,11.491 10.884,11.491c0,0 -1.097,1.239 -1.336,3.061c-0.76,0.258 -1.877,0.576 -2.78,0.576c-2.362,0 -4.159,-2.296 -4.817,-3.358c-0.649,-1.048 -1.98,-1.927 -3.221,-1.927c-0.817,0 -1.216,0.409 -1.216,0.876c0,0.467 1.146,0.793 1.902,1.659c1.594,1.826 1.565,5.933 7.245,5.933c0.617,0 1.876,-0.152 2.823,-0.279c-0.006,1.293 -0.007,2.657 0.013,3.454c0.034,1.355 -1.586,2.114 -1.586,2.114c0,0 0.004,0.013 0.007,0.022c-9.61,-3.133 -16.558,-12.162 -16.558,-22.818c0,-13.255 10.745,-24 24,-24z"></path>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            Продовжити через GitHub
         </a>
     </div>
 </div>
