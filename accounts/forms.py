@@ -11,9 +11,9 @@ from accounts.models import APIKey
 User = get_user_model()
 
 
-class UserSignUpForm(UserCreationForm):
+class SignUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
-        super(UserSignUpForm, self).__init__(*args, **kwargs)
+        super(SignUpForm, self).__init__(*args, **kwargs)
         self.fields['email'].widget.attrs.update({'autofocus': False})
         self.fields['email'].help_text = ''
         self.fields['password1'].help_text = ''
@@ -32,13 +32,13 @@ class UserSignUpForm(UserCreationForm):
         fields = ('first_name', 'last_name', 'email', 'password1', 'password2',)
 
 
-class UserSetPasswordForm(SetPasswordForm):
+class CustomSetPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['new_password1'].help_text = ''
 
 
-class UserPasswordChangeForm(PasswordChangeForm):
+class CustomPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['new_password1'].help_text = ''
