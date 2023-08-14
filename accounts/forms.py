@@ -42,6 +42,8 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['new_password1'].help_text = ''
+        if not self.user.has_usable_password():
+            del self.fields['old_password']
 
 
 class UserForm(forms.ModelForm):
