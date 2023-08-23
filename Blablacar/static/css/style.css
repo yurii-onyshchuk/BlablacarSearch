@@ -41,6 +41,10 @@ body {
     --bs-btn-disabled-border-color: #0dcaf0;
 }
 
+.btn:active {
+    transform: scale(0.98);
+}
+
 .btn-social,
 .btn-social:hover,
 .btn-social:active,
@@ -59,11 +63,25 @@ body {
 
 .btn-social:active {
     background-color: rgba(220, 230, 255, 0.5);
-    scale: 0.99;
+    transform: scale(0.99);
+}
+
+.btn-social svg {
+    margin-bottom: 2px;
 }
 
 a, a:hover {
+    color: #000000;
+    font-style: normal;
     text-decoration: none;
+}
+
+a:hover {
+    color: #646464;
+}
+
+.bi:before {
+    line-height: 1.25;
 }
 
 /*--------------------------------------------------------------
@@ -85,6 +103,18 @@ nav {
 
 .archive-link a:hover {
     color: #727272;
+}
+
+/*--------------------------------------------------------------
+# Personal cabinet
+--------------------------------------------------------------*/
+.personal-cabinet .card:hover {
+    background-color: rgb(245, 245, 245);
+}
+
+.personal-cabinet .card:active {
+    transform: scale(0.99);
+    transition: all 0.2s;
 }
 
 /*--------------------------------------------------------------
