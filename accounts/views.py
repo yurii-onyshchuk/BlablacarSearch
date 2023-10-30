@@ -18,6 +18,8 @@ User = get_user_model()
 
 
 class SignUpView(RedirectAuthenticatedUserMixin, CreateView):
+    """View for handling the user registration."""
+
     extra_context = {'title': 'Реєстрація'}
     template_name = 'accounts/signup.html'
     form_class = forms.SignUpForm
@@ -36,6 +38,8 @@ class SignUpView(RedirectAuthenticatedUserMixin, CreateView):
 
 
 class CustomLoginView(LoginView):
+    """View for handling the user login process."""
+
     extra_context = {'title': 'Вхід'}
     template_name = 'accounts/login.html'
     form_class = AuthenticationForm
@@ -44,12 +48,20 @@ class CustomLoginView(LoginView):
 
 
 class PersonalCabinetView(LoginRequiredMixin, TemplateView):
+    """View for the user's personal cabinet.
+
+    This view displays the user's personal cabinet with information
+    about orders and personal data.
+    """
+
     extra_context = {'title': 'Особистий кабінет',
                      'subtitle': 'Керуйте своїми особистими даними та безпекою акаунту'}
     template_name = 'accounts/personal_cabinet/personal_cabinet.html'
 
 
 class PersonalInfoUpdateView(LoginRequiredMixin, UpdateView):
+    """View for updating the user's personal information."""
+
     extra_context = {'title': 'Особисті дані',
                      'subtitle': 'Керуйте своїми особистими та контактними даними'}
     template_name = 'accounts/personal_cabinet/personal_info.html'
@@ -64,12 +76,16 @@ class PersonalInfoUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class PersonalSafetyView(LoginRequiredMixin, TemplateView):
+    """View for account safety settings."""
+
     extra_context = {'title': 'Безпека облікового запису',
                      'subtitle': 'Змінити пароль або видалити обліковий запис'}
     template_name = 'accounts/personal_cabinet/personal_safety.html'
 
 
 class AccountDeleteView(LoginRequiredMixin, DeleteView):
+    """View for deleting a user's account."""
+
     extra_context = {'title': 'Видалення облікового запису'}
 
     def get_queryset(self):
@@ -81,6 +97,12 @@ class AccountDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class APIKeyView(FormView):
+    """View for managing and setting personal API keys.
+
+    This view allows users to manage their personal API keys associated with their accounts. Users can set or remove
+    their API keys and view API usage information such as limits and remaining requests.
+    """
+
     extra_context = {'title': 'Особистий API-ключ',
                      'subtitle': 'Встановити особистий API-ключ, перевірити ліміт та залишок доступних запитів до '
                                  'серверу BlaBlaCar'}
@@ -89,6 +111,11 @@ class APIKeyView(FormView):
     success_url = reverse_lazy('personal_cabinet')
 
     def get_context_data(self, **kwargs):
+        """Get additional context data to pass to the template.
+
+        This method retrieves the user's API key, sets initial form data,
+        and fetches API usage information if an API key is available.
+        """
         context = super(APIKeyView, self).get_context_data()
         user_API_key = get_user_API_key(self.request.user)
         if user_API_key:
@@ -101,6 +128,11 @@ class APIKeyView(FormView):
         return context
 
     def form_valid(self, form):
+        """Handle the form submission when the API key is set or removed.
+
+        This method is called when the form is submitted. It handles setting or removing the API key based on the form
+        data.
+        """
         API_key = form.cleaned_data['API_key']
         if API_key:
             APIKey.objects.update_or_create(user=self.request.user, defaults={'API_key': API_key})

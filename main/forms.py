@@ -9,6 +9,8 @@ from .widgets import InputGroupWidget
 
 
 class SearchForm(forms.Form):
+    """Form for collecting search criteria for BlaBlaCar trips."""
+
     from_city = forms.CharField(label='Звідки?', widget=InputGroupWidget())
     to_city = forms.CharField(label='Куди?')
     start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
@@ -22,6 +24,7 @@ class SearchForm(forms.Form):
                                               required=False, min_value=1, max_value=50)
 
     def clean_from_city(self):
+        """Clean and validate the 'from_city' field."""
         from_city = self.cleaned_data['from_city']
         coordinate = get_city_coordinate(from_city)
         if coordinate:
@@ -31,6 +34,7 @@ class SearchForm(forms.Form):
             raise ValidationError(f'Міста "{from_city}" не знайдено..')
 
     def clean_to_city(self):
+        """Clean and validate the 'to_city' field."""
         to_city = self.cleaned_data['to_city']
         coordinate = get_city_coordinate(to_city)
         if coordinate:
@@ -40,12 +44,15 @@ class SearchForm(forms.Form):
             raise ValidationError(f'Міста "{to_city}" не знайдено..')
 
     def clean(self):
+        """Custom cleaning and validation logic for the entire form."""
         clean_data = super(SearchForm, self).clean()
         if clean_data['end_date_local'] and clean_data['start_date_local'] > clean_data['end_date_local']:
             raise ValidationError('"Час початку пошуку" має бути раніше "Часу закінчення пошуку": ')
 
 
 class TaskForm(SearchForm, forms.ModelForm):
+    """Form for creating or updating a Task."""
+
     from_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     to_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     only_from_city = forms.BooleanField(label='Ігнорувати міста поблизу', required=False, label_suffix='')
@@ -58,6 +65,8 @@ class TaskForm(SearchForm, forms.ModelForm):
 
 
 class TaskProForm(TaskForm):
+    """Form for creating or updating a Task with additional option: notification."""
+
     notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='')
 
     class Meta:

@@ -8,6 +8,8 @@ User = get_user_model()
 
 
 class Task(models.Model):
+    """Model representing a task for searching trips."""
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
     from_city = models.CharField(verbose_name='Звідки?', max_length=32)
     to_city = models.CharField(verbose_name='Куди?', max_length=32)
@@ -34,6 +36,8 @@ class Task(models.Model):
 
 
 class Trip(models.Model):
+    """Model representing a trip available for a task."""
+
     task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Завдання')
     link = models.URLField(verbose_name='Посилання на поїздку')
     from_city = models.CharField(verbose_name='Пункт відправлення', max_length=32)

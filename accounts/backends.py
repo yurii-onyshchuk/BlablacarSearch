@@ -5,7 +5,10 @@ UserModel = get_user_model()
 
 
 class EmailBackend(ModelBackend):
+    """Custom authentication backend for login using email."""
+
     def authenticate(self, request, username=None, password=None, **kwargs):
+        """Authenticate a user based on their email and password."""
         try:
             user = UserModel.objects.get(email__iexact=username)
         except UserModel.DoesNotExist:

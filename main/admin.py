@@ -6,6 +6,11 @@ from .models import Task, Trip
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
+    """Admin class for the Task model.
+
+    Defines the display and behavior of Task objects in the Django admin panel.
+    """
+
     list_display = ('id', 'from_city', 'to_city', 'start_date_local', 'end_date_local', 'requested_seats',
                     'radius_in_kilometers', 'user',)
     list_display_links = ('id',)
@@ -16,6 +21,7 @@ class TaskAdmin(admin.ModelAdmin):
         'end_date_local', 'requested_seats', 'radius_in_kilometers', 'url',)
 
     def url(self, obj):
+        """Returns a clickable URL link based on the 'link' field of a Task or Trip object."""
         return mark_safe(f'<a href="{obj.link}">{obj.link}</a>')
 
     url.short_description = "Посилання на пошук поїздок за завданням"
@@ -23,6 +29,11 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
+    """Admin class for the Trip model.
+
+    Defines the display and behavior of Trip objects in the Django admin panel.
+    """
+
     list_display = ('from_city', 'to_city', 'departure_time', 'vehicle', 'price', 'url')
     list_display_links = ('from_city', 'to_city',)
     readonly_fields = (
@@ -31,6 +42,7 @@ class TripAdmin(admin.ModelAdmin):
     exclude = ('link',)
 
     def url(self, obj):
+        """Returns a clickable URL link based on the 'link' field of a Task or Trip object."""
         return mark_safe(f'<a href="{obj.link}">{obj.link}</a>')
 
     url.short_description = "Посилання на поїздку"
