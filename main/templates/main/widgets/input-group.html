@@ -1,10 +1,4 @@
-<input type="{{ widget.type }}" name="{{ widget.name }}"
-       {% if widget.value != None %}value="{{ widget.value|stringformat:'s' }}"{% endif %}
-{% for name, value in widget.attrs.items %}
-    {% if value is not False %}
-        {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}
-    {% endif %}
-{% endfor %}>
+{% include "main/widgets/city_input_widget.html" %}
 <button id="city-exchange" type="button" class="btn btn-link btn-exchange float-end">
     <i class="bi bi-arrow-down-up"></i>
 </button>

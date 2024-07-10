@@ -1,9 +1,13 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, FormView
 
 from .mixins import SearchFormMixin, TaskFormMixin, TaskEditMixin
 from .models import Task
+from .services.geo_service import NovaPoshtaGeoService
 from .services.request_service import get_Blablacar_response_data, get_query_params
 from .services.task_service import TaskChecker, get_actual_user_tasks, get_archived_user_tasks
 
@@ -112,3 +116,13 @@ class DeleteTask(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+
+def city_autocomplete(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        searcher = NovaPoshtaGeoService({'query': data.get('query')})
+        autocomplete_data = searcher.get_response_from_API()
+        return JsonResponse(autocomplete_data, safe=False)
+    else:
+        raise Http404()

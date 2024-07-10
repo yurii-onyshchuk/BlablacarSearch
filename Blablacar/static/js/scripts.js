@@ -7,6 +7,10 @@ $(document).on('click', '#city-exchange', function () {
     let from_city = document.getElementById('id_from_city').value;
     document.getElementById('id_from_city').value = document.getElementById('id_to_city').value;
     document.getElementById('id_to_city').value = from_city;
+
+    let from_coordinate = document.getElementById('id_from_coordinate').value;
+    document.getElementById('id_from_coordinate').value = document.getElementById('id_to_coordinate').value;
+    document.getElementById('id_to_coordinate').value = from_coordinate;
 });
 
 $(document).ready(function () {
@@ -29,7 +33,7 @@ $(document).ready(function () {
     if (fromCityInput && toCityInput) {
         fromCityInput = fromCityInput['value'].trim()
         toCityInput = toCityInput['value'].trim()
-    // Cities from task
+        // Cities from task
     } else {
         fromCityInput = $(".detail-task-card .from_city").text().trim()
         toCityInput = $(".detail-task-card .to_city").text().trim()
@@ -74,15 +78,12 @@ $(document).ready(function () {
 
     // Init Isotope
     let $grid = $('.grid').isotope({
-        itemSelector: '.trip-item',
-        layoutMode: 'fitRows',
-        getSortData: {
+        itemSelector: '.trip-item', layoutMode: 'fitRows', getSortData: {
             price: function (itemElem) {
                 var price = $(itemElem).find('.price').text();
                 return parseFloat(price.replace(/[\(\)]/g, ''));
             }
-        },
-        filter: function () {
+        }, filter: function () {
 
             let isMatched = true;
             let $this = $(this);
@@ -148,5 +149,70 @@ $(document).ready(function () {
     } else {
         $('.filters-area #heading-filters button').removeClass('collapsed');
         $('.filters-area #collapse-filters').removeClass('collapse').addClass('show');
+    }
+});
+
+// Autocomplete
+$(document).ready(function () {
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+    // Autocomplete function
+    function setupAutocomplete(inputSelector, resultsSelector, coordinateField) {
+        $(inputSelector).on('click', function () {
+            $(coordinateField).attr('value', '')
+            autocompleteFunction($(this).val(), inputSelector, resultsSelector);
+        })
+            .on('input', function () {
+                autocompleteFunction($(this).val(), inputSelector, resultsSelector);
+            });
+
+        $(resultsSelector).on('click', 'li', function () {
+            const selectedText = $(this).attr('data-city');
+            const selectedLatitude = $(this).attr('data-latitude');
+            const selectedLongitude = $(this).attr('data-longitude');
+
+            $(inputSelector).val(selectedText).attr('value', selectedText);
+            $(coordinateField).attr('value', `${selectedLatitude},${selectedLongitude}`)
+            $(resultsSelector).hide();
+        });
+
+        $(document).click(function (event) {
+            if (!$(event.target).closest(`${inputSelector}, ${resultsSelector}`).length) {
+                $(resultsSelector).hide();
+            }
+        });
+    }
+
+    // Setup autocomplete for #id_from_city
+    setupAutocomplete('#id_from_city', '#id_from_city_results', '#id_from_coordinate');
+
+    // Setup autocomplete for #id_to_city
+    setupAutocomplete('#id_to_city', '#id_to_city_results', '#id_to_coordinate');
+
+    function autocompleteFunction(query, inputSelector, resultsSelector) {
+        if (query.length >= 1) {
+            $.ajax({
+                url: '/city_autocomplete/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({query: query}),
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function (data) {
+                    $(resultsSelector).empty();
+                    if (data.success && data.data.length > 0) {
+                        $(resultsSelector).show();
+                        $.each(data.data, function (index, city) {
+                            $(resultsSelector).append(`<li class="dropdown-item" data-city="${city.Description}" data-latitude="${city.Latitude}" data-longitude="${city.Longitude}">${city.SettlementTypeDescription.substring(0, 1)}. ${city.Description}, ${city.AreaDescription} обл.</li>`);
+                        });
+                    } else {
+                        $(resultsSelector).hide();
+                    }
+                }
+            });
+        } else {
+            $(resultsSelector).hide();
+        }
     }
 });

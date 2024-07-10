@@ -4,15 +4,16 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import Task
-from .services.geo_service import get_city_coordinate
-from .widgets import InputGroupWidget
+from .widgets import InputGroupWidget, CityAutocompleteWidget
 
 
 class SearchForm(forms.Form):
     """Form for collecting search criteria for BlaBlaCar trips."""
 
-    from_city = forms.CharField(label='Звідки?', widget=InputGroupWidget())
-    to_city = forms.CharField(label='Куди?')
+    from_city = forms.CharField(label='Звідки?', widget=InputGroupWidget(attrs={'autocomplete': 'off'}))
+    from_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
+    to_city = forms.CharField(label='Куди?', widget=CityAutocompleteWidget(attrs={'autocomplete': 'off'}))
+    to_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
                                            widget=forms.DateTimeInput(attrs={'type': "datetime-local"},
                                                                       format="%Y-%m-%dT%H:%M"))
@@ -26,9 +27,8 @@ class SearchForm(forms.Form):
     def clean_from_city(self):
         """Clean and validate the 'from_city' field."""
         from_city = self.cleaned_data['from_city']
-        coordinate = get_city_coordinate(from_city)
+        coordinate = self.data['from_coordinate']
         if coordinate:
-            self.cleaned_data['from_coordinate'] = coordinate
             return from_city
         else:
             raise ValidationError(f'Міста "{from_city}" не знайдено..')
@@ -36,9 +36,8 @@ class SearchForm(forms.Form):
     def clean_to_city(self):
         """Clean and validate the 'to_city' field."""
         to_city = self.cleaned_data['to_city']
-        coordinate = get_city_coordinate(to_city)
+        coordinate = self.data['to_coordinate']
         if coordinate:
-            self.cleaned_data['to_coordinate'] = coordinate
             return to_city
         else:
             raise ValidationError(f'Міста "{to_city}" не знайдено..')
@@ -53,8 +52,6 @@ class SearchForm(forms.Form):
 class TaskForm(SearchForm, forms.ModelForm):
     """Form for creating or updating a Task."""
 
-    from_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
-    to_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
     only_from_city = forms.BooleanField(label='Ігнорувати міста поблизу', required=False, label_suffix='')
     only_to_city = forms.BooleanField(label='Ігнорувати міста поблизу', required=False, label_suffix='')
 

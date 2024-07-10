@@ -120,6 +120,19 @@ nav {
 /*--------------------------------------------------------------
 # Search form
 --------------------------------------------------------------*/
+.city-results .dropdown-item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*Style for the autocomplete dropdown list*/
+.city-results .dropdown-item:hover,
+.city-results .dropdown-item:active {
+    cursor: pointer;
+    background-color: #e9ecef;
+}
+
+
 .btn-exchange {
     --bs-btn-color: #6c757d;
     --bs-btn-border-color: #ced4da;

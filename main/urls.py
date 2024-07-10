@@ -10,4 +10,5 @@ urlpatterns = [
     path('task/<int:pk>/detail/', views.TaskDetail.as_view(), name='task_detail'),
     path('task/<int:pk>/update/', views.TaskUpdate.as_view(), name='task_update'),
     path('task/<int:pk>/delete/', views.DeleteTask.as_view(), name='task_delete'),
+    path('city_autocomplete/', views.city_autocomplete, name='city_autocomplete'),
 ]
