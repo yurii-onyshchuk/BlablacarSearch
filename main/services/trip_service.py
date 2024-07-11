@@ -73,5 +73,5 @@ class TripParser:
         """Gets the make and model of the vehicle (if available)."""
         try:
             return f'{self.trip["vehicle"]["make"]} {self.trip["vehicle"]["model"]}'
-        except KeyError:
+        except KeyError or TypeError:
             return None
