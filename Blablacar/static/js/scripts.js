@@ -153,18 +153,30 @@ $(document).ready(function () {
 });
 
 // Autocomplete
+// Debounce function
+function debounce(func, delay) {
+    let debounceTimer;
+    return function () {
+        const context = this;
+        const args = arguments;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    };
+}
+
 $(document).ready(function () {
     const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    const cache = {};
 
     // Autocomplete function
     function setupAutocomplete(inputSelector, resultsSelector, coordinateField) {
         $(inputSelector).on('click', function () {
-            $(coordinateField).attr('value', '')
-            autocompleteFunction($(this).val(), inputSelector, resultsSelector);
-        })
-            .on('input', function () {
-                autocompleteFunction($(this).val(), inputSelector, resultsSelector);
-            });
+            $(coordinateField).attr('value', '');
+            debounceAutocomplete($(this).val(), inputSelector, resultsSelector);
+        }).on('input', debounce(function () {
+            $(coordinateField).attr('value', '');
+            debounceAutocomplete($(this).val(), inputSelector, resultsSelector);
+        }, 250));
 
         $(resultsSelector).on('click', 'li', function () {
             const selectedText = $(this).attr('data-city');
@@ -172,7 +184,7 @@ $(document).ready(function () {
             const selectedLongitude = $(this).attr('data-longitude');
 
             $(inputSelector).val(selectedText).attr('value', selectedText);
-            $(coordinateField).attr('value', `${selectedLatitude},${selectedLongitude}`)
+            $(coordinateField).attr('value', `${selectedLatitude},${selectedLongitude}`);
             $(resultsSelector).hide();
         });
 
@@ -189,41 +201,51 @@ $(document).ready(function () {
     // Setup autocomplete for #id_to_city
     setupAutocomplete('#id_to_city', '#id_to_city_results', '#id_to_coordinate');
 
-    function autocompleteFunction(query, inputSelector, resultsSelector) {
+    function debounceAutocomplete(query, inputSelector, resultsSelector) {
         if (query.length >= 1) {
-            $.ajax({
-                url: '/city_autocomplete/',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({query: query}),
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                success: function (data) {
-                    $(resultsSelector).empty();
-                    if (data.success && data.data.length > 0) {
-                        
-                        data.data.sort(function (a, b) {
-                            if (a.SettlementTypeDescription === 'місто' && b.SettlementTypeDescription === 'село') {
-                                return -1;
-                            }
-                            if (a.SettlementTypeDescription === 'село' && b.SettlementTypeDescription === 'місто') {
-                                return 1;
-                            }
-                            return 0;
-                        });
-
-                        $(resultsSelector).show();
-                        $.each(data.data.slice(0, 10), function (index, city) {
-                            $(resultsSelector).append(`<li class="dropdown-item" data-city="${city.Description}" data-latitude="${city.Latitude}" data-longitude="${city.Longitude}">${city.SettlementTypeDescription.substring(0, 1)}. ${city.Description}, ${city.AreaDescription} обл.</li>`);
-                        });
-                    } else {
-                        $(resultsSelector).hide();
+            if (cache[query]) {
+                displayResults(cache[query], resultsSelector);
+            } else {
+                $.ajax({
+                    url: '/city_autocomplete/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({query: query}),
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    success: function (data) {
+                        if (data.success && data.data.length > 0) {
+                            cache[query] = data.data;
+                            displayResults(data.data, resultsSelector);
+                        } else {
+                            $(resultsSelector).hide();
+                        }
                     }
-                }
-            });
+                });
+            }
         } else {
             $(resultsSelector).hide();
         }
+    }
+
+    function displayResults(data, resultsSelector) {
+        $(resultsSelector).empty();
+
+        data.sort(function (a, b) {
+            const priority = {
+                'місто': 1,
+            };
+
+            const aPriority = priority[a.SettlementTypeDescription] || 2;
+            const bPriority = priority[b.SettlementTypeDescription] || 2;
+
+            return aPriority - bPriority;
+        });
+
+        $(resultsSelector).show();
+        $.each(data.slice(0, 10), function (index, city) {
+            $(resultsSelector).append(`<li class="dropdown-item" data-city="${city.Description}" data-latitude="${city.Latitude}" data-longitude="${city.Longitude}">${city.SettlementTypeDescription.substring(0, 1)}. ${city.Description}, ${city.AreaDescription} обл.</li>`);
+        });
     }
 });

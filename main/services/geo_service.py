@@ -44,7 +44,11 @@ class NovaPoshtaGeoService:
         This method queries an external API to retrieve city name
         suggestions matching the user's input.
         """
+        start_time = time.time()
         response = self.post_request_to_api(self.api_url, self.query_params())
+        end_time = time.time()
+        response_time = end_time - start_time
+        print(response_time)
         return response
 
     def query_params(self) -> dict:
