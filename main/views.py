@@ -123,6 +123,9 @@ def city_autocomplete(request):
         data = json.loads(request.body)
         searcher = NovaPoshtaGeoService({'query': data.get('query')})
         autocomplete_data = searcher.get_response_from_API()
-        return JsonResponse(autocomplete_data, safe=False)
+        sorted_data = sorted(autocomplete_data['data'],
+                             key=lambda x: (x.get('SettlementTypeDescription') != 'місто', x.get('Description')))
+        limited_data = sorted_data[:10]
+        return JsonResponse({'success': True, 'data': limited_data}, safe=False)
     else:
         raise Http404()

@@ -176,7 +176,7 @@ $(document).ready(function () {
         }).on('input', debounce(function () {
             $(coordinateField).attr('value', '');
             debounceAutocomplete($(this).val(), inputSelector, resultsSelector);
-        }, 250));
+        }, 300));
 
         $(resultsSelector).on('click', 'li', function () {
             const selectedText = $(this).attr('data-city');
@@ -231,20 +231,8 @@ $(document).ready(function () {
 
     function displayResults(data, resultsSelector) {
         $(resultsSelector).empty();
-
-        data.sort(function (a, b) {
-            const priority = {
-                'місто': 1,
-            };
-
-            const aPriority = priority[a.SettlementTypeDescription] || 2;
-            const bPriority = priority[b.SettlementTypeDescription] || 2;
-
-            return aPriority - bPriority;
-        });
-
         $(resultsSelector).show();
-        $.each(data.slice(0, 10), function (index, city) {
+        $.each(data, function (index, city) {
             $(resultsSelector).append(`<li class="dropdown-item" data-city="${city.Description}" data-latitude="${city.Latitude}" data-longitude="${city.Longitude}">${city.SettlementTypeDescription.substring(0, 1)}. ${city.Description}, ${city.AreaDescription} обл.</li>`);
         });
     }
