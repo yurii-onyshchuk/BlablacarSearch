@@ -11,10 +11,10 @@ class Task(models.Model):
     """Model representing a task for searching trips."""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Користувач')
-    from_city = models.CharField(verbose_name='Звідки?', max_length=32)
-    to_city = models.CharField(verbose_name='Куди?', max_length=32)
-    from_coordinate = models.CharField(verbose_name='Координата відправлення', max_length=32)
-    to_coordinate = models.CharField(verbose_name='Координата прибуття', max_length=32)
+    from_city = models.CharField(verbose_name='Звідки?', max_length=64)
+    to_city = models.CharField(verbose_name='Куди?', max_length=64)
+    from_coordinate = models.CharField(verbose_name='Координата відправлення', max_length=64)
+    to_coordinate = models.CharField(verbose_name='Координата прибуття', max_length=64)
     start_date_local = models.DateTimeField(verbose_name='Починаючи з часу', default=datetime.now)
     end_date_local = models.DateTimeField(verbose_name='Закінчуючи часом', blank=True, null=True)
     requested_seats = models.PositiveSmallIntegerField(verbose_name='Кількість місць', default=1)
