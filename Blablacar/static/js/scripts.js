@@ -167,15 +167,19 @@ function debounce(func, delay) {
 $(document).ready(function () {
     const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
     const cache = {};
+    let citySelected = false;
 
     // Autocomplete function
     function setupAutocomplete(inputSelector, resultsSelector, coordinateField) {
         $(inputSelector).on('click', function () {
+            citySelected = false;
             $(coordinateField).attr('value', '');
             debounceAutocomplete($(this).val(), inputSelector, resultsSelector);
         }).on('input', debounce(function () {
-            $(coordinateField).attr('value', '');
-            debounceAutocomplete($(this).val(), inputSelector, resultsSelector);
+            if (!citySelected) {
+                $(coordinateField).attr('value', '');
+                debounceAutocomplete($(this).val(), inputSelector, resultsSelector);
+            }
         }, 300));
 
         $(resultsSelector).on('click', 'li', function () {
@@ -186,6 +190,7 @@ $(document).ready(function () {
             $(inputSelector).val(selectedText).attr('value', selectedText);
             $(coordinateField).attr('value', `${selectedLatitude},${selectedLongitude}`);
             $(resultsSelector).hide();
+            citySelected = true;  // Встановлення прапорця при виборі міста
         });
 
         $(document).click(function (event) {
@@ -215,6 +220,7 @@ $(document).ready(function () {
                         'X-CSRFToken': csrfToken
                     },
                     success: function (data) {
+                        if (citySelected) return;
                         if (data.success && data.data.length > 0) {
                             cache[query] = data.data;
                             displayResults(data.data, resultsSelector);
