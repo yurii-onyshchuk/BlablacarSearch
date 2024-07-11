@@ -1,4 +1,5 @@
 import json
+import time
 
 import requests
 from django.conf import settings
@@ -53,7 +54,7 @@ class NovaPoshtaGeoService:
             "calledMethod": "getSettlements",
             "methodProperties": {
                 "FindByString": f"{self.data['query']}",
-                "Limit": "10",
+                "Limit": "100",
                 "Page": "1"
             }
         }

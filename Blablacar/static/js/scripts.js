@@ -202,8 +202,19 @@ $(document).ready(function () {
                 success: function (data) {
                     $(resultsSelector).empty();
                     if (data.success && data.data.length > 0) {
+                        
+                        data.data.sort(function (a, b) {
+                            if (a.SettlementTypeDescription === 'місто' && b.SettlementTypeDescription === 'село') {
+                                return -1;
+                            }
+                            if (a.SettlementTypeDescription === 'село' && b.SettlementTypeDescription === 'місто') {
+                                return 1;
+                            }
+                            return 0;
+                        });
+
                         $(resultsSelector).show();
-                        $.each(data.data, function (index, city) {
+                        $.each(data.data.slice(0, 10), function (index, city) {
                             $(resultsSelector).append(`<li class="dropdown-item" data-city="${city.Description}" data-latitude="${city.Latitude}" data-longitude="${city.Longitude}">${city.SettlementTypeDescription.substring(0, 1)}. ${city.Description}, ${city.AreaDescription} обл.</li>`);
                         });
                     } else {

@@ -31,7 +31,8 @@ class SearchForm(forms.Form):
         if coordinate:
             return from_city
         else:
-            raise ValidationError(f'Міста "{from_city}" не знайдено..')
+            raise ValidationError(
+                f'Населеного пункту "{from_city}" не знайдено...')
 
     def clean_to_city(self):
         """Clean and validate the 'to_city' field."""
@@ -40,7 +41,7 @@ class SearchForm(forms.Form):
         if coordinate:
             return to_city
         else:
-            raise ValidationError(f'Міста "{to_city}" не знайдено..')
+            raise ValidationError(f'Населеного пункту "{to_city}" не знайдено...')
 
     def clean(self):
         """Custom cleaning and validation logic for the entire form."""
