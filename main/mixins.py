@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 
 from accounts.services.user_service import get_user_API_key
 from . import forms
-from .services.request_service import get_Blablacar_response_data, get_query_params
+from .services.external_api_services import BlaBlaCarService
 from .services.task_service import TaskChecker
 
 
@@ -13,8 +13,11 @@ class TaskEditMixin:
 
     def form_valid(self, form):
         """Handle the form submission for editing a task."""
-        query_params = get_query_params(self.request.user, form.cleaned_data)
-        response_data = get_Blablacar_response_data(query_params)
+        data = form.cleaned_data
+        data.update({'user': self.request.user})
+        blablacar = BlaBlaCarService(data)
+        query_params = blablacar.get_query_params_for_searching()
+        response_data = blablacar.send_api_request(query_data=query_params, method='GET').json()
         form.instance.link = response_data['link']
         form.instance.user = self.request.user
         task = form.save(commit=True)

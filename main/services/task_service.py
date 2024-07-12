@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.template.loader import get_template
 
 from main.models import Task, Trip
-from main.services.request_service import get_Blablacar_response_data, get_query_params
+from main.services.external_api_services import BlaBlaCarService
 from main.services.trip_service import TripParser
 
 
@@ -100,8 +100,10 @@ def check_new_trips():
     """Check for new BlaBlaCar trips that match active tasks and send notifications."""
     tasks = get_active_tasks()
     for task in tasks:
-        query_params = get_query_params(task.user, task.__dict__)
-        response_data = get_Blablacar_response_data(query_params)
+        data = task.__dict__.update({'user': task.user})
+        blablacar = BlaBlaCarService(data)
+        query_params = blablacar.get_query_params_for_searching()
+        response_data = blablacar.send_api_request(query_data=query_params, method='GET')
         task_checker = TaskChecker(task, response_data)
         new_relevant_trip_list = task_checker.get_new_relevant_trip_list()
         if new_relevant_trip_list:

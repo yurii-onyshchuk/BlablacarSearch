@@ -12,7 +12,7 @@ from .mixins import RedirectAuthenticatedUserMixin
 from .models import APIKey
 from .services.user_service import get_user_API_key
 from main.models import Task
-from main.services.request_service import request_to_Blablacar
+from main.services.external_api_services import BlaBlaCarService
 
 User = get_user_model()
 
@@ -120,7 +120,8 @@ class APIKeyView(FormView):
         user_API_key = get_user_API_key(self.request.user)
         if user_API_key:
             context['form'].initial['API_key'] = user_API_key
-            response = request_to_Blablacar({'key': user_API_key})
+            blablacar = BlaBlaCarService({'key': user_API_key})
+            response = blablacar.send_api_request(query_data={'key': user_API_key}, method='GET')
             context['quota'] = {'limit_day': response.headers['x-ratelimit-limit-day'],
                                 'remaining_day': response.headers['x-ratelimit-remaining-day'],
                                 'limit_minute': response.headers['x-ratelimit-limit-minute'],

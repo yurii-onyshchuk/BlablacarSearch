@@ -7,8 +7,7 @@ from django.views.generic import CreateView, ListView, UpdateView, DetailView, D
 
 from .mixins import SearchFormMixin, TaskFormMixin, TaskEditMixin
 from .models import Task
-from .services.geo_service import NovaPoshtaGeoService
-from .services.request_service import get_Blablacar_response_data, get_query_params
+from .services.external_api_services import BlaBlaCarService, NovaPoshtaGeoService
 from .services.task_service import TaskChecker, get_actual_user_tasks, get_archived_user_tasks
 
 
@@ -35,13 +34,17 @@ class SearchPage(LoginRequiredMixin, TaskEditMixin, SearchFormMixin, FormView):
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
             context['show_results'] = True
-            context['response_data'] = get_Blablacar_response_data(kwargs['query_params'])
+            blablacar = BlaBlaCarService({'user': self.request.user})
+            context['response_data'] = blablacar.send_api_request(query_data=kwargs['query_params'],
+                                                                  method='GET').json()
         return context
 
     def form_valid(self, form):
         """Handle the form submission and rendering results or creating a new task."""
         if self.request.POST.get('search', None):
-            query_params = get_query_params(self.request.user, form.cleaned_data)
+            data = form.cleaned_data.copy()
+            data.update({'user': self.request.user})
+            query_params = BlaBlaCarService(data).get_query_params_for_searching()
             return self.render_to_response(self.get_context_data(form=form, query_params=query_params))
         elif self.request.POST.get('create_task', None):
             return super().form_valid(form)
@@ -83,8 +86,11 @@ class TaskDetail(LoginRequiredMixin, DetailView):
             dict: A dictionary containing the context data for rendering the page.
         """
         context = super(TaskDetail, self).get_context_data(**kwargs)
-        query_params = get_query_params(self.object.user, self.object.__dict__)
-        response_data = get_Blablacar_response_data(query_params)
+        data = self.object.__dict__
+        data.update({'user': self.object.user})
+        blablacar = BlaBlaCarService(data)
+        query_params = blablacar.get_query_params_for_searching()
+        response_data = blablacar.send_api_request(query_data=query_params, method='GET').json()
         task_checker = TaskChecker(self.object, response_data)
         task_checker.update_saved_trips()
         context['response_data'] = task_checker.filter_response_accord_to_task()
@@ -122,7 +128,8 @@ def city_autocomplete(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         searcher = NovaPoshtaGeoService({'query': data.get('query')})
-        autocomplete_data = searcher.get_response_from_API()
+        query_data = searcher.get_query_params()
+        autocomplete_data = searcher.send_api_request(query_data=query_data, method='POST').json()
         sorted_data = sorted(autocomplete_data['data'],
                              key=lambda x: (x.get('SettlementTypeDescription') != 'місто', x.get('Description')))
         limited_data = sorted_data[:10]
