@@ -38,7 +38,6 @@ class BlaBlaCarService(APIService):
 
         self.data = data
         self.url = settings.BLABLACAR_API_URL
-        self.api_key = get_API_key(user=self.data.get('user'))
         self.locale = settings.BLABLACAR_LOCALE
         self.currency = settings.BLABLACAR_CURRENCY
         self.count = settings.BLABLACAR_DEFAULT_TRIP_COUNT
@@ -47,15 +46,15 @@ class BlaBlaCarService(APIService):
     def get_query_params_for_quota(self) -> dict:
         """Prepare query parameters for making a BlaBlaCar API quota request."""
 
-        query_params = {'key': self.api_key}
+        query_params = {'key': self.data['key']}
         return query_params
 
     def get_query_params_for_searching(self) -> dict:
         """Prepare query parameters for making a BlaBlaCar API searching request."""
 
-        query_params = {'key': self.api_key}
-        query_params_key = ['from_coordinate', 'to_coordinate', 'start_date_local', 'end_date_local', 'requested_seats',
-                            'radius_in_kilometers']
+        query_params_key = ['key', 'from_coordinate', 'to_coordinate', 'start_date_local',
+                            'end_date_local', 'requested_seats', 'radius_in_kilometers']
+        query_params = {}
         for key in query_params_key:
             value = self.data.get(key)
             if value:
@@ -65,6 +64,8 @@ class BlaBlaCarService(APIService):
                     key = 'radius_in_meters'
                     value *= 1000
                 query_params[key] = value
+            elif key == 'key':
+                query_params[key] = get_API_key(self.data.get('user'))
         query_params['locale'] = self.locale
         query_params['currency'] = self.currency
         query_params['count'] = self.count
@@ -74,7 +75,7 @@ class BlaBlaCarService(APIService):
 class NovaPoshtaGeoService(APIService):
     """Service for interacting with the Nova Poshta API."""
 
-    def __init__(self, data=None):
+    def __init__(self, data):
         """Initialize NovaPoshtaGeoService with the provided data."""
 
         self.data = data

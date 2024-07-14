@@ -34,17 +34,15 @@ class SearchPage(LoginRequiredMixin, TaskEditMixin, SearchFormMixin, FormView):
             context['title'] = 'Доступні поїздки'
             context['heading'] = 'Пошук'
             context['show_results'] = True
-            blablacar = BlaBlaCarService({'user': self.request.user})
-            context['response_data'] = blablacar.send_api_request(query_data=kwargs['query_params'],
-                                                                  method='GET').json()
+            context['response_data'] = BlaBlaCarService().send_api_request(query_data=kwargs['query_params'],
+                                                                           method='GET').json()
         return context
 
     def form_valid(self, form):
         """Handle the form submission and rendering results or creating a new task."""
+
         if self.request.POST.get('search', None):
-            data = form.cleaned_data.copy()
-            data.update({'user': self.request.user})
-            query_params = BlaBlaCarService(data).get_query_params_for_searching()
+            query_params = BlaBlaCarService(form.cleaned_data).get_query_params_for_searching()
             return self.render_to_response(self.get_context_data(form=form, query_params=query_params))
         elif self.request.POST.get('create_task', None):
             return super().form_valid(form)
@@ -86,9 +84,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
             dict: A dictionary containing the context data for rendering the page.
         """
         context = super(TaskDetail, self).get_context_data(**kwargs)
-        data = self.object.__dict__
-        data.update({'user': self.object.user})
-        blablacar = BlaBlaCarService(data)
+        blablacar = BlaBlaCarService(self.object.__dict__)
         query_params = blablacar.get_query_params_for_searching()
         response_data = blablacar.send_api_request(query_data=query_params, method='GET').json()
         task_checker = TaskChecker(self.object, response_data)

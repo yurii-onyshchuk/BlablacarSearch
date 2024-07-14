@@ -3,6 +3,7 @@ from datetime import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 
+from accounts.services.user_service import get_user_API_key
 from .models import Task
 from .widgets import InputGroupWidget, CityAutocompleteWidget
 
@@ -10,10 +11,11 @@ from .widgets import InputGroupWidget, CityAutocompleteWidget
 class SearchForm(forms.Form):
     """Form for collecting search criteria for BlaBlaCar trips."""
 
+    key = forms.CharField(label='API key', widget=forms.HiddenInput(), required=False)
     from_city = forms.CharField(label='Звідки?', widget=InputGroupWidget(attrs={'autocomplete': 'off'}))
-    from_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
+    from_coordinate = forms.CharField(widget=forms.HiddenInput(), required=False)
     to_city = forms.CharField(label='Куди?', widget=CityAutocompleteWidget(attrs={'autocomplete': 'off'}))
-    to_coordinate = forms.CharField(widget=forms.TextInput(attrs={'type': 'hidden'}), required=False)
+    to_coordinate = forms.CharField(widget=forms.HiddenInput(), required=False)
     start_date_local = forms.DateTimeField(label='Починаючи з часу', initial=datetime.now(),
                                            widget=forms.DateTimeInput(attrs={'type': "datetime-local"},
                                                                       format="%Y-%m-%dT%H:%M"))
@@ -23,6 +25,12 @@ class SearchForm(forms.Form):
     requested_seats = forms.IntegerField(label='Кількість місць', initial=1, min_value=1, max_value=8)
     radius_in_kilometers = forms.IntegerField(label="Радіус пошуку навколо вказаних міст, км (не обов'язково)",
                                               required=False, min_value=1, max_value=50)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['key'].initial = get_user_API_key(user)
 
     def clean_from_city(self):
         """Clean and validate the 'from_city' field."""
@@ -68,6 +76,5 @@ class TaskProForm(TaskForm):
     notification = forms.BooleanField(label='Отримувати сповіщення про нові поїздки', required=False, label_suffix='')
 
     class Meta:
-        model = Task
-        fields = ['from_coordinate', 'to_coordinate', 'from_city', 'only_from_city', 'to_city', 'only_to_city',
-                  'start_date_local', 'end_date_local', 'requested_seats', 'radius_in_kilometers', 'notification', ]
+        model = TaskForm.Meta.model
+        fields = TaskForm.Meta.fields + ['notification']

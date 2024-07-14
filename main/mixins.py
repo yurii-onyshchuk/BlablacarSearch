@@ -13,9 +13,8 @@ class TaskEditMixin:
 
     def form_valid(self, form):
         """Handle the form submission for editing a task."""
-        data = form.cleaned_data
-        data.update({'user': self.request.user})
-        blablacar = BlaBlaCarService(data)
+
+        blablacar = BlaBlaCarService(form.cleaned_data)
         query_params = blablacar.get_query_params_for_searching()
         response_data = blablacar.send_api_request(query_data=query_params, method='GET').json()
         form.instance.link = response_data['link']
@@ -35,6 +34,12 @@ class TaskFormMixin:
             return forms.TaskProForm
         else:
             return forms.TaskForm
+
+    def get_form_kwargs(self):
+        """Pass user to the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 class SearchFormMixin(TaskFormMixin):

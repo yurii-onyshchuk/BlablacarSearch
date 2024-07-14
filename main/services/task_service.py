@@ -100,8 +100,7 @@ def check_new_trips():
     """Check for new BlaBlaCar trips that match active tasks and send notifications."""
     tasks = get_active_tasks()
     for task in tasks:
-        data = task.__dict__.update({'user': task.user})
-        blablacar = BlaBlaCarService(data)
+        blablacar = BlaBlaCarService(task.__dict__)
         query_params = blablacar.get_query_params_for_searching()
         response_data = blablacar.send_api_request(query_data=query_params, method='GET')
         task_checker = TaskChecker(task, response_data)
