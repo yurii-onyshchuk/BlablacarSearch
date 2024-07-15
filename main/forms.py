@@ -34,6 +34,7 @@ class SearchForm(forms.Form):
 
     def clean_from_city(self):
         """Clean and validate the 'from_city' field."""
+
         from_city = self.cleaned_data['from_city']
         coordinate = self.data['from_coordinate']
         if coordinate:
@@ -44,6 +45,7 @@ class SearchForm(forms.Form):
 
     def clean_to_city(self):
         """Clean and validate the 'to_city' field."""
+
         to_city = self.cleaned_data['to_city']
         coordinate = self.data['to_coordinate']
         if coordinate:
@@ -53,6 +55,7 @@ class SearchForm(forms.Form):
 
     def clean(self):
         """Custom cleaning and validation logic for the entire form."""
+
         clean_data = super(SearchForm, self).clean()
         if clean_data['end_date_local'] and clean_data['start_date_local'] > clean_data['end_date_local']:
             raise ValidationError('"Час початку пошуку" має бути раніше "Часу закінчення пошуку": ')

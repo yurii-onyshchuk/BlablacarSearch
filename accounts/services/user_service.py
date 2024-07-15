@@ -4,8 +4,7 @@ from accounts.models import APIKey
 
 
 def get_user_API_key(user):
-    """
-    Retrieve the API key associated with a user.
+    """Retrieve the API key associated with a user.
 
     This function checks if the user has set a personal API key in their account and returns it. If no personal API key
     is set, it returns None.

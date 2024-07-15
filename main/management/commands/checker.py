@@ -17,8 +17,7 @@ class Command(BaseCommand):
     help = 'Перевірка наявності необхідних поїздок'
 
     def handle(self, *args, **options):
-        """
-        Handle the command execution.
+        """Handle the command execution.
 
         This method is called when the management command is executed. It calls the check_new_trips function
         and sleeps for 120 seconds before checking again. It continues to run indefinitely to periodically check for

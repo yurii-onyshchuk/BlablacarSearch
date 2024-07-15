@@ -5,13 +5,13 @@ from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, FormView
 
-from .mixins import SearchFormMixin, TaskFormMixin, TaskEditMixin
+from .mixins import FormRetrieveMixin, TaskFormRetrieveMixin, TaskSaveMixin
 from .models import Task
 from .services.external_api_services import BlaBlaCarService, NovaPoshtaGeoService
 from .services.task_service import TaskChecker, get_actual_user_tasks, get_archived_user_tasks
 
 
-class SearchPage(LoginRequiredMixin, TaskEditMixin, SearchFormMixin, FormView):
+class SearchPage(LoginRequiredMixin, TaskSaveMixin, FormRetrieveMixin, FormView):
     """View for the BlaBlaCar trip search page.
 
     This view allows authenticated users to search for BlaBlaCar trips based on various criteria.
@@ -94,14 +94,14 @@ class TaskDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class CreateTask(LoginRequiredMixin, TaskFormMixin, TaskEditMixin, CreateView):
+class CreateTask(LoginRequiredMixin, TaskFormRetrieveMixin, TaskSaveMixin, CreateView):
     """View for creating a new task."""
 
     extra_context = {'title': 'Планування нової поїздки'}
     template_name = 'main/task_form.html'
 
 
-class TaskUpdate(LoginRequiredMixin, TaskFormMixin, TaskEditMixin, UpdateView):
+class TaskUpdate(LoginRequiredMixin, TaskFormRetrieveMixin, TaskSaveMixin, UpdateView):
     """View for updating an existing task."""
 
     extra_context = {'title': 'Оновлення поїздки'}
@@ -121,6 +121,13 @@ class DeleteTask(LoginRequiredMixin, DeleteView):
 
 
 def city_autocomplete(request):
+    """ Handle city autocomplete requests.
+
+    This view function processes POST requests for city autocomplete queries.
+    It uses the NovaPoshtaGeoService to search for cities based on the provided query
+    and returns a sorted and limited list of results.
+    """
+
     if request.method == 'POST':
         data = json.loads(request.body)
         searcher = NovaPoshtaGeoService({'query': data.get('query')})

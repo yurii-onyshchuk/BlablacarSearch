@@ -1,7 +1,5 @@
 from abc import ABC
-
 import requests
-
 from django.conf import settings
 
 from geopy.geocoders import Nominatim
